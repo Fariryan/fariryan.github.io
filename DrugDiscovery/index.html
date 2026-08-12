@@ -1,62 +1,63 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Neuro Atlas — Disease · Drug · Molecule · Mechanism</title>
-<meta name="description" content="Interconnected scientific atlas of neurological diseases, therapeutics, molecular targets, chemical structures, pathways, and clinical evidence." />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Neuro Atlas — Disease · Drug · Molecule · Mechanism</title>
+  <meta name="description" content="Interconnected scientific atlas of neurological diseases, therapeutics, molecular targets, chemical structures, pathways, and clinical evidence." />
+  <link rel="stylesheet" href="css/app.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>" />
 
-<!-- This page is a pointer, not the app. The application itself — UI and API —
-     is served from https://neuro.roneu.com over a Cloudflare Tunnel; its source
-     stays in a private repository. Redirect happens three ways so it works with
-     or without JavaScript, and search engines are told where the real page is. -->
-<link rel="canonical" href="https://neuro.roneu.com/" />
-<meta http-equiv="refresh" content="0; url=https://neuro.roneu.com/" />
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>" />
-
-<style>
-  :root { color-scheme: dark; }
-  html, body { height: 100%; }
-  body {
-    margin: 0;
-    display: grid;
-    place-items: center;
-    background: #0b0f17;
-    color: #e6edf7;
-    font: 16px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-    text-align: center;
-    padding: 2rem;
-  }
-  .mark { font-size: 2.5rem; }
-  h1 { font-size: 1.35rem; font-weight: 600; margin: 1rem 0 .25rem; }
-  p { margin: .25rem 0; color: #93a4bd; }
-  a { color: #7cc5ff; }
-  .spin {
-    margin: 1.5rem auto 0;
-    width: 22px; height: 22px;
-    border: 2px solid #24304a;
-    border-top-color: #7cc5ff;
-    border-radius: 50%;
-    animation: r .8s linear infinite;
-  }
-  @keyframes r { to { transform: rotate(360deg); } }
-  @media (prefers-reduced-motion: reduce) { .spin { animation: none; } }
-</style>
+  <!-- No build step. Libraries are vendored locally so the app runs offline.
+       Modules import by explicit path rather than through an import map: an
+       import map is an inline script, which the Content-Security-Policy
+       blocks, and loosening the policy with 'unsafe-inline' is not worth the
+       convenience. The vendored OrbitControls is patched to match. -->
+  <script src="vendor/3dmol.min.js"></script>
+  <script src="vendor/cytoscape.min.js"></script>
 </head>
 <body>
-  <main>
-    <div class="mark">🧠</div>
-    <h1>Neuro Atlas</h1>
-    <p>Taking you to <a href="https://neuro.roneu.com/">neuro.roneu.com</a>…</p>
-    <div class="spin" aria-hidden="true"></div>
-    <noscript>
-      <p>JavaScript is off — <a href="https://neuro.roneu.com/">open the atlas</a>.</p>
-    </noscript>
-  </main>
-  <script>
-    // replace() rather than assign() so the back button returns to wherever the
-    // visitor came from instead of bouncing through this page again.
-    location.replace("https://neuro.roneu.com/");
-  </script>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <h1><span class="mark">N</span> Neuro Atlas</h1>
+        <p>Disease · Drug · Molecule · Mechanism</p>
+      </div>
+      <nav class="nav" id="nav"></nav>
+      <div class="sidebar-foot">
+        <button id="theme-toggle" class="sm">Switch theme</button>
+        <div>Research &amp; education only.<br />Not medical advice.</div>
+      </div>
+    </aside>
+
+    <div class="main">
+      <header class="topbar">
+        <div class="search-wrap">
+          <span class="search-icon">⌕</span>
+          <input
+            id="search"
+            class="search-input"
+            type="search"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="Search diseases, drugs, genes, targets, pathways, trials…"
+            aria-label="Universal search"
+          />
+          <span class="search-kbd">⌘K</span>
+          <div class="suggestions" id="suggestions"></div>
+        </div>
+        <div class="spacer"></div>
+        <button id="compare-btn" class="sm" title="Open the comparison tray">
+          Compare <span id="compare-count" class="dim">(0)</span>
+        </button>
+      </header>
+
+      <main class="content" id="view">
+        <div class="loading"><span class="spinner"></span> Loading…</div>
+      </main>
+    </div>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>

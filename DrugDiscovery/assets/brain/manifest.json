@@ -1,0 +1,1411 @@
+{
+  "generated_by": "scripts/build_brain_assets.py",
+  "note": "All geometry here is derived from published measurements of real tissue. Nothing in this directory is an artistic or procedural model.",
+  "atlas": {
+    "name": "Allen Human Reference Atlas \u2014 3D, version 1.0",
+    "species": "Homo sapiens",
+    "resolution_um": [
+      500.0,
+      500.0,
+      500.0
+    ],
+    "citation": "Ding et al 2016, https://doi.org/10.1002/cne.24080",
+    "doi": "10.1002/cne.24080",
+    "source_url": "http://download.alleninstitute.org/informatics-archive/allen_human_reference_atlas_3d_2020/version_1/",
+    "distributed_via": "BrainGlobe (https://brainglobe.info/)",
+    "distribution_url": "https://gin.g-node.org/BrainGlobe/atlases/raw/master/allen_human_500um_v1.0.tar.gz",
+    "license": "Allen Institute Terms of Use \u2014 free for research and educational use with attribution",
+    "license_url": "https://alleninstitute.org/terms-of-use/",
+    "processing": "Surface meshes decimated by quadric edge collapse and re-expressed in viewer coordinates. Shape is preserved to within the decimation tolerance; no geometry was invented."
+  },
+  "neuron_source": {
+    "name": "NeuroMorpho.org",
+    "version": "digital reconstructions of individual cells",
+    "source_url": "https://neuromorpho.org/",
+    "license": "Free for research use; cite NeuroMorpho.org and the original publication",
+    "license_url": "https://neuromorpho.org/useterm.jsp",
+    "citation": "Ascoli GA, Donohue DE, Halavi M (2007) J Neurosci 27(35):9247-9251",
+    "doi": "10.1523/JNEUROSCI.2055-07.2007",
+    "processing": "SWC reconstructions parsed verbatim; points centred on the soma and uniformly scaled. Branch topology and relative geometry are unmodified."
+  },
+  "structures": [
+    {
+      "id": 10155,
+      "acronym": "Br",
+      "name": "brain",
+      "label": "Brain",
+      "role": "shell",
+      "aliases": [
+        "brain"
+      ],
+      "file": "structures/10155.bin",
+      "bytes": 466884,
+      "triangles": 26000,
+      "original_triangles": 384216,
+      "centroid": [
+        0.00113,
+        0.00341,
+        -0.04124
+      ],
+      "color": "#e0e0e0",
+      "structure_id_path": [
+        10153,
+        10154,
+        10155
+      ]
+    },
+    {
+      "id": 12113,
+      "acronym": "FroL",
+      "name": "frontal lobe",
+      "label": "Frontal lobe",
+      "role": "lobe",
+      "aliases": [
+        "frontal cortex",
+        "prefrontal cortex",
+        "motor cortex"
+      ],
+      "file": "structures/12113.bin",
+      "bytes": 161556,
+      "triangles": 9000,
+      "original_triangles": 284252,
+      "centroid": [
+        0.0006,
+        0.22724,
+        0.43023
+      ],
+      "color": "#f2e5bb",
+      "structure_id_path": [
+        10153,
+        10154,
+        10155,
+        10156,
+        10609,
+        12112,
+        12113
+      ]
+    },
+    {
+      "id": 12131,
+      "acronym": "ParL",
+      "name": "parietal lobe",
+      "label": "Parietal lobe",
+      "role": "lobe",
+      "aliases": [
+        "parietal lobe"
+      ],
+      "file": "structures/12131.bin",
+      "bytes": 161928,
+      "triangles": 8998,
+      "original_triangles": 190894,
+      "centroid": [
+        -0.00247,
+        0.4069,
+        -0.31936
+      ],
+      "color": "#f0dabe",
+      "structure_id_path": [
+        10153,
+        10154,
+        10155,
+        10156,
+        10609,
+        12112,
+        12131
+      ]
+    },
+    {
+      "id": 12139,
+      "acronym": "TemL",
+      "name": "temporal lobe",
+      "label": "Temporal lobe",
+      "role": "lobe",
+      "aliases": [
+        "temporal lobe"
+      ],
+      "file": "structures/12139.bin",
+      "bytes": 161856,
+      "triangles": 9000,
+      "original_triangles": 144684,
+      "centroid": [
+        -0.00362,
+        -0.19521,
+        -0.0907
+      ],
+      "color": "#ebbfd0",
+      "structure_id_path": [
+        10153,
+        10154,
+        10155,
+        10156,
+        10609,
+        12112,
+        12139
+      ]
+    },
+    {
+      "id": 12148,
+      "acronym": "OccL",
+      "name": "occipital lobe",
+      "label": "Occipital lobe",
+      "role": "lobe",
+      "aliases": [
+        "occipital lobe"
+      ],
+      "file": "structures/12148.bin",
+      "bytes": 144228,
+      "triangles": 8000,
+      "original_triangles": 110260,
+      "centroid": [
+        0.00109,
+        0.02758,
+        -0.6962
+      ],
+      "color": "#e7aca1",
+      "structure_id_path": [
+        10153,
+        10154,
+        10155,
+        10156,
+        10609,
+        12112,
+        12148
+      ]
+    },
+    {
+      "id": 12176,
+      "acronym": "InL",
+      "name": "insular lobe",
+      "label": "Insular lobe",
+      "role": "lobe",
+      "aliases": [
+        "insular cortex"
+      ],
+      "file": "structures/12176.bin",
+      "bytes": 90060,
+      "triangles": 5000,
+      "original_triangles": 25378,
+      "centroid": [
+        0.00104,
+        -0.04582,
+        0.20018
+      ],
+      "color": "#e5ab9a",
+      "structure_id_path": [
+        10153,
+        10154,
+        10155,
+        10156,
+        10609,
+        12112,
+        12176
+      ]
+    },
+    {
+      "id": 12156,
+      "acronym": "CgG",
+      "name": "cingulate gyrus",
+      "label": "Cingulate gyrus",
+      "role": "lobe",
+      "aliases": [
+        "cingulate cortex"
+      ],
+      "file": "structures/12156.bin",
+      "bytes": 108048,
+      "triangles": 5998,
+      "original_triangles": 42918,
+      "centroid": [
+        -7e-05,
+        0.2052,
+        0.09217
+      ],
+      "color": "#efb9be",
+      "structure_id_path": [
+        10153,
+        10154,
+        10155,
+        10156,
+        10609,
+        12112,
+        12155,
+        12156
+      ]
+    },
+    {
+      "id": 10159,
+      "acronym": "Cx",
+      "name": "cerebral cortex",
+      "label": "Cerebral cortex",
+      "role": "lobe",
+      "aliases": [
+        "cerebral cortex"
+      ],
+      "file": "structures/10159.bin",
+      "bytes": 91260,
+      "triangles": 5056,
+      "original_triangles": 5056,
+      "centroid": [
+        0.00044,
+        -0.31817,
+        0.29414
+      ],
+      "color": "#e9ccc2",
+      "structure_id_path": [
+        10153,
+        10154,
+        10155,
+        10156,
+        10157,
+        10158,
+        10159
+      ]
+    },
+    {
+      "id": 12170,
+      "acronym": "HiF",
+      "name": "hippocampal gyrus (formation)",
+      "label": "Hippocampal formation",
+      "role": "subcortical",
+      "aliases": [
+        "hippocampus"
+      ],
+      "file": "structures/12170.bin",
+      "bytes": 108060,
+      "triangles": 6000,
+      "original_triangles": 13682,
+      "centroid": [
+        0.00212,
+        -0.20321,
+        -0.0934
+      ],
+      "color": "#aa9dc6",
+      "structure_id_path": [
+        10153,
+        10154,
+        10155,
+        10156,
+        10609,
+        12112,
+        12155,
+        12170
+      ]
+    },
+    {
+      "id": 12162,
+      "acronym": "PHG",
+      "name": "parahippocampal gyrus",
+      "label": "Parahippocampal gyrus",
+      "role": "subcortical",
+      "aliases": [
+        "entorhinal cortex"
+      ],
+      "file": "structures/12162.bin",
+      "bytes": 81060,
+      "triangles": 4500,
+      "original_triangles": 18218,
+      "centroid": [
+        0.00034,
+        -0.32154,
+        -0.01773
+      ],
+      "color": "#d2bfb2",
+      "structure_id_path": [
+        10153,
+        10154,
+        10155,
+        10156,
+        10609,
+        12112,
+        12155,
+        12162
+      ]
+    },
+    {
+      "id": 10361,
+      "acronym": "AMY",
+      "name": "amygdaloid complex",
+      "label": "Amygdaloid complex",
+      "role": "subcortical",
+      "aliases": [
+        "amygdala"
+      ],
+      "file": "structures/10361.bin",
+      "bytes": 95532,
+      "triangles": 5000,
+      "original_triangles": 11748,
+      "centroid": [
+        0.00034,
+        -0.27152,
+        0.12711
+      ],
+      "color": "#c9e2b1",
+      "structure_id_path": [
+        10153,
+        10154,
+        10155,
+        10156,
+        10157,
+        10158,
+        10331,
+        10361
+      ]
+    },
+    {
+      "id": 10332,
+      "acronym": "BN",
+      "name": "basal nuclei (basal ganglia)",
+      "label": "Basal ganglia",
+      "role": "subcortical",
+      "aliases": [
+        "basal ganglia"
+      ],
+      "file": "structures/10332.bin",
+      "bytes": 108012,
+      "triangles": 6000,
+      "original_triangles": 32198,
+      "centroid": [
+        0.00045,
+        -0.02211,
+        0.15577
+      ],
+      "color": "#e2eaca",
+      "structure_id_path": [
+        10153,
+        10154,
+        10155,
+        10156,
+        10157,
+        10158,
+        10331,
+        10332
+      ]
+    },
+    {
+      "id": 10333,
+      "acronym": "STR",
+      "name": "striatum",
+      "label": "Striatum",
+      "role": "subcortical",
+      "aliases": [
+        "striatum"
+      ],
+      "file": "structures/10333.bin",
+      "bytes": 107976,
+      "triangles": 5998,
+      "original_triangles": 29898,
+      "centroid": [
+        0.00155,
+        -0.01868,
+        0.15787
+      ],
+      "color": "#c1cea7",
+      "structure_id_path": [
+        10153,
+        10154,
+        10155,
+        10156,
+        10157,
+        10158,
+        10331,
+        10332,
+        10333
+      ]
+    },
+    {
+      "id": 10334,
+      "acronym": "Ca",
+      "name": "caudate nucleus",
+      "label": "Caudate nucleus",
+      "role": "subcortical",
+      "aliases": [
+        "caudate nucleus"
+      ],
+      "file": "structures/10334.bin",
+      "bytes": 90012,
+      "triangles": 5000,
+      "original_triangles": 16294,
+      "centroid": [
+        -0.00095,
+        0.02436,
+        0.12073
+      ],
+      "color": "#99a677",
+      "structure_id_path": [
+        10153,
+        10154,
+        10155,
+        10156,
+        10157,
+        10158,
+        10331,
+        10332,
+        10333,
+        10334
+      ]
+    },
+    {
+      "id": 10338,
+      "acronym": "Pu",
+      "name": "putamen",
+      "label": "Putamen",
+      "role": "subcortical",
+      "aliases": [
+        "putamen"
+      ],
+      "file": "structures/10338.bin",
+      "bytes": 90060,
+      "triangles": 5000,
+      "original_triangles": 12314,
+      "centroid": [
+        -0.00034,
+        -0.04901,
+        0.18459
+      ],
+      "color": "#a8b485",
+      "structure_id_path": [
+        10153,
+        10154,
+        10155,
+        10156,
+        10157,
+        10158,
+        10331,
+        10332,
+        10333,
+        10338
+      ]
+    },
+    {
+      "id": 10342,
+      "acronym": "GP",
+      "name": "globus pallidus",
+      "label": "Globus pallidus",
+      "role": "subcortical",
+      "aliases": [
+        "globus pallidus"
+      ],
+      "file": "structures/10342.bin",
+      "bytes": 72060,
+      "triangles": 4000,
+      "original_triangles": 4794,
+      "centroid": [
+        -0.00092,
+        -0.06552,
+        0.13484
+      ],
+      "color": "#d7e0bf",
+      "structure_id_path": [
+        10153,
+        10154,
+        10155,
+        10156,
+        10157,
+        10158,
+        10331,
+        10332,
+        10342
+      ]
+    },
+    {
+      "id": 10339,
+      "acronym": "NAC",
+      "name": "nucleus accumbens",
+      "label": "Nucleus accumbens",
+      "role": "subcortical",
+      "aliases": [
+        "nucleus accumbens"
+      ],
+      "file": "structures/10339.bin",
+      "bytes": 47688,
+      "triangles": 2646,
+      "original_triangles": 2646,
+      "centroid": [
+        -0.00011,
+        -0.16143,
+        0.29002
+      ],
+      "color": "#91a06e",
+      "structure_id_path": [
+        10153,
+        10154,
+        10155,
+        10156,
+        10157,
+        10158,
+        10331,
+        10332,
+        10333,
+        10339
+      ]
+    },
+    {
+      "id": 10466,
+      "acronym": "STH",
+      "name": "subthalamic nucleus",
+      "label": "Subthalamic nucleus",
+      "role": "subcortical",
+      "aliases": [
+        "subthalamic nucleus"
+      ],
+      "file": "structures/10466.bin",
+      "bytes": 19464,
+      "triangles": 1078,
+      "original_triangles": 1078,
+      "centroid": [
+        0.00068,
+        -0.14911,
+        0.05162
+      ],
+      "color": "#b799c4",
+      "structure_id_path": [
+        10153,
+        10154,
+        10155,
+        10156,
+        10157,
+        10389,
+        10465,
+        10466
+      ]
+    },
+    {
+      "id": 10346,
+      "acronym": "Cla",
+      "name": "claustrum",
+      "label": "Claustrum",
+      "role": "subcortical",
+      "aliases": [],
+      "file": "structures/10346.bin",
+      "bytes": 71724,
+      "triangles": 4000,
+      "original_triangles": 13040,
+      "centroid": [
+        6e-05,
+        -0.07455,
+        0.20817
+      ],
+      "color": "#aadbce",
+      "structure_id_path": [
+        10153,
+        10154,
+        10155,
+        10156,
+        10157,
+        10158,
+        10331,
+        10346
+      ]
+    },
+    {
+      "id": 10349,
+      "acronym": "BF",
+      "name": "basal forebrain",
+      "label": "Basal forebrain",
+      "role": "subcortical",
+      "aliases": [],
+      "file": "structures/10349.bin",
+      "bytes": 54060,
+      "triangles": 3000,
+      "original_triangles": 3666,
+      "centroid": [
+        0.00088,
+        -0.15778,
+        0.21104
+      ],
+      "color": "#ddddaf",
+      "structure_id_path": [
+        10153,
+        10154,
+        10155,
+        10156,
+        10157,
+        10158,
+        10331,
+        10349
+      ]
+    },
+    {
+      "id": 10390,
+      "acronym": "THM",
+      "name": "thalamus",
+      "label": "Thalamus",
+      "role": "subcortical",
+      "aliases": [
+        "thalamus"
+      ],
+      "file": "structures/10390.bin",
+      "bytes": 105600,
+      "triangles": 5998,
+      "original_triangles": 37008,
+      "centroid": [
+        -0.00025,
+        0.0103,
+        -0.01743
+      ],
+      "color": "#e4cce3",
+      "structure_id_path": [
+        10153,
+        10154,
+        10155,
+        10156,
+        10157,
+        10389,
+        10390
+      ]
+    },
+    {
+      "id": 10467,
+      "acronym": "HTH",
+      "name": "hypothalamus",
+      "label": "Hypothalamus",
+      "role": "subcortical",
+      "aliases": [
+        "hypothalamus"
+      ],
+      "file": "structures/10467.bin",
+      "bytes": 17412,
+      "triangles": 968,
+      "original_triangles": 968,
+      "centroid": [
+        -0.00011,
+        -0.15494,
+        0.04673
+      ],
+      "color": "#e4c9d9",
+      "structure_id_path": [
+        10153,
+        10154,
+        10155,
+        10156,
+        10157,
+        10389,
+        10467
+      ]
+    },
+    {
+      "id": 10648,
+      "acronym": "M",
+      "name": "midbrain (mesencephalon)",
+      "label": "Midbrain",
+      "role": "brainstem",
+      "aliases": [
+        "midbrain"
+      ],
+      "file": "structures/10648.bin",
+      "bytes": 90084,
+      "triangles": 5000,
+      "original_triangles": 12508,
+      "centroid": [
+        0.00013,
+        -0.22249,
+        -0.10381
+      ],
+      "color": "#afd0dd",
+      "structure_id_path": [
+        10153,
+        10154,
+        10155,
+        10648
+      ]
+    },
+    {
+      "id": 12195,
+      "acronym": "MTg",
+      "name": "midbrain tegmentum",
+      "label": "Midbrain tegmentum",
+      "role": "brainstem",
+      "aliases": [],
+      "file": "structures/12195.bin",
+      "bytes": 72228,
+      "triangles": 4000,
+      "original_triangles": 7950,
+      "centroid": [
+        0.00078,
+        -0.18817,
+        -0.05144
+      ],
+      "color": "#5298ae",
+      "structure_id_path": [
+        10153,
+        10154,
+        10155,
+        10648,
+        10649,
+        12195
+      ]
+    },
+    {
+      "id": 10661,
+      "acronym": "Pn",
+      "name": "pons",
+      "label": "Pons",
+      "role": "brainstem",
+      "aliases": [
+        "pons"
+      ],
+      "file": "structures/10661.bin",
+      "bytes": 90084,
+      "triangles": 5000,
+      "original_triangles": 10474,
+      "centroid": [
+        0.00019,
+        -0.42316,
+        -0.15195
+      ],
+      "color": "#afc3db",
+      "structure_id_path": [
+        10153,
+        10154,
+        10155,
+        10653,
+        10654,
+        10655,
+        10661
+      ]
+    },
+    {
+      "id": 10662,
+      "acronym": "Mo",
+      "name": "myelencephalon (medulla oblongata)",
+      "label": "Medulla oblongata",
+      "role": "brainstem",
+      "aliases": [
+        "medulla oblongata"
+      ],
+      "file": "structures/10662.bin",
+      "bytes": 90180,
+      "triangles": 5000,
+      "original_triangles": 5226,
+      "centroid": [
+        -2e-05,
+        -0.65258,
+        -0.27179
+      ],
+      "color": "#d1d7e8",
+      "structure_id_path": [
+        10153,
+        10154,
+        10155,
+        10653,
+        10654,
+        10662
+      ]
+    },
+    {
+      "id": 10653,
+      "acronym": "H",
+      "name": "hindbrain (rhombencephalon)",
+      "label": "Hindbrain",
+      "role": "brainstem",
+      "aliases": [
+        "brainstem"
+      ],
+      "file": "structures/10653.bin",
+      "bytes": 108084,
+      "triangles": 6000,
+      "original_triangles": 70732,
+      "centroid": [
+        -0.00055,
+        -0.46531,
+        -0.43344
+      ],
+      "color": "#cad7ee",
+      "structure_id_path": [
+        10153,
+        10154,
+        10155,
+        10653
+      ]
+    },
+    {
+      "id": 10656,
+      "acronym": "CB",
+      "name": "cerebellum",
+      "label": "Cerebellum",
+      "role": "cerebellum",
+      "aliases": [
+        "cerebellum"
+      ],
+      "file": "structures/10656.bin",
+      "bytes": 161808,
+      "triangles": 9000,
+      "original_triangles": 92546,
+      "centroid": [
+        0.00102,
+        -0.46451,
+        -0.50002
+      ],
+      "color": "#9ebae1",
+      "structure_id_path": [
+        10153,
+        10154,
+        10155,
+        10653,
+        10654,
+        10655,
+        10656
+      ]
+    },
+    {
+      "id": 10557,
+      "acronym": "FWM",
+      "name": "white matter of forebrain",
+      "label": "Cerebral white matter",
+      "role": "white_matter",
+      "aliases": [
+        "white matter",
+        "corpus callosum"
+      ],
+      "file": "structures/10557.bin",
+      "bytes": 143508,
+      "triangles": 8000,
+      "original_triangles": 595250,
+      "centroid": [
+        3e-05,
+        0.108,
+        -0.01576
+      ],
+      "color": "#f2f1f0",
+      "structure_id_path": [
+        10153,
+        10154,
+        10155,
+        10156,
+        10557
+      ]
+    },
+    {
+      "id": 10596,
+      "acronym": "LV",
+      "name": "lateral ventricles",
+      "label": "Lateral ventricles",
+      "role": "ventricle",
+      "aliases": [],
+      "file": "structures/10596.bin",
+      "bytes": 72036,
+      "triangles": 4000,
+      "original_triangles": 35388,
+      "centroid": [
+        -0.00091,
+        0.0156,
+        -0.03245
+      ],
+      "color": "#231f20",
+      "structure_id_path": [
+        10153,
+        10154,
+        10155,
+        10156,
+        10595,
+        10596
+      ]
+    },
+    {
+      "id": 10602,
+      "acronym": "3V",
+      "name": "third ventricle",
+      "label": "Third ventricle",
+      "role": "ventricle",
+      "aliases": [],
+      "file": "structures/10602.bin",
+      "bytes": 27036,
+      "triangles": 1500,
+      "original_triangles": 2160,
+      "centroid": [
+        2e-05,
+        -0.10994,
+        0.07893
+      ],
+      "color": "#231f20",
+      "structure_id_path": [
+        10153,
+        10154,
+        10155,
+        10156,
+        10595,
+        10602
+      ]
+    }
+  ],
+  "neurons": [
+    {
+      "id": 1042,
+      "label": "Cortical pyramidal neuron",
+      "relevance": "Cortical projection neuron; degenerates in Alzheimer disease",
+      "cell_types": [
+        "neuron",
+        "glutamatergic neuron"
+      ],
+      "file": "neurons/1042.bin",
+      "bytes": 37594,
+      "points": 1514,
+      "extent_um": 261.8,
+      "soma": {
+        "points": 3,
+        "representation": "single sphere, radius 12.6 \u00b5m (three-point soma)",
+        "triangles": 320,
+        "traced": true
+      },
+      "neuron_name": "02a_pyramidal2aFI",
+      "archive": "Allman",
+      "species": "human",
+      "brain_region": [
+        "neocortex",
+        "fronto-insula",
+        "layer 5"
+      ],
+      "cell_type": [
+        "pyramidal",
+        "principal cell"
+      ],
+      "physical_integrity": "Dendrites Moderate",
+      "pmid": "16797136",
+      "doi": "10.1016/j.neuroscience.2006.04.084",
+      "url": "https://neuromorpho.org/neuron_info.jsp?neuron_name=02a_pyramidal2aFI",
+      "structure_types": {
+        "1": "soma",
+        "3": "basal dendrite",
+        "4": "apical dendrite"
+      }
+    },
+    {
+      "id": 102399,
+      "label": "Cortical interneuron",
+      "relevance": "Inhibitory interneuron; implicated in epilepsy and circuit excitability",
+      "cell_types": [],
+      "file": "neurons/102399.bin",
+      "bytes": 37258,
+      "points": 1498,
+      "extent_um": 461.4,
+      "soma": {
+        "points": 3,
+        "representation": "single sphere, radius 5.2 \u00b5m (three-point soma)",
+        "triangles": 320,
+        "traced": true
+      },
+      "neuron_name": "H17-03-010-11-13-01_656411100_m",
+      "archive": "Allen Cell Types",
+      "species": "human",
+      "brain_region": [
+        "neocortex",
+        "occipital",
+        "middle temporal gyrus"
+      ],
+      "cell_type": [
+        "interneuron",
+        "Aspiny"
+      ],
+      "physical_integrity": "Dendrites Complete, Axon Incomplete",
+      "pmid": "27810003",
+      "doi": "10.1016/j.neuron.2016.10.019",
+      "url": "https://neuromorpho.org/neuron_info.jsp?neuron_name=H17-03-010-11-13-01_656411100_m",
+      "structure_types": {
+        "1": "soma",
+        "2": "axon",
+        "3": "basal dendrite"
+      }
+    },
+    {
+      "id": 104502,
+      "label": "Dopaminergic neuron",
+      "relevance": "Substantia nigra pars compacta; the population lost in Parkinson disease",
+      "cell_types": [
+        "dopaminergic neuron"
+      ],
+      "file": "neurons/104502.bin",
+      "bytes": 92818,
+      "points": 3926,
+      "extent_um": 467.6,
+      "soma": {
+        "points": 19,
+        "representation": "traced outline, 19 points (convex hull of recorded spheres)",
+        "triangles": 574,
+        "traced": true
+      },
+      "neuron_name": "MYUX58R-RECONSTRUCCION-CORREGIDA-AIS-AND-SC",
+      "archive": "Henny",
+      "species": "mouse",
+      "brain_region": [
+        "basal ganglia",
+        "substantia nigra",
+        "pars compacta",
+        "rostral"
+      ],
+      "cell_type": [
+        "principal cell",
+        "dopaminergic"
+      ],
+      "physical_integrity": "Dendrites Complete, Axon Incomplete",
+      "pmid": "29217687",
+      "doi": "10.1523/JNEUROSCI.1432-17.2017",
+      "url": "https://neuromorpho.org/neuron_info.jsp?neuron_name=MYUX58R-RECONSTRUCCION-CORREGIDA-AIS-AND-SC",
+      "structure_types": {
+        "1": "soma",
+        "2": "axon",
+        "3": "basal dendrite"
+      }
+    },
+    {
+      "id": 107209,
+      "label": "Medium spiny neuron",
+      "relevance": "Principal GABAergic projection neuron of the striatum; lost in Huntington disease",
+      "cell_types": [
+        "GABAergic neuron"
+      ],
+      "file": "neurons/107209.bin",
+      "bytes": 6778,
+      "points": 322,
+      "extent_um": 5.3,
+      "soma": {
+        "points": 0,
+        "representation": "not traced",
+        "triangles": 0,
+        "traced": false
+      },
+      "neuron_name": "4018-2L-Series010-R2",
+      "archive": "Vaasjo",
+      "species": "mouse",
+      "brain_region": [
+        "basal ganglia",
+        "striatum",
+        "dorsolateral"
+      ],
+      "cell_type": [
+        "principal cell",
+        "medium spiny",
+        "D1-type dopamine receptor-expressing",
+        "GABAergic"
+      ],
+      "physical_integrity": "Dendrites Incomplete",
+      "pmid": "30056831",
+      "doi": "10.1016/j.neuron.2018.06.007",
+      "url": "https://neuromorpho.org/neuron_info.jsp?neuron_name=4018-2L-Series010-R2",
+      "structure_types": {
+        "3": "basal dendrite"
+      }
+    },
+    {
+      "id": 108445,
+      "label": "Cholinergic interneuron",
+      "relevance": "Striatal cholinergic interneuron; opposes dopaminergic signalling in Parkinson disease",
+      "cell_types": [
+        "cholinergic neuron"
+      ],
+      "file": "neurons/108445.bin",
+      "bytes": 163753,
+      "points": 7797,
+      "extent_um": 193.5,
+      "soma": {
+        "points": 0,
+        "representation": "not traced",
+        "triangles": 0,
+        "traced": false
+      },
+      "neuron_name": "CGIN-6OHDA-3",
+      "archive": "Ben-Ari",
+      "species": "mouse",
+      "brain_region": [
+        "basal ganglia",
+        "striatum",
+        "dorsolateral"
+      ],
+      "cell_type": [
+        "interneuron",
+        "cholinergic",
+        "GABAergic"
+      ],
+      "physical_integrity": "Neurites Complete",
+      "pmid": "29651049",
+      "doi": "10.1038/s41467-018-03802-y",
+      "url": "https://neuromorpho.org/neuron_info.jsp?neuron_name=CGIN-6OHDA-3",
+      "structure_types": {
+        "6": "unspecified neurite"
+      }
+    },
+    {
+      "id": 70202,
+      "label": "Serotonergic interneuron",
+      "relevance": "Htr3a-expressing cortical interneuron; serotonergic signalling is the target of several CNS drugs",
+      "cell_types": [
+        "serotonergic neuron"
+      ],
+      "file": "neurons/70202.bin",
+      "bytes": 120187,
+      "points": 5447,
+      "extent_um": 398.6,
+      "soma": {
+        "points": 3,
+        "representation": "single sphere, radius 5.3 \u00b5m (three-point soma)",
+        "triangles": 320,
+        "traced": true
+      },
+      "neuron_name": "Htr3a-Cre_NO152_Ai14-191534-04-01-01_543101964_m",
+      "archive": "Allen Cell Types",
+      "species": "mouse",
+      "brain_region": [
+        "neocortex",
+        "occipital",
+        "primary visual",
+        "layer 6a",
+        "left"
+      ],
+      "cell_type": [
+        "interneuron",
+        "Aspiny",
+        "serotonergic"
+      ],
+      "physical_integrity": "Dendrites Complete, Axon Incomplete",
+      "pmid": "25741722",
+      "doi": "10.1016/j.neuron.2015.02.022",
+      "url": "https://neuromorpho.org/neuron_info.jsp?neuron_name=Htr3a-Cre_NO152_Ai14-191534-04-01-01_543101964_m",
+      "structure_types": {
+        "1": "soma",
+        "2": "axon",
+        "3": "basal dendrite"
+      }
+    },
+    {
+      "id": 102085,
+      "label": "Dentate granule cell",
+      "relevance": "Hippocampal dentate gyrus principal cell; a focus of epilepsy and memory research",
+      "cell_types": [],
+      "file": "neurons/102085.bin",
+      "bytes": 10021,
+      "points": 201,
+      "extent_um": 179.2,
+      "soma": {
+        "points": 3,
+        "representation": "single sphere, radius 5.6 \u00b5m (three-point soma)",
+        "triangles": 320,
+        "traced": true
+      },
+      "neuron_name": "01042017e6-000",
+      "archive": "Nandi",
+      "species": "mouse",
+      "brain_region": [
+        "hippocampus",
+        "dentate gyrus",
+        "granule layer",
+        "outer"
+      ],
+      "cell_type": [
+        "principal cell",
+        "granule",
+        "mature"
+      ],
+      "physical_integrity": "Dendrites Complete",
+      "pmid": "29155277",
+      "doi": "10.1016/j.neuroscience.2017.11.017",
+      "url": "https://neuromorpho.org/neuron_info.jsp?neuron_name=01042017e6-000",
+      "structure_types": {
+        "1": "soma",
+        "3": "basal dendrite"
+      }
+    },
+    {
+      "id": 10069,
+      "label": "Cerebellar Purkinje cell",
+      "relevance": "Sole output of the cerebellar cortex; affected in ataxias",
+      "cell_types": [],
+      "file": "neurons/10069.bin",
+      "bytes": 93076,
+      "points": 4156,
+      "extent_um": 189.7,
+      "soma": {
+        "points": 3,
+        "representation": "single sphere, radius 9.4 \u00b5m (three-point soma)",
+        "triangles": 320,
+        "traced": true
+      },
+      "neuron_name": "Purkinje-slice-ageP43-6",
+      "archive": "Dusart",
+      "species": "mouse",
+      "brain_region": [
+        "cerebellum",
+        "cerebellar cortex",
+        "Purkinje layer"
+      ],
+      "cell_type": [
+        "Purkinje",
+        "principal cell"
+      ],
+      "physical_integrity": "Dendrites Complete",
+      "pmid": "23719821",
+      "doi": "10.1523/JNEUROSCI.2977-12.2013",
+      "url": "https://neuromorpho.org/neuron_info.jsp?neuron_name=Purkinje-slice-ageP43-6",
+      "structure_types": {
+        "1": "soma",
+        "3": "basal dendrite"
+      }
+    },
+    {
+      "id": 106334,
+      "label": "Microglial cell",
+      "relevance": "Resident CNS immune cell; central to neuroinflammation",
+      "cell_types": [
+        "microglial cell"
+      ],
+      "file": "neurons/106334.bin",
+      "bytes": 38956,
+      "points": 1380,
+      "extent_um": 68.5,
+      "soma": {
+        "points": 21,
+        "representation": "traced outline, 21 points (convex hull of recorded spheres)",
+        "triangles": 552,
+        "traced": true
+      },
+      "neuron_name": "wtsalF3068iba3_2",
+      "archive": "Bilkei-Gorzo",
+      "species": "mouse",
+      "brain_region": [
+        "hippocampus"
+      ],
+      "cell_type": [
+        "Glia",
+        "microglia",
+        "Iba1-positive"
+      ],
+      "physical_integrity": "Process Moderate",
+      "pmid": "30210289",
+      "doi": "10.3389/fnmol.2018.00295",
+      "url": "https://neuromorpho.org/neuron_info.jsp?neuron_name=wtsalF3068iba3_2",
+      "structure_types": {
+        "1": "soma",
+        "7": "glial process"
+      }
+    },
+    {
+      "id": 104770,
+      "label": "Astrocyte",
+      "relevance": "Principal glial cell; supports the blood-brain barrier and synapses",
+      "cell_types": [
+        "astrocyte"
+      ],
+      "file": "neurons/104770.bin",
+      "bytes": 20596,
+      "points": 636,
+      "extent_um": 251.9,
+      "soma": {
+        "points": 3,
+        "representation": "traced outline, 3 points (convex hull of recorded spheres)",
+        "triangles": 400,
+        "traced": true
+      },
+      "neuron_name": "RealAstrocyteSkeleton1",
+      "archive": "Rusakov",
+      "species": "rat",
+      "brain_region": [
+        "hippocampus",
+        "CA1",
+        "stratum radiatum"
+      ],
+      "cell_type": [
+        "Glia",
+        "astrocyte",
+        "Protoplasmic"
+      ],
+      "physical_integrity": "Process Moderate",
+      "pmid": "30177844",
+      "doi": "10.1038/s41467-018-05896-w",
+      "url": "https://neuromorpho.org/neuron_info.jsp?neuron_name=RealAstrocyteSkeleton1",
+      "structure_types": {
+        "1": "soma",
+        "7": "glial process"
+      }
+    }
+  ],
+  "unsegmented": [
+    {
+      "region": "substantia nigra",
+      "contained_in": "MTg",
+      "note": "Lies within the midbrain tegmentum; not segmented separately at 500 \u00b5m."
+    },
+    {
+      "region": "locus ceruleus",
+      "contained_in": "PnTg",
+      "note": "A small pontine nucleus, below the resolution of this atlas."
+    },
+    {
+      "region": "dorsal raphe nucleus",
+      "contained_in": "MTg",
+      "note": "Brainstem raphe nuclei are not segmented separately at 500 \u00b5m."
+    },
+    {
+      "region": "corpus callosum",
+      "contained_in": "FWM",
+      "note": "Included within the forebrain white-matter surface."
+    },
+    {
+      "region": "spinal cord",
+      "contained_in": null,
+      "note": "Outside the extent of this brain atlas."
+    },
+    {
+      "region": "optic nerve",
+      "contained_in": null,
+      "note": "Cranial nerves are not included in this atlas."
+    },
+    {
+      "region": "neuromuscular junction",
+      "contained_in": null,
+      "note": "Peripheral structure; outside a brain atlas."
+    },
+    {
+      "region": "meninges",
+      "contained_in": null,
+      "note": "Not represented as a surface in this atlas."
+    },
+    {
+      "region": "choroid plexus",
+      "contained_in": "LV",
+      "note": "Lies within the ventricular system; not segmented separately."
+    }
+  ],
+  "no_reconstruction": [
+    {
+      "cell_type": "motor neuron",
+      "note": "No mammalian spinal motor-neuron reconstruction was available from this archive."
+    },
+    {
+      "cell_type": "oligodendrocyte",
+      "note": "Oligodendrocytes are not represented in NeuroMorpho's reconstruction set."
+    },
+    {
+      "cell_type": "oligodendrocyte precursor cell",
+      "note": "No reconstruction available."
+    },
+    {
+      "cell_type": "Schwann cell",
+      "note": "No reconstruction available."
+    },
+    {
+      "cell_type": "ependymal cell",
+      "note": "No reconstruction available."
+    },
+    {
+      "cell_type": "neural stem cell",
+      "note": "No reconstruction available."
+    },
+    {
+      "cell_type": "brain pericyte",
+      "note": "Vascular mural cell; outside the scope of a neuronal morphology archive."
+    },
+    {
+      "cell_type": "endothelial cell of brain",
+      "note": "Vascular cell; outside the scope of a neuronal morphology archive."
+    },
+    {
+      "cell_type": "T cell",
+      "note": "Peripheral immune cell; no morphological reconstruction in this archive."
+    },
+    {
+      "cell_type": "B cell",
+      "note": "Peripheral immune cell; no morphological reconstruction in this archive."
+    },
+    {
+      "cell_type": "macrophage",
+      "note": "No reconstruction available; see the microglial cell for the CNS-resident counterpart."
+    }
+  ]
+}
