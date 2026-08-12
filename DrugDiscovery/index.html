@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Neuro Atlas — Disease · Drug · Molecule · Mechanism</title>
+<meta name="description" content="Interconnected scientific atlas of neurological diseases, therapeutics, molecular targets, chemical structures, pathways, and clinical evidence." />
+
+<!-- This page is a pointer, not the app. The application itself — UI and API —
+     is served from https://neuro.roneu.com over a Cloudflare Tunnel; its source
+     stays in a private repository. Redirect happens three ways so it works with
+     or without JavaScript, and search engines are told where the real page is. -->
+<link rel="canonical" href="https://neuro.roneu.com/" />
+<meta http-equiv="refresh" content="0; url=https://neuro.roneu.com/" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>" />
+
+<style>
+  :root { color-scheme: dark; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    display: grid;
+    place-items: center;
+    background: #0b0f17;
+    color: #e6edf7;
+    font: 16px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    text-align: center;
+    padding: 2rem;
+  }
+  .mark { font-size: 2.5rem; }
+  h1 { font-size: 1.35rem; font-weight: 600; margin: 1rem 0 .25rem; }
+  p { margin: .25rem 0; color: #93a4bd; }
+  a { color: #7cc5ff; }
+  .spin {
+    margin: 1.5rem auto 0;
+    width: 22px; height: 22px;
+    border: 2px solid #24304a;
+    border-top-color: #7cc5ff;
+    border-radius: 50%;
+    animation: r .8s linear infinite;
+  }
+  @keyframes r { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .spin { animation: none; } }
+</style>
+</head>
+<body>
+  <main>
+    <div class="mark">🧠</div>
+    <h1>Neuro Atlas</h1>
+    <p>Taking you to <a href="https://neuro.roneu.com/">neuro.roneu.com</a>…</p>
+    <div class="spin" aria-hidden="true"></div>
+    <noscript>
+      <p>JavaScript is off — <a href="https://neuro.roneu.com/">open the atlas</a>.</p>
+    </noscript>
+  </main>
+  <script>
+    // replace() rather than assign() so the back button returns to wherever the
+    // visitor came from instead of bouncing through this page again.
+    location.replace("https://neuro.roneu.com/");
+  </script>
+</body>
+</html>
