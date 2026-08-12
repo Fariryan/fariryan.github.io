@@ -3,43 +3,152 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Fariryan</title>
-<meta name="description" content="Project index." />
+<title>Fariryan — Projects</title>
+<meta name="description" content="Research software for neuroscience and drug discovery: interactive atlases, imaging classification, and fMRI analysis." />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>" />
 <style>
-  :root { color-scheme: dark; }
+  :root {
+    color-scheme: dark;
+    --bg: #0b0f17;
+    --panel: #121926;
+    --line: #1e2836;
+    --text: #e6edf7;
+    --dim: #8fa1ba;
+    --accent: #7cc5ff;
+  }
+  * { box-sizing: border-box; }
   body {
     margin: 0;
     min-height: 100vh;
-    display: grid;
-    place-items: center;
-    background: #0b0f17;
-    color: #e6edf7;
+    background: var(--bg);
+    color: var(--text);
     font: 16px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-    padding: 2rem;
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    justify-content: center;
+    padding: clamp(2rem, 8vw, 6rem) 1.25rem;
   }
-  main { max-width: 34rem; }
-  h1 { font-size: 1.4rem; font-weight: 600; margin: 0 0 1.5rem; }
-  ul { list-style: none; padding: 0; margin: 0; }
-  li { padding: .75rem 0; border-top: 1px solid #1c2739; }
-  a { color: #7cc5ff; text-decoration: none; font-weight: 500; }
-  a:hover { text-decoration: underline; }
-  span { display: block; color: #93a4bd; font-size: .9rem; }
+  main { width: 100%; max-width: 46rem; }
+
+  header { margin-bottom: 3rem; }
+  .eyebrow {
+    font-size: .75rem;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin: 0 0 .6rem;
+  }
+  h1 { font-size: clamp(1.6rem, 4vw, 2.1rem); font-weight: 650; margin: 0 0 .75rem; letter-spacing: -.01em; }
+  header p { margin: 0; color: var(--dim); max-width: 34rem; }
+
+  ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; }
+
+  .card {
+    display: block;
+    padding: 1.25rem 1.35rem;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color .15s ease, transform .15s ease;
+  }
+  a.card:hover { border-color: #33507a; transform: translateY(-2px); }
+  a.card:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  .row { display: flex; align-items: baseline; gap: .6rem; flex-wrap: wrap; }
+  .name { font-weight: 600; font-size: 1.05rem; }
+  a.card .name { color: var(--accent); }
+  .desc { margin: .4rem 0 0; color: var(--dim); font-size: .93rem; }
+
+  .tag {
+    font-size: .68rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: .16rem .5rem;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    color: var(--dim);
+    white-space: nowrap;
+  }
+  .card.soon { opacity: .62; }
+
+  footer { margin-top: 3rem; color: var(--dim); font-size: .85rem; }
+  footer a { color: var(--dim); }
 </style>
 </head>
 <body>
   <main>
-    <h1>Projects</h1>
+    <header>
+      <p class="eyebrow">Fariryan</p>
+      <h1>Research software</h1>
+      <p>Interactive tools for neuroscience and drug discovery — built on public
+         datasets, with provenance kept visible. Research and education only;
+         not medical advice.</p>
+    </header>
+
     <ul>
       <li>
-        <a href="/DrugDiscovery/">Neuro Atlas</a>
-        <span>Neurological diseases, therapeutics, targets and mechanisms.</span>
+        <a class="card" href="/DrugDiscovery/">
+          <div class="row">
+            <span class="name">Drug Discovery</span>
+            <span class="tag">Live</span>
+          </div>
+          <p class="desc">
+            Neurological diseases, therapeutics, molecular targets, chemical
+            structures, pathways and clinical evidence, joined into one graph
+            where every relationship carries its evidence level and source.
+          </p>
+        </a>
       </li>
+
       <li>
-        <a href="/neurotumor3d/">NeuroTumor3D</a>
-        <span>3D neuro-oncology imaging.</span>
+        <a class="card" href="/neurotumor3d/">
+          <div class="row">
+            <span class="name">NeuroTumor3D</span>
+            <span class="tag">Live</span>
+          </div>
+          <p class="desc">
+            Explainable brain MRI tumour classification for OpenNeuro ds006318,
+            with Grad-CAM attention maps and rotatable pseudo-3D renderings.
+            Research use only — not a medical device.
+          </p>
+        </a>
+      </li>
+
+      <li>
+        <a class="card" href="/Bio-model-3D/">
+          <div class="row">
+            <span class="name">Bio-Model-3D</span>
+            <span class="tag">Live</span>
+          </div>
+          <p class="desc">
+            A cinematic 3D atlas for exploring human and animal cell models in
+            the browser.
+          </p>
+        </a>
+      </li>
+
+      <li>
+        <div class="card soon">
+          <div class="row">
+            <span class="name">Auditory fMRI Lab</span>
+            <span class="tag">Not yet deployed</span>
+          </div>
+          <p class="desc">
+            Frequency cortical magnification in human auditory cortex at 7 Tesla,
+            from OpenNeuro ds008460 — dataset retrieval, event-table conversion
+            and browser-based inspection of participants, runs and NIfTI slices.
+          </p>
+        </div>
       </li>
     </ul>
+
+    <footer>
+      Source for each project lives in its own repository.
+      Some applications are self-hosted and served through a
+      <a href="https://www.cloudflare.com/products/tunnel/">Cloudflare Tunnel</a>.
+    </footer>
   </main>
 </body>
 </html>
