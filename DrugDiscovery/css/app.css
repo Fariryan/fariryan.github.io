@@ -789,3 +789,119 @@ table.matrix td.cell:hover { outline: 2px solid var(--accent); outline-offset: -
   .kv { grid-template-columns: 1fr; gap: 3px 0; }
   .kv dd { margin-bottom: 8px; }
 }
+
+/* ==========================================================================
+   Terms gate and legal text
+
+   The gate is a blocking notice, so it is deliberately hard to dismiss by
+   accident: no click-outside, no Escape, and the accept button stays disabled
+   until the checkbox is ticked.
+   ========================================================================== */
+
+.gate-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(4, 7, 11, 0.82);
+  backdrop-filter: blur(6px);
+}
+
+/* Stops the page behind the gate scrolling under it on iOS. */
+body.gated { overflow: hidden; }
+
+.gate {
+  display: flex;
+  flex-direction: column;
+  width: min(760px, 100%);
+  max-height: min(88vh, 900px);
+  background: var(--bg-panel);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+
+.gate-head {
+  padding: 22px 24px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.gate-head h2 { margin: 0 0 10px; font-size: 18px; letter-spacing: -0.01em; }
+
+.gate-summary { display: grid; gap: 5px; margin: 0; }
+.gate-summary span {
+  font-size: 13px;
+  color: var(--text);
+  padding-left: 14px;
+  position: relative;
+}
+.gate-summary span::before {
+  content: "—";
+  position: absolute;
+  left: 0;
+  color: var(--warning);
+}
+
+.gate-body {
+  overflow-y: auto;
+  padding: 4px 24px;
+  border-bottom: 1px solid var(--border);
+}
+.gate-body:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+.gate-foot { padding: 16px 24px 18px; }
+
+.gate-check {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.gate-check input { margin-top: 3px; flex: 0 0 auto; }
+
+.gate-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 14px;
+}
+.gate-actions button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* Legal prose: narrower measure and quieter than data, since it is read
+   linearly rather than scanned. */
+.legal { max-width: 68ch; font-size: 13.5px; line-height: 1.65; }
+.legal h3 {
+  margin: 22px 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.legal p { margin: 0 0 10px; color: var(--text-muted); }
+.legal ul { margin: 0 0 10px; padding-left: 18px; color: var(--text-muted); }
+.legal li { margin-bottom: 5px; }
+.legal strong { color: var(--text); }
+
+.legal-strong {
+  padding: 10px 12px;
+  border-left: 2px solid var(--warning);
+  background: rgba(210, 153, 34, 0.07);
+  color: var(--text) !important;
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+.legal-note { font-size: 12px; color: var(--text-dim) !important; }
+
+.sidebar-foot a { color: var(--text-muted); text-decoration: underline; }
+.sidebar-foot a:hover { color: var(--accent); }
+
+@media (max-width: 720px) {
+  .gate { max-height: 92vh; }
+  .gate-head, .gate-body, .gate-foot { padding-left: 16px; padding-right: 16px; }
+  .gate-actions { flex-direction: column-reverse; }
+  .gate-actions button { width: 100%; }
+}

@@ -7,6 +7,7 @@
 
 import { api } from "./api.js";
 import { compareStore } from "./compare-store.js";
+import { requireAcceptance, termsView } from "./terms.js";
 import { esc, kindBadge, notice } from "./ui.js";
 
 const NAV = [
@@ -82,6 +83,10 @@ const ROUTES = {
 
   ai: () => import("./views/ai.js").then((m) => m.aiView(view)),
   explorer: () => import("./views/ai.js").then((m) => m.explorerView(view)),
+
+  // Not a dynamic import: terms.js is already loaded by the gate, and the one
+  // page a visitor may need to re-read should never depend on a further fetch.
+  terms: () => termsView(view),
 };
 
 async function route() {
@@ -286,8 +291,12 @@ function setupCompare() {
 
 window.addEventListener("hashchange", route);
 
+// The shell is built first so there is something coherent behind the gate, but
+// routing is held back until the terms are accepted: no record should be
+// fetched or displayed to someone who has not yet seen the notice.
 buildNav();
 setupSearch();
 setupTheme();
 setupCompare();
-route();
+
+requireAcceptance().then(route);
