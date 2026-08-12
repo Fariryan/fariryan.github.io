@@ -31,7 +31,7 @@ export async function dashboardView(root) {
 
   if (!total) {
     root.innerHTML = `
-      <div class="page-head"><h2>Neuro Atlas</h2></div>
+      <div class="page-head"><h2>Drug Discovery</h2></div>
       ${notice(
         `The database is empty. Run the ingestion job to populate it from the
          configured scientific sources:
