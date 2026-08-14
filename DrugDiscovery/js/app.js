@@ -59,6 +59,17 @@ const NAV = [
       { route: "lab/workbench", icon: "▤", label: "Candidate Workbench" },
     ],
   },
+  // The preclinical laboratory: one molecule followed from structure through
+  // docking, dynamics, a cell model and a mouse PK/PD model.
+  {
+    group: "Preclinical",
+    items: [
+      { route: "preclinical/molecule", icon: "⌬", label: "Molecule" },
+      { route: "preclinical/insilico", icon: "⚛", label: "In Silico" },
+      { route: "preclinical/invitro", icon: "▦", label: "In Vitro" },
+      { route: "preclinical/invivo", icon: "🐁", label: "In Vivo Mouse" },
+    ],
+  },
 ];
 
 const view = document.getElementById("view");
@@ -104,6 +115,12 @@ const ROUTES = {
   // here and the atlas's routing rules are unchanged.
   lab: (section, params) =>
     import("./lab/router.js").then((m) => m.labView(view, section, params)),
+
+  // Same pattern as the lab: one route, the second segment selects the stage.
+  preclinical: (section, params) =>
+    import("./preclinical/router.js").then((m) =>
+      m.preclinicalView(view, section, params)
+    ),
 
   // Not a dynamic import: terms.js is already loaded by the gate, and the one
   // page a visitor may need to re-read should never depend on a further fetch.
