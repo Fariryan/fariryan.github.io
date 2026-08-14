@@ -28,6 +28,16 @@ import {
 import { MoleculeViewer, StructureViewer } from "../viewer-molecule.js";
 import { compareStore } from "../compare-store.js";
 
+/** Entity kinds Discovery Lab can work on; others get no lab link. */
+const LAB_KINDS = new Set([
+  "disease",
+  "drug",
+  "compound",
+  "target",
+  "gene",
+  "pathway",
+]);
+
 export async function entityView(root, id) {
   root.innerHTML = loading();
   const entity = await api.entity(id);
@@ -60,6 +70,14 @@ export async function entityView(root, id) {
         ${
           entity.kind === "drug"
             ? `<a class="btn sm" href="#/mechanism/${entity.id}">⇣ Mechanism cascade</a>`
+            : ""
+        }
+        ${
+          // Discovery Lab opens on this entity without altering anything on
+          // this page: the lab reads the node id from the query string.
+          LAB_KINDS.has(entity.kind)
+            ? `<a class="btn sm" href="#/lab/radar?node=${entity.id}"
+                  title="Open this entity in Discovery Lab">◎ Open in Discovery Lab</a>`
             : ""
         }
       </div>

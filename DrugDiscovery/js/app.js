@@ -44,6 +44,21 @@ const NAV = [
     ],
   },
   { group: "Assistant", items: [{ route: "ai", icon: "✦", label: "AI scientist" }] },
+  // Discovery Lab: the computational layer. Isolated under its own route
+  // prefix, so nothing above changes behaviour when it is present or absent.
+  {
+    group: "Discovery Lab",
+    items: [
+      { route: "lab/radar", icon: "◎", label: "Research Radar" },
+      { route: "lab/graph", icon: "⁘", label: "Evidence Graph" },
+      { route: "lab/designer", icon: "⚗", label: "Molecule Designer" },
+      { route: "lab/molecular3d", icon: "⬢", label: "3D Molecular Lab" },
+      { route: "lab/bbb", icon: "◐", label: "BBB Lab" },
+      { route: "lab/target", icon: "🎯", label: "Target & Binding" },
+      { route: "lab/gaps", icon: "◌", label: "Gap Finder" },
+      { route: "lab/workbench", icon: "▤", label: "Candidate Workbench" },
+    ],
+  },
 ];
 
 const view = document.getElementById("view");
@@ -84,6 +99,12 @@ const ROUTES = {
   ai: () => import("./views/ai.js").then((m) => m.aiView(view)),
   explorer: () => import("./views/ai.js").then((m) => m.explorerView(view)),
 
+  // Discovery Lab. One route for the whole module; the second path segment
+  // selects the section, so the lab's own navigation costs no further entries
+  // here and the atlas's routing rules are unchanged.
+  lab: (section, params) =>
+    import("./lab/router.js").then((m) => m.labView(view, section, params)),
+
   // Not a dynamic import: terms.js is already loaded by the gate, and the one
   // page a visitor may need to re-read should never depend on a further fetch.
   terms: () => termsView(view),
@@ -109,7 +130,7 @@ async function route() {
 
   view.scrollIntoView?.({ block: "start" });
   window.scrollTo(0, 0);
-  markActive(name);
+  markActive(pathPart);
 
   try {
     await handler(id, params);
@@ -123,9 +144,20 @@ async function route() {
   }
 }
 
-function markActive(name) {
+/**
+ * Highlight the nav entry for the current path.
+ *
+ * Compared against the whole path rather than its first segment, because
+ * Discovery Lab's entries are two segments deep (`lab/radar`). A single-segment
+ * entry still matches its own sub-paths, so `#/mechanism/12` keeps highlighting
+ * "Mechanisms" exactly as it did before.
+ */
+function markActive(path) {
   navHost.querySelectorAll("a").forEach((link) => {
-    link.classList.toggle("active", link.dataset.route === name);
+    const route = link.dataset.route;
+    const active =
+      route === path || (route !== "" && path.startsWith(`${route}/`));
+    link.classList.toggle("active", active);
   });
 }
 
