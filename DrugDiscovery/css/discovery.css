@@ -245,3 +245,105 @@
 .disc-event-kind {
   font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim);
 }
+
+/* --- chemical space ------------------------------------------------------ */
+.space-wrap { display: grid; grid-template-columns: 1fr 210px; gap: 12px; }
+@media (max-width: 900px) { .space-wrap { grid-template-columns: 1fr; } }
+.space-stage {
+  height: 440px; border: 1px solid var(--border); border-radius: 8px;
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+}
+.space-side { display: flex; flex-direction: column; gap: 10px; }
+.space-legend { display: flex; flex-direction: column; gap: 4px; font-size: 11px; }
+.space-legend-item { display: flex; align-items: center; gap: 6px; }
+.space-swatch { border-radius: 50%; display: inline-block; flex: none; }
+.space-readout {
+  border: 1px solid var(--border); border-radius: 7px; padding: 8px 10px;
+  font-size: 12px;
+}
+.space-readout .mol-2d img { max-width: 100%; }
+
+/* --- targets ------------------------------------------------------------- */
+.disc-target {
+  border: 1px solid var(--border); border-radius: 9px;
+  padding: 12px 14px; margin-bottom: 10px; background: var(--surface);
+}
+.disc-target.blocked { opacity: 0.6; border-style: dashed; }
+.disc-symbol { font-family: var(--mono, ui-monospace, monospace); font-size: 14px; }
+.chip.warn { background: color-mix(in srgb, #b8860b 22%, transparent); }
+.chip.pareto { background: color-mix(in srgb, #f59e0b 25%, transparent); }
+.disc-known { margin-top: 8px; font-size: 12px; }
+.disc-series { margin-top: 5px; display: flex; flex-direction: column; gap: 3px; }
+.disc-series-row { display: flex; gap: 8px; align-items: center; font-size: 11.5px; }
+.status-chip.status-measured { background: color-mix(in srgb, #2e9e5b 22%, transparent); }
+.status-chip.status-predicted { background: color-mix(in srgb, #3b82f6 18%, transparent); }
+.status-chip.status-derived { background: color-mix(in srgb, #64748b 22%, transparent); }
+.status-chip.status-simulated { background: color-mix(in srgb, #a855f7 18%, transparent); }
+.status-chip.status-curated { background: color-mix(in srgb, #2e9e5b 15%, transparent); }
+
+/* --- candidates ---------------------------------------------------------- */
+.disc-candidates {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 10px;
+}
+.disc-candidate {
+  border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px;
+  background: var(--surface); display: flex; flex-direction: column; gap: 6px;
+}
+/* Rejected candidates stay visible — dimmed, never hidden. */
+.disc-candidate.rejected { opacity: 0.55; border-style: dashed; }
+.disc-candidate.focused { border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent); }
+.disc-candidate .mol-2d { text-align: center; }
+.disc-candidate .mol-2d img { max-width: 100%; }
+.disc-measured { font-size: 12px; }
+.disc-edge {
+  border-left: 2px solid var(--accent); padding-left: 8px;
+  font-size: 12px; display: flex; flex-direction: column; gap: 3px;
+}
+.disc-expect { display: flex; flex-direction: column; gap: 3px; }
+.disc-observed { display: flex; flex-wrap: wrap; gap: 4px; }
+.disc-delta {
+  font-size: 10.5px; padding: 1px 5px; border-radius: 3px;
+  background: color-mix(in srgb, var(--text-dim) 15%, transparent);
+  font-variant-numeric: tabular-nums;
+}
+.disc-delta.up { background: color-mix(in srgb, #2e9e5b 22%, transparent); }
+.disc-delta.down { background: color-mix(in srgb, var(--danger) 20%, transparent); }
+.disc-preds { width: 100%; border-collapse: collapse; font-size: 11px; }
+.disc-preds td { padding: 2px 4px; border-bottom: 1px solid var(--border); }
+.disc-preds td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.disc-preds tr.out { background: color-mix(in srgb, var(--danger) 7%, transparent); }
+.disc-trace { font-size: 12px; }
+.disc-trace-chain { display: flex; flex-direction: column; gap: 3px; margin-top: 6px; }
+.disc-trace-step {
+  padding: 4px 8px; border-left: 2px solid var(--border); font-size: 12px;
+}
+.disc-gen-report { margin: 6px 0; font-size: 12.5px; }
+
+/* --- optimization -------------------------------------------------------- */
+.disc-best { display: flex; flex-wrap: wrap; gap: 10px; }
+.disc-best-cell {
+  border: 1px solid var(--border); border-radius: 7px; padding: 8px 11px;
+  min-width: 130px;
+}
+.disc-table tr.front-one { background: color-mix(in srgb, #f59e0b 9%, transparent); }
+.disc-smallmultiples {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px;
+}
+.disc-sm {
+  border: 1px solid var(--border); border-radius: 7px; padding: 8px;
+  text-align: center; font-size: 11.5px;
+}
+.disc-sm img { max-width: 100%; }
+
+/* --- evidence graph ------------------------------------------------------ */
+.graph-stage {
+  height: 480px; border: 1px solid var(--border); border-radius: 8px;
+  background: var(--surface);
+}
+.graph-legend {
+  display: flex; gap: 14px; flex-wrap: wrap; font-size: 11.5px;
+  margin-top: 8px; align-items: center;
+}
+.graph-line { display: inline-block; width: 22px; height: 0; vertical-align: middle; }
+.graph-line.solid { border-top: 2px solid var(--text-dim); }
+.graph-line.dashed { border-top: 2px dashed var(--text-dim); }

@@ -73,15 +73,48 @@ export const SECTIONS = [
     view: "memoryView",
     lede: "The campaign's recorded history and every reasoning call it made, including the ones that failed.",
   },
-  // Declared, not yet built. Listed because the shape of the programme is
-  // itself information, and marked so nobody mistakes an unbuilt stage for an
-  // empty result.
-  { key: "graph", label: "Evidence Graph", pending: "the claim-to-graph projection and its provenance layer" },
-  { key: "targets", label: "Target Discovery", pending: "the target dossier adapters (Open Targets, DepMap, UniProt tractability)" },
-  { key: "chemistry", label: "Chemical Space", pending: "known-chemistry retrieval, embedding and the 3D chemical-space view" },
-  { key: "design", label: "Candidate Design", pending: "the controlled transformation engine and candidate lineage" },
-  { key: "optimization", label: "Optimization", pending: "the ML prediction registry, Pareto ranking and active learning" },
-  { key: "comparisons", label: "Comparisons", pending: "the candidate comparison lab and the preclinical bridge" },
+  {
+    key: "graph",
+    label: "Evidence Graph",
+    module: () => import("./views/graph.js"),
+    view: "graphView",
+    lede: "The campaign's claims as a network, with the records behind every edge and inferred links drawn differently from stated ones.",
+  },
+  {
+    key: "targets",
+    label: "Target Discovery",
+    module: () => import("./views/targets.js"),
+    view: "targetsView",
+    lede: "Intervention points found in the campaign's own evidence, with what each dossier does not contain stated as plainly as what it does.",
+  },
+  {
+    key: "chemistry",
+    label: "Chemical Space",
+    module: () => import("./views/chemistry.js"),
+    view: "chemistryView",
+    lede: "Every molecule positioned by its structure — a projection fitted once per campaign, with the variance it loses stated on the panel.",
+  },
+  {
+    key: "design",
+    label: "Candidate Design",
+    module: () => import("./views/design.js"),
+    view: "designView",
+    lede: "Every candidate with its parent, the transformation applied, what it was expected to improve, and what actually moved.",
+  },
+  {
+    key: "optimization",
+    label: "Optimization",
+    module: () => import("./views/optimization.js"),
+    view: "optimizationView",
+    lede: "Pareto fronts rather than a score, and a selection that spends computation where uncertainty is highest.",
+  },
+  {
+    key: "comparisons",
+    label: "Comparisons",
+    module: () => import("./views/comparisons.js"),
+    view: "comparisonsView",
+    lede: "What came back from the preclinical workspace, what the generation taught, and what the campaign has ruled out.",
+  },
 ];
 
 const DEFAULT_SECTION = "overview";

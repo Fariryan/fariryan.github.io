@@ -84,6 +84,66 @@ export const discApi = {
   updateHypothesis: (hypothesisId, payload) =>
     request(`/hypotheses/${hypothesisId}`, { method: "PATCH", body: payload }),
 
+  targets: (id) => request(`/campaigns/${encodeURIComponent(id)}/targets`),
+  proposeTargets: (id, payload) =>
+    request(`/campaigns/${encodeURIComponent(id)}/targets`, {
+      method: "POST",
+      body: payload,
+    }),
+  updateTarget: (targetId, payload) =>
+    request(`/targets/${targetId}`, { method: "PATCH", body: payload }),
+  graph: (id) => request(`/campaigns/${encodeURIComponent(id)}/graph`),
+
+  knownChemistry: (id, payload) =>
+    request(`/campaigns/${encodeURIComponent(id)}/known-chemistry`, {
+      method: "POST",
+      body: payload,
+    }),
+  addSeed: (id, payload) =>
+    request(`/campaigns/${encodeURIComponent(id)}/seeds`, {
+      method: "POST",
+      body: payload,
+    }),
+
+  candidates: (id, params) =>
+    request(`/campaigns/${encodeURIComponent(id)}/candidates${qs(params)}`),
+  candidate: (candidateId) => request(`/candidates/${candidateId}`),
+  updateCandidate: (candidateId, payload) =>
+    request(`/candidates/${candidateId}`, { method: "PATCH", body: payload }),
+  generate: (id, payload) =>
+    request(`/campaigns/${encodeURIComponent(id)}/generate`, {
+      method: "POST",
+      body: payload,
+    }),
+  screen: (id, payload) =>
+    request(`/campaigns/${encodeURIComponent(id)}/screen`, {
+      method: "POST",
+      body: payload,
+    }),
+  pareto: (id) => request(`/campaigns/${encodeURIComponent(id)}/pareto`),
+  chemicalSpace: (id) =>
+    request(`/campaigns/${encodeURIComponent(id)}/chemical-space`),
+  lineage: (id) => request(`/campaigns/${encodeURIComponent(id)}/lineage`),
+
+  sendToPreclinical: (candidateId, payload) =>
+    request(`/candidates/${candidateId}/preclinical`, {
+      method: "POST",
+      body: payload,
+    }),
+  preclinicalRuns: (id) =>
+    request(`/campaigns/${encodeURIComponent(id)}/preclinical`),
+
+  nextGeneration: (id, payload) =>
+    request(`/campaigns/${encodeURIComponent(id)}/next-generation`, {
+      method: "POST",
+      body: payload,
+    }),
+  findings: (id, params) =>
+    request(`/campaigns/${encodeURIComponent(id)}/findings${qs(params)}`),
+  negativeKnowledge: (id) =>
+    request(`/campaigns/${encodeURIComponent(id)}/negative-knowledge`),
+  report: (id) => request(`/campaigns/${encodeURIComponent(id)}/report`),
+
   timeline: (id) => request(`/campaigns/${encodeURIComponent(id)}/timeline`),
   llmRuns: (id, params) =>
     request(`/campaigns/${encodeURIComponent(id)}/llm-runs${qs(params)}`),
