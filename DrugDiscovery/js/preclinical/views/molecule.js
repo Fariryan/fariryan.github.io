@@ -8,14 +8,13 @@
 
 import { card, empty, esc, loading, notice } from "../../ui.js";
 import { labApi } from "../../lab/api.js";
+import { pcApi } from "../api.js";
 import { subject } from "../router.js";
 import { statusValue } from "../ui.js";
 
-const EXAMPLES = [
-  { label: "Erlotinib", smiles: "COCCOc1cc2ncnc(Nc3cccc(C#C)c3)c2cc1OCCOC" },
-  { label: "Temozolomide", smiles: "CN1C(=O)N2C=NC(C(N)=O)=C2N=N1" },
-  { label: "Donepezil", smiles: "COc1cc2CC(CC3CCN(Cc4ccccc4)CC3)C(=O)c2cc1OC" },
-];
+//: How many library hits to show at once. Enough to browse, few enough that
+//: the panel does not become the page.
+const LIBRARY_PAGE = 40;
 
 export async function moleculeView(root, params) {
   const current = subject.get();
@@ -30,13 +29,13 @@ export async function moleculeView(root, params) {
                style="flex:1;min-width:300px" />
         <button class="sm primary" id="pc-analyse">Validate &amp; analyse</button>
       </div>
-      <div class="row mt">
-        <span class="small dim">Examples:</span>
-        ${EXAMPLES.map(
-          (e) =>
-            `<button class="sm" data-example="${esc(e.smiles)}">${esc(e.label)}</button>`
-        ).join("")}
+      <div class="toolbar mt">
+        <input class="search-input" id="pc-library-q" type="text"
+               placeholder="…or search this platform's compound library by name, synonym or InChIKey"
+               style="flex:1;min-width:300px" />
+        <span class="small dim" id="pc-library-count"></span>
       </div>
+      <div id="pc-library"></div>
       <div class="lab-note">
         The structure is parsed, sanitised, reduced to its largest fragment and
         canonicalised by RDKit. Salts and solvates are removed and the removal
@@ -48,14 +47,49 @@ export async function moleculeView(root, params) {
   const input = root.querySelector("#pc-smiles");
   const host = root.querySelector("#pc-mol-result");
 
-  root.querySelectorAll("[data-example]").forEach((button) =>
-    button.addEventListener("click", () => {
-      input.value = button.dataset.example;
-      analyse();
-    })
-  );
+  const library = root.querySelector("#pc-library");
+  const librarySearch = root.querySelector("#pc-library-q");
+  const libraryCount = root.querySelector("#pc-library-count");
 
-  const analyse = async () => {
+  /**
+   * The platform's own catalogued structures, rather than a handful of
+   * hard-coded examples. A catalogued compound arrives with an InChIKey and a
+   * node id, so every downstream result stays attached to the entity the rest
+   * of the platform knows — which a pasted SMILES never is.
+   */
+  const loadLibrary = async (query) => {
+    library.innerHTML = loading("Searching the compound library…");
+    try {
+      const found = await pcApi.molecules({ q: query || undefined, limit: LIBRARY_PAGE });
+      libraryCount.textContent = query
+        ? `${found.count} of ${found.library_size} compounds`
+        : `${found.library_size} compounds with a curated structure`;
+      library.innerHTML = renderLibrary(found);
+      library.querySelectorAll("[data-smiles]").forEach((button) =>
+        button.addEventListener("click", () => {
+          input.value = button.dataset.smiles;
+          analyse({
+            node_id: Number(button.dataset.node) || null,
+            name: button.dataset.name,
+          });
+        })
+      );
+    } catch (error) {
+      library.innerHTML = notice(
+        `The compound library could not be read: ${esc(error.message)}`,
+        "warn",
+        "⚠"
+      );
+    }
+  };
+
+  let debounce;
+  librarySearch.addEventListener("input", () => {
+    clearTimeout(debounce);
+    debounce = setTimeout(() => loadLibrary(librarySearch.value.trim()), 250);
+  });
+
+  const analyse = async (catalogued = null) => {
     const smiles = input.value.trim();
     if (!smiles) {
       host.innerHTML = notice("Enter a structure first.", "warn", "⚠");
@@ -65,6 +99,10 @@ export async function moleculeView(root, params) {
     try {
       const profile = await labApi.analyse(smiles);
       subject.set({
+        // Identity from the catalogue when it came from there, so the rest of
+        // the laboratory can name the compound rather than echo a string.
+        node_id: catalogued?.node_id ?? null,
+        name: catalogued?.name ?? null,
         smiles: profile.structure.canonical_smiles,
         inchikey: profile.structure.inchikey,
         formula: profile.structure.formula,
@@ -86,7 +124,40 @@ export async function moleculeView(root, params) {
   });
 
   if (initial) await analyse();
-  else host.innerHTML = empty("Enter a structure to begin.");
+  else host.innerHTML = empty("Enter a structure, or pick one from the library below.");
+
+  await loadLibrary("");
+}
+
+function renderLibrary(found) {
+  if (!found.compounds.length) {
+    return empty(
+      found.query
+        ? `Nothing in the platform's ${found.library_size} catalogued structures ` +
+            `matches “${esc(found.query)}”. Paste a SMILES above to work on a ` +
+            `compound the database does not hold.`
+        : "The compound library is empty."
+    );
+  }
+
+  return `<div class="pc-library">
+      ${found.compounds
+        .map(
+          (compound) => `
+        <button class="pc-library-item" data-smiles="${esc(compound.smiles)}"
+                data-node="${compound.node_id}" data-name="${esc(compound.name)}"
+                title="${esc(compound.inchikey || "")}">
+          <span class="pc-library-name">${esc(compound.name)}</span>
+          <span class="pc-library-meta">
+            ${esc(compound.formula || "—")}
+            ${compound.molecular_weight ? ` · ${compound.molecular_weight.toFixed(1)} Da` : ""}
+            ${compound.has_stereochemistry ? " · stereo" : ""}
+          </span>
+        </button>`
+        )
+        .join("")}
+    </div>
+    <div class="lab-note">${esc(found.note)}</div>`;
 }
 
 /** Wrap a raw calculated number so it renders with its status glyph. */

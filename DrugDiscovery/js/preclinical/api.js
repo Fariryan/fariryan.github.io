@@ -55,6 +55,7 @@ export const pcApi = {
 
   pkpd: (payload) => request("/pkpd", { method: "POST", body: payload }),
   mouseModels: (params) => request(`/mouse/models${qs(params)}`),
+  molecules: (params) => request(`/molecules${qs(params)}`, { useCache: true }),
   report: (id) => request(`/report/${encodeURIComponent(id)}`),
 };
 

@@ -1,0 +1,247 @@
+/* Molecular Discovery Lab
+   ---------------------------------------------------------------------------
+   Built on lab.css primitives; only what is specific to this workspace lives
+   here. The visual grammar has one job: keep reasoning visually distinct from
+   result. Anything a model said carries the ✦ chip and a tinted surround;
+   anything computed does not. */
+
+.disc-shell { display: flex; flex-direction: column; gap: 14px; }
+
+.disc-head { display: flex; align-items: flex-start; gap: 16px; }
+.disc-head h2 { margin: 2px 0 4px; }
+.disc-eyebrow {
+  font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.09em;
+  color: var(--text-dim);
+}
+.disc-lede { color: var(--text-dim); max-width: 70ch; margin: 0; font-size: 13px; }
+
+/* --- reasoning-service status ------------------------------------------- */
+.disc-ai { margin-left: auto; min-width: 210px; }
+.disc-ai-card {
+  border: 1px solid var(--border); border-radius: 8px;
+  padding: 8px 10px; background: var(--surface); font-size: 12px;
+}
+.disc-ai-card.offline { border-color: var(--warn, #b8860b); }
+.disc-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--text-dim); display: inline-block; margin-right: 6px;
+}
+.disc-dot.online { background: #2e9e5b; }
+.disc-ai-models {
+  display: grid; grid-template-columns: auto 1fr; gap: 1px 8px;
+  margin: 6px 0 0; font-size: 11.5px;
+}
+.disc-ai-models dt { color: var(--text-dim); }
+.disc-ai-models dd { margin: 0; font-family: var(--mono, ui-monospace, monospace); }
+
+/* --- campaign bar and tabs ---------------------------------------------- */
+.disc-campaign-bar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 7px 11px; border: 1px solid var(--border); border-radius: 7px;
+  background: var(--surface);
+}
+.disc-campaign-code {
+  font-family: var(--mono, ui-monospace, monospace); font-weight: 600;
+  font-size: 12.5px; letter-spacing: 0.02em;
+}
+.disc-campaign-code.big { font-size: 15px; }
+.disc-campaign-title { color: var(--text-dim); font-size: 12.5px; }
+
+.disc-tabs { display: flex; flex-wrap: wrap; gap: 3px; border-bottom: 1px solid var(--border); }
+.disc-tab {
+  padding: 7px 11px; font-size: 12.5px; text-decoration: none;
+  color: var(--text-dim); border-bottom: 2px solid transparent;
+}
+.disc-tab:hover { color: var(--text); }
+.disc-tab.active { color: var(--text); border-bottom-color: var(--accent); }
+/* A section with no backend yet is dimmed rather than hidden: the shape of the
+   programme is information, and hiding the unbuilt parts would misrepresent it. */
+.disc-tab.pending { opacity: 0.45; font-style: italic; }
+
+/* --- command centre ------------------------------------------------------ */
+.disc-command { display: flex; flex-direction: column; gap: 14px; }
+.disc-command-head {
+  display: flex; gap: 20px; flex-wrap: wrap;
+  padding: 14px; border: 1px solid var(--border); border-radius: 9px;
+  background: var(--surface);
+}
+.disc-command-head h3 { margin: 6px 0 2px; }
+.disc-goal { margin-left: auto; max-width: 46ch; font-size: 13px; }
+.disc-state {
+  font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em;
+  padding: 2px 7px; border-radius: 10px;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.disc-tiles {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px;
+}
+.disc-tile {
+  border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px;
+  background: var(--surface);
+}
+.disc-tile-value { font-size: 22px; font-variant-numeric: tabular-nums; }
+.disc-tile-label { font-size: 12px; }
+.disc-tile-hint { font-size: 10.5px; color: var(--text-dim); margin-top: 2px; }
+
+.disc-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 900px) { .disc-columns { grid-template-columns: 1fr; } }
+
+/* --- campaign list ------------------------------------------------------- */
+.disc-form {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px;
+}
+.disc-form label { display: flex; flex-direction: column; gap: 3px; font-size: 12px; }
+.disc-form label.wide { grid-column: 1 / -1; }
+.disc-objectives {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 4px; margin-top: 12px;
+}
+.disc-objective { display: flex; align-items: center; gap: 7px; font-size: 12px; }
+
+.disc-campaign-list {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px;
+}
+.disc-campaign-card {
+  text-align: left; font: inherit; color: inherit; cursor: pointer;
+  border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px;
+  background: var(--surface); display: flex; flex-direction: column; gap: 4px;
+}
+.disc-campaign-card:hover { border-color: var(--accent); }
+.disc-campaign-card.active {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+}
+.disc-counts { display: flex; gap: 10px; font-size: 11px; color: var(--text-dim); flex-wrap: wrap; }
+
+/* --- evidence ------------------------------------------------------------ */
+.disc-coverage { font-size: 12.5px; }
+.disc-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.disc-table th, .disc-table td {
+  padding: 6px 8px; border-bottom: 1px solid var(--border); text-align: left;
+}
+.disc-table th {
+  font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.04em;
+  color: var(--text-dim);
+}
+.disc-table td.num, .disc-table th.num {
+  text-align: right; font-variant-numeric: tabular-nums;
+}
+.disc-table tr.failed-run { background: color-mix(in srgb, var(--danger) 7%, transparent); }
+
+.disc-facet { margin-bottom: 14px; }
+.disc-facet-head {
+  font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--text-dim); margin-bottom: 5px;
+}
+.disc-claim {
+  border-left: 2px solid var(--border); padding: 6px 0 6px 10px; margin-bottom: 6px;
+}
+.disc-claim-text { font-size: 13px; }
+.disc-rel { color: var(--text-dim); font-style: italic; margin: 0 4px; }
+.disc-claim-meta {
+  display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+  font-size: 11px; margin-top: 3px;
+}
+.disc-quote {
+  font-size: 11.5px; color: var(--text-dim); margin-top: 3px;
+  padding-left: 8px; border-left: 1px solid var(--border);
+}
+.disc-preprint {
+  font-size: 10px; padding: 1px 5px; border-radius: 3px;
+  background: color-mix(in srgb, var(--warn, #b8860b) 20%, transparent);
+}
+
+/* Reasoning is tinted; results are not. One look tells them apart. */
+.status-chip {
+  font-size: 10.5px; padding: 1px 6px; border-radius: 3px;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+.status-chip.status-llm_synthesis {
+  background: color-mix(in srgb, #8b5cf6 18%, transparent);
+}
+.status-chip.status-hypothesis {
+  background: color-mix(in srgb, #0ea5e9 18%, transparent);
+}
+
+/* --- hypotheses ---------------------------------------------------------- */
+.disc-hypothesis {
+  border: 1px solid var(--border); border-radius: 9px;
+  padding: 13px 15px; margin-bottom: 12px; background: var(--surface);
+}
+.disc-hyp-head { display: flex; align-items: center; gap: 8px; }
+.disc-code {
+  font-family: var(--mono, ui-monospace, monospace); font-weight: 600; font-size: 12.5px;
+}
+.disc-hypothesis h4 { margin: 8px 0 6px; }
+.disc-hyp-body {
+  display: grid; grid-template-columns: auto 1fr; gap: 3px 12px;
+  font-size: 12.5px; margin: 0 0 10px;
+}
+.disc-hyp-body dt { color: var(--text-dim); white-space: nowrap; }
+.disc-hyp-body dd { margin: 0; }
+
+.disc-evidence-split { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 8px 0; }
+.disc-evidence-head {
+  font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 3px;
+}
+.disc-evidence-head.supporting { color: #2e9e5b; }
+/* Contradicting evidence is styled at equal weight, never smaller or collapsed:
+   a hypothesis shown without what argues against it reads as a finding. */
+.disc-evidence-head.contradicting { color: #c2410c; }
+.disc-cite {
+  display: inline-block; font-family: var(--mono, ui-monospace, monospace);
+  font-size: 11px; padding: 1px 5px; margin: 1px 2px 1px 0;
+  border: 1px solid var(--border); border-radius: 3px;
+}
+.disc-props { font-size: 12px; margin: 6px 0; }
+.disc-uncertain { font-size: 12px; margin: 8px 0; }
+.disc-uncertain ul, .disc-uncertainty-list { margin: 4px 0 0; padding-left: 18px; }
+
+.disc-critique {
+  margin-top: 10px; padding: 10px 12px; border-radius: 7px;
+  background: color-mix(in srgb, #8b5cf6 7%, transparent);
+  border: 1px solid color-mix(in srgb, #8b5cf6 22%, transparent);
+}
+.disc-critique.unavailable { background: transparent; border-style: dashed; }
+.disc-critique-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.disc-recommendation {
+  font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em;
+  padding: 2px 7px; border-radius: 10px;
+}
+.disc-recommendation.pursue { background: color-mix(in srgb, #2e9e5b 22%, transparent); }
+.disc-recommendation.pursue_with_caution { background: color-mix(in srgb, #b8860b 25%, transparent); }
+.disc-recommendation.do_not_pursue { background: color-mix(in srgb, var(--danger) 25%, transparent); }
+.disc-objection {
+  border-left: 3px solid var(--border); padding: 5px 0 5px 9px;
+  margin-bottom: 6px; font-size: 12.5px;
+}
+.disc-objection.severity-high { border-left-color: var(--danger); }
+.disc-objection.severity-moderate { border-left-color: #b8860b; }
+.disc-objection-cat {
+  font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim);
+}
+.disc-severity { font-size: 10.5px; color: var(--text-dim); }
+.disc-status-reason { font-size: 12px; margin-top: 8px; color: var(--text-dim); }
+
+/* --- timeline ------------------------------------------------------------ */
+.disc-timeline { display: flex; flex-direction: column; }
+.disc-event { display: grid; grid-template-columns: 128px 14px 1fr; gap: 8px; align-items: start; }
+.disc-timeline.compact .disc-event { grid-template-columns: 90px 14px 1fr; }
+.disc-event-time {
+  font-size: 11px; color: var(--text-dim); font-variant-numeric: tabular-nums;
+  text-align: right; padding-top: 2px;
+}
+.disc-event-dot {
+  width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
+  margin: 6px 0 0 3px; position: relative;
+}
+.disc-event-dot::after {
+  content: ""; position: absolute; left: 3px; top: 9px;
+  width: 1px; height: 100%; background: var(--border);
+}
+.disc-event:last-child .disc-event-dot::after { display: none; }
+.disc-event-body { padding-bottom: 12px; font-size: 12.5px; }
+.disc-event-kind {
+  font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim);
+}

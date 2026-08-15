@@ -233,3 +233,69 @@
   .plate-stage { height: 380px; }
   .well-detail { position: static; width: auto; max-height: none; margin-top: 10px; }
 }
+
+/* Compound library picker -------------------------------------------------
+   A scrolling grid rather than a long list: 387 catalogued structures should
+   be browsable without pushing the analysis panel off the screen. */
+.pc-library {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 6px;
+  max-height: 260px;
+  overflow-y: auto;
+  padding: 4px 2px;
+  margin-top: 8px;
+}
+.pc-library-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 7px 9px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+}
+.pc-library-item:hover {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 7%, var(--surface));
+}
+.pc-library-name { font-size: 12.5px; font-weight: 500; }
+.pc-library-meta {
+  font-size: 10.5px;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Mouse disease models ---------------------------------------------------- */
+.mm-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.mm-table th, .mm-table td {
+  padding: 7px 9px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+}
+.mm-table th {
+  font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.04em;
+  color: var(--text-dim);
+}
+.mm-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.mm-genotype { font-family: var(--mono, ui-monospace, monospace); font-size: 11.5px; }
+/* A curated non-model is shown, not hidden — and marked so it cannot be
+   mistaken for a recommendation. */
+.mm-table tr.not-model { background: color-mix(in srgb, var(--danger) 8%, transparent); }
+.mm-not-badge {
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em;
+  padding: 1px 5px; border-radius: 3px;
+  background: var(--danger); color: #fff;
+}
+.mm-score-bar {
+  display: inline-block; height: 4px; border-radius: 2px;
+  background: var(--accent); vertical-align: middle;
+}
+.mm-criteria { font-size: 11.5px; }
+.mm-criteria li { margin-bottom: 3px; }

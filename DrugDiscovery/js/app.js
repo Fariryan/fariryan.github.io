@@ -70,6 +70,19 @@ const NAV = [
       { route: "preclinical/invivo", icon: "🐁", label: "In Vivo Mouse" },
     ],
   },
+  // Molecular Discovery Lab: the research programme. Separate from the
+  // preclinical group above, which evaluates a molecule it is given. This one
+  // decides which molecule is worth evaluating, and why.
+  {
+    group: "Molecular Discovery Lab",
+    items: [
+      { route: "discovery/overview", icon: "◉", label: "Overview" },
+      { route: "discovery/campaigns", icon: "▣", label: "Campaigns" },
+      { route: "discovery/disease", icon: "❊", label: "Disease Intelligence" },
+      { route: "discovery/hypotheses", icon: "◈", label: "Hypothesis Lab" },
+      { route: "discovery/memory", icon: "⏱", label: "Research Memory" },
+    ],
+  },
 ];
 
 const view = document.getElementById("view");
@@ -120,6 +133,12 @@ const ROUTES = {
   preclinical: (section, params) =>
     import("./preclinical/router.js").then((m) =>
       m.preclinicalView(view, section, params)
+    ),
+
+  // Molecular Discovery Lab, same pattern again.
+  discovery: (section, params) =>
+    import("./discovery/router.js").then((m) =>
+      m.discoveryView(view, section, params)
     ),
 
   // Not a dynamic import: terms.js is already loaded by the gate, and the one

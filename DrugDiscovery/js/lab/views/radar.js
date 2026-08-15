@@ -8,12 +8,12 @@
  */
 
 import { card, empty, esc, fmt, loading, notice } from "../../ui.js";
-import { awaitJob, labApi } from "../api.js";
+import { bindJob } from "../../jobstore.js";
+import { labApi } from "../api.js";
 import { needsSubject } from "../router.js";
 import { subjectStore } from "../store.js";
 import {
   confidenceChip,
-  jobChip,
   provBadge,
   recordTypeChip,
   relationshipChip,
@@ -66,8 +66,7 @@ export async function radarView(root, params) {
           : `<span class="dim small">Not yet synchronised</span>`}
       </div>
       <div class="row">
-        <span id="radar-job"></span>
-        <button class="sm primary" id="radar-refresh">Refresh research</button>
+        <span id="radar-refresh"></span>
       </div>
     </div>
 
@@ -98,54 +97,43 @@ export async function radarView(root, params) {
     if (button) show(button.dataset.tab);
   });
 
-  root
-    .querySelector("#radar-refresh")
-    .addEventListener("click", () => refresh(root, subject));
+  // Per subject: a scan started for one entity must not appear to belong to
+  // the next one the user opens.
+  bindJob(root, `lab-radar:${subject.id}`, {
+    control: "#radar-refresh",
+    output: "#radar-job",
+    runLabel: "Refresh research",
+    start: () =>
+      labApi.refreshLiterature({
+        node_id: subject.id,
+        months: 6,
+        cap: 200,
+        detect_novelty: true,
+        force: true,
+      }),
+    render: (host, _result, job) => applyScan(host, job),
+  });
 
   show(tab);
 }
 
 /* ------------------------------------------------------------- refresh */
 
-async function refresh(root, subject) {
-  const button = root.querySelector("#radar-refresh");
-  const host = root.querySelector("#radar-job");
-  button.disabled = true;
-  button.textContent = "Refreshing…";
+/**
+ * A finished scan changes what every panel on this page should show, so the
+ * view is re-rendered from the refreshed cache rather than patched in place.
+ *
+ * Once per job: the re-render re-binds the slot, which paints the same
+ * completed job again, and re-rendering on that would never terminate.
+ */
+const applied = new Set();
 
-  try {
-    const { job, reused } = await labApi.refreshLiterature({
-      node_id: subject.id,
-      months: 6,
-      cap: 200,
-      detect_novelty: true,
-      force: true,
-    });
-    host.innerHTML = jobChip(job);
-
-    const finished = await awaitJob(job.id, (update) => {
-      host.innerHTML = jobChip(update);
-    });
-
-    if (finished.status === "failed") {
-      host.innerHTML = `<span class="job-chip failed"><span class="dot"></span>${esc(
-        finished.error || "failed"
-      )}</span>`;
-      button.disabled = false;
-      button.textContent = "Retry";
-      return;
-    }
-
-    labApi.clearCache();
-    window.dispatchEvent(new HashChangeEvent("hashchange"));
-    if (reused) host.innerHTML = jobChip(finished);
-  } catch (error) {
-    host.innerHTML = `<span class="job-chip failed"><span class="dot"></span>${esc(
-      error.message
-    )}</span>`;
-    button.disabled = false;
-    button.textContent = "Retry";
-  }
+function applyScan(host, job) {
+  if (applied.has(job.id)) return;
+  applied.add(job.id);
+  host.innerHTML = "";
+  labApi.clearCache();
+  window.dispatchEvent(new HashChangeEvent("hashchange"));
 }
 
 /* ------------------------------------------------------------ coverage */

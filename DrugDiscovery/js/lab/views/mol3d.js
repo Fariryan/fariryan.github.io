@@ -11,12 +11,13 @@
  * one, and the amber banner is what keeps that visible.
  */
 
-import { card, empty, esc, loading, notice, structureBanner } from "../../ui.js";
+import { card, esc, notice, structureBanner } from "../../ui.js";
 import { MoleculeViewer, viewerToolbar } from "../../viewer-molecule.js";
-import { awaitJob, labApi } from "../api.js";
+import { bindJob } from "../../jobstore.js";
+import { labApi } from "../api.js";
 import { needsStructure, needsSubject } from "../router.js";
 import { subjectStore } from "../store.js";
-import { jobChip, provBadge, wireProvenance } from "../ui.js";
+import { provBadge, wireProvenance } from "../ui.js";
 
 let viewer = null;
 
@@ -37,60 +38,52 @@ export async function mol3dView(root, params) {
       <label class="row small">Conformers
         <select id="m-count"><option>3</option><option selected>5</option><option>10</option></select>
       </label>
-      <button class="sm primary" id="m-run">Generate</button>
+      <span id="m-run"></span>
     </div>
-    <div id="m-status"></div>
     <div id="m-body"></div>`;
 
-  const run = () => generate(root);
-  root.querySelector("#m-run").addEventListener("click", run);
-  root.querySelector("#m-smiles").addEventListener("keydown", (event) => {
-    if (event.key === "Enter") run();
-  });
+  if (!smiles) {
+    root.querySelector("#m-body").innerHTML = needsStructure(subject);
+    return;
+  }
 
-  if (smiles) await generate(root);
-  else root.querySelector("#m-body").innerHTML = needsStructure(subject);
+  // Keyed by structure: typing a different SMILES is a different run, and must
+  // not reattach to the previous molecule's ensemble.
+  const bind = () =>
+    bindJob(root, `lab-conformers:${root.querySelector("#m-smiles").value.trim()}`, {
+      control: "#m-run",
+      output: "#m-body",
+      runLabel: "Generate",
+      autoStart: true,
+      start: () => startConformers(root),
+      render: (host, ensemble) => showEnsemble(host, ensemble),
+    });
+
+  let unbind = bind();
+  root.querySelector("#m-smiles").addEventListener("change", () => {
+    unbind();
+    unbind = bind();
+  });
 }
 
-async function generate(root) {
+function startConformers(root) {
   const smiles = root.querySelector("#m-smiles").value.trim();
-  const status = root.querySelector("#m-status");
-  const body = root.querySelector("#m-body");
+  if (!smiles) throw new Error("Supply a structure.");
+  return labApi.conformers({
+    smiles,
+    count: Number(root.querySelector("#m-count").value),
+  });
+}
 
-  if (!smiles) {
-    body.innerHTML = notice("Supply a structure.", "warn", "⚠");
-    return;
-  }
-
-  status.innerHTML = loading("Embedding conformers…");
-  body.innerHTML = "";
-
-  let profile;
-  let ensemble;
+async function showEnsemble(body, ensemble) {
   try {
-    profile = await labApi.analyse(smiles);
-    const { job } = await labApi.conformers({
-      smiles,
-      count: Number(root.querySelector("#m-count").value),
-    });
-    const finished = await awaitJob(job.id, (update) => {
-      status.innerHTML = jobChip(update);
-    });
-    if (finished.status !== "completed") {
-      status.innerHTML = notice(
-        `Conformer generation ${esc(finished.status)}: ${esc(finished.error || "")}`,
-        "danger",
-        "⚠"
-      );
-      return;
-    }
-    ensemble = finished.result;
-    status.innerHTML = jobChip(finished);
+    await paintEnsemble(body, ensemble);
   } catch (error) {
-    status.innerHTML = notice(esc(error.message), "danger", "⚠");
-    return;
+    body.innerHTML = notice(esc(error.message), "danger", "⚠");
   }
+}
 
+async function paintEnsemble(body, ensemble) {
   if (!ensemble?.available) {
     body.innerHTML = notice(
       `<strong>No 3D structure could be generated.</strong> ${esc(
@@ -101,6 +94,11 @@ async function generate(root) {
     );
     return;
   }
+
+  // Both panels are built from the structure the run actually used, not from
+  // whatever is in the input box now.
+  const smiles = ensemble.structure.canonical_smiles;
+  const profile = await labApi.analyse(smiles);
 
   body.innerHTML = `
     <div class="grid grid-2">

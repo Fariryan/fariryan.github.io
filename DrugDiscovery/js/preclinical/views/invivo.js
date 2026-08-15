@@ -19,7 +19,18 @@ export async function inVivoView(root, params, status) {
   }
 
   root.innerHTML = `
-    ${card("Mouse disease model", `<div id="pc-mouse-model">${loading()}</div>`)}
+    ${card(
+      "Mouse disease model",
+      `<div class="toolbar">
+        <input class="search-input" id="mm-q" type="text" spellcheck="false"
+               placeholder="Disease — e.g. glioblastoma, Alzheimer disease, Huntington disease"
+               style="flex:1;min-width:280px" />
+        <input class="search-input" id="mm-targets" type="text" spellcheck="false"
+               placeholder="Target gene symbols (optional)" style="width:210px" />
+        <button class="sm primary" id="mm-run">Find models</button>
+      </div>
+      <div id="pc-mouse-model"></div>`
+    )}
     ${card(
       "Pharmacokinetics",
       `<div class="assumption-banner">
@@ -55,15 +66,40 @@ export async function inVivoView(root, params, status) {
       <div id="pk-result"></div>`
     )}`;
 
-  try {
-    const models = await pcApi.mouseModels({});
-    root.querySelector("#pc-mouse-model").innerHTML =
-      models.implemented === false
-        ? notImplemented(models)
-        : `<div class="small muted">${esc(JSON.stringify(models).slice(0, 300))}</div>`;
-  } catch (error) {
-    root.querySelector("#pc-mouse-model").innerHTML = notice(esc(error.message), "warn", "⚠");
-  }
+  const modelHost = root.querySelector("#pc-mouse-model");
+  const findModels = async () => {
+    const query = root.querySelector("#mm-q").value.trim();
+    if (!query) {
+      modelHost.innerHTML = notice(
+        "Name a disease to search MGI's curated genotype annotations.",
+        "muted",
+        "◎"
+      );
+      return;
+    }
+    modelHost.innerHTML = loading("Searching MGI…");
+    try {
+      const found = await pcApi.mouseModels({
+        q: query,
+        targets: root.querySelector("#mm-targets").value.trim() || undefined,
+        limit: 25,
+      });
+      modelHost.innerHTML =
+        found.implemented === false ? notImplemented(found) : renderModels(found);
+    } catch (error) {
+      modelHost.innerHTML = notice(esc(error.message), "warn", "⚠");
+    }
+  };
+
+  root.querySelector("#mm-run").addEventListener("click", findModels);
+  root.querySelector("#mm-q").addEventListener("keydown", (event) => {
+    if (event.key === "Enter") findModels();
+  });
+  modelHost.innerHTML = notice(
+    "Name a disease to search MGI's curated genotype annotations.",
+    "muted",
+    "◎"
+  );
 
   root.querySelector("#pk-run").addEventListener("click", () => run(root, molecule));
 }
@@ -164,4 +200,140 @@ function render(host, result) {
         : ""
     }
     ${card("Parameters", parameterTable(result.parameters.parameters))}`;
+}
+
+
+/* ------------------------------------------------------- mouse disease models */
+
+/**
+ * MGI's curated genotypes for a disease.
+ *
+ * Two things are rendered deliberately rather than conveniently. Genotypes MGI
+ * annotated as *not* modelling the disease stay in the table, marked; and the
+ * selection criteria are printed with their weights, because a rank whose
+ * basis is hidden is a recommendation dressed up as a result.
+ */
+function renderModels(found) {
+  if (found.available === false) {
+    return notice(
+      `<strong>Mouse-model evidence is unavailable.</strong><br />${esc(found.reason || "")}`,
+      "warn",
+      "⚠"
+    );
+  }
+
+  if (found.matched === false) {
+    return notice(
+      `<strong>No matching Disease Ontology term.</strong><br />${esc(found.reason || "")}`,
+      "muted",
+      "◎"
+    );
+  }
+
+  if (!found.models?.length) {
+    return notice(
+      `<strong>MGI curates no mouse model for this disease.</strong><br />${esc(
+        found.reason || ""
+      )}`,
+      "muted",
+      "◎"
+    );
+  }
+
+  const matched = (found.matches || [])
+    .map(
+      (match) =>
+        `<span class="chip">${esc(match.do_term)} <span class="dim">(${esc(
+          match.match_type
+        )})</span></span>`
+    )
+    .join(" ");
+
+  const rows = found.models
+    .map((model) => {
+      const width = Math.round(model.selection_score * 46);
+      return `<tr class="${model.not_model ? "not-model" : ""}">
+        <td class="mm-genotype">
+          ${esc(model.allele_pairs)}
+          ${model.not_model ? ` <span class="mm-not-badge">not a model</span>` : ""}
+        </td>
+        <td>${esc(model.marker_symbol || "—")}</td>
+        <td>${esc(model.zygosity)} · ${esc(model.allele_kind)}</td>
+        <td>${
+          model.background_stated
+            ? esc(model.strain_background)
+            : `<span class="dim">not specified</span>`
+        }</td>
+        <td class="num">${model.reference_count ?? "—"}</td>
+        <td>${
+          model.obtainable
+            ? `${model.repository_ids.length} stock${
+                model.repository_ids.length === 1 ? "" : "s"
+              }`
+            : `<span class="dim">none listed</span>`
+        }</td>
+        <td class="num" title="${esc(
+          Object.entries(model.selection_components)
+            .map(([key, value]) => `${key}: ${value}`)
+            .join(", ")
+        )}">
+          <span class="mm-score-bar" style="width:${width}px"></span>
+          ${model.selection_score.toFixed(2)}
+        </td>
+        <td>${
+          model.url
+            ? `<a href="${esc(model.url)}" target="_blank" rel="noopener">MGI</a>`
+            : "—"
+        }</td>
+      </tr>`;
+    })
+    .join("");
+
+  const criteria = found.selection.criteria
+    .map(
+      (criterion) =>
+        `<li><strong>${esc(criterion.label)}</strong>
+          <span class="dim">(weight ${criterion.weight})</span> —
+          ${esc(criterion.evidence_of)}</li>`
+    )
+    .join("");
+
+  return `
+    <div class="row mb">
+      <span class="small dim">Matched:</span> ${matched}
+      <span class="spacer"></span>
+      <span class="small dim">${found.count} genotype${
+        found.count === 1 ? "" : "s"
+      }${found.not_model_count ? `, ${found.not_model_count} annotated as non-models` : ""}</span>
+    </div>
+
+    <div style="overflow-x:auto">
+      <table class="mm-table">
+        <tr>
+          <th>Genotype</th><th>Gene</th><th>Zygosity · allele</th>
+          <th>Background</th><th class="num">Refs</th><th>Repository</th>
+          <th class="num">Rank</th><th></th>
+        </tr>
+        ${rows}
+      </table>
+    </div>
+
+    <details class="mt">
+      <summary class="small">How this ranking was computed</summary>
+      <ul class="mm-criteria mt">${criteria}</ul>
+      <div class="lab-note">${esc(found.selection.disclaimer)}</div>
+    </details>
+
+    <ul class="small muted mt" style="padding-left:17px">
+      ${found.caveats.map((caveat) => `<li>${esc(caveat)}</li>`).join("")}
+    </ul>
+
+    <div class="lab-note">
+      ${esc(found.source.name)} · ${esc(found.source.curation)}
+      ${
+        found.cache_age_hours != null
+          ? ` Report cached ${Math.round(found.cache_age_hours)} h ago.`
+          : ""
+      }
+    </div>`;
 }

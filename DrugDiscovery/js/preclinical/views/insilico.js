@@ -8,7 +8,8 @@
 
 import { card, esc, loading, notice } from "../../ui.js";
 import { StructureViewer } from "../../viewer-molecule.js";
-import { awaitJob, pcApi } from "../api.js";
+import { pcApi } from "../api.js";
+import { bindJob } from "../../jobstore.js";
 import { needsMolecule, subject } from "../router.js";
 import { statusValue, unavailable } from "../ui.js";
 
@@ -35,7 +36,7 @@ export async function inSilicoView(root, params, status) {
         <label class="row small">Exhaustiveness
           <select id="pc-exh"><option>8</option><option>16</option><option>32</option></select>
         </label>
-        <button class="sm primary" id="pc-dock" ${docking.available ? "" : "disabled"}>Dock</button>
+        <span id="pc-dock-control"></span>
       </div>
       <div class="lab-note">
         The search box is centred on the co-crystallised ligand you name, and
@@ -61,7 +62,7 @@ export async function inSilicoView(root, params, status) {
                  <option value="500">500 ps</option>
                </select>
              </label>
-             <button class="sm" id="pc-md">Run dynamics</button>
+             <span id="pc-md-control"></span>
              <span class="small dim">${esc(dynamics.engine)} ${esc(
                dynamics.version || ""
              )} · ${esc(dynamics.preferred_platform || "CPU")}</span>
@@ -87,41 +88,40 @@ export async function inSilicoView(root, params, status) {
     });
   }
 
-  root.querySelector("#pc-dock")?.addEventListener("click", () => runDocking(root, molecule));
-  root.querySelector("#pc-md")?.addEventListener("click", () => runDynamics(root));
-}
+  // Both stages reattach to whatever is already running for them, so leaving
+  // the tab and coming back shows a live run rather than an empty panel.
+  bindJob(root, "pc-docking", {
+    control: "#pc-dock-control",
+    output: "#pc-dock-result",
+    runLabel: "Dock",
+    disabled: !docking.available,
+    start: () => startDocking(root, molecule),
+    render: renderDocking,
+  });
 
-async function runDocking(root, molecule) {
-  const statusHost = root.querySelector("#pc-dock-status");
-  const host = root.querySelector("#pc-dock-result");
-  statusHost.innerHTML = loading("Queueing the docking run…");
-  host.innerHTML = "";
-
-  try {
-    const { job } = await pcApi.dock({
-      smiles: molecule.smiles,
-      pdb_id: root.querySelector("#pc-pdb").value.trim(),
-      reference_ligand: root.querySelector("#pc-ref").value.trim() || null,
-      exhaustiveness: Number(root.querySelector("#pc-exh").value),
-      num_modes: 5,
-      force: true,
+  if (dynamics.available) {
+    bindJob(root, "pc-dynamics", {
+      control: "#pc-md-control",
+      output: "#pc-md-result",
+      runLabel: "Run dynamics",
+      start: () => startDynamics(root),
+      render: renderDynamics,
     });
-
-    const finished = await awaitJob(job.id, (update) => {
-      statusHost.innerHTML = `<span class="job-chip ${esc(update.status)}">
-        <span class="dot"></span>${esc(update.stage || update.status)}</span>`;
-    });
-
-    if (finished.status !== "completed") {
-      statusHost.innerHTML = notice(esc(finished.error || "Docking failed."), "danger", "⚠");
-      return;
-    }
-    statusHost.innerHTML = "";
-    renderDocking(host, finished.result);
-  } catch (error) {
-    statusHost.innerHTML = notice(esc(error.message), "danger", "⚠");
   }
 }
+
+
+function startDocking(root, molecule) {
+  return pcApi.dock({
+    smiles: molecule.smiles,
+    pdb_id: root.querySelector("#pc-pdb").value.trim(),
+    reference_ligand: root.querySelector("#pc-ref").value.trim() || null,
+    exhaustiveness: Number(root.querySelector("#pc-exh").value),
+    num_modes: 5,
+    force: true,
+  });
+}
+
 
 function renderDocking(host, result) {
   if (!result.available) {
@@ -201,36 +201,16 @@ function renderDocking(host, result) {
   );
 }
 
-async function runDynamics(root) {
-  const statusHost = root.querySelector("#pc-md-status");
-  const host = root.querySelector("#pc-md-result");
-  statusHost.innerHTML = loading("Queueing the simulation…");
-  host.innerHTML = "";
-
-  try {
-    const { job } = await pcApi.dynamics({
-      pdb_id: root.querySelector("#pc-pdb").value.trim(),
-      picoseconds: Number(root.querySelector("#pc-ps").value),
-      equilibration_ps: 10,
-      frame_interval_ps: 2,
-      force: true,
-    });
-
-    const finished = await awaitJob(job.id, (update) => {
-      statusHost.innerHTML = `<span class="job-chip ${esc(update.status)}">
-        <span class="dot"></span>${esc(update.stage || update.status)}</span>`;
-    });
-
-    if (finished.status !== "completed") {
-      statusHost.innerHTML = notice(esc(finished.error || "Simulation failed."), "danger", "⚠");
-      return;
-    }
-    statusHost.innerHTML = "";
-    renderDynamics(host, finished.result);
-  } catch (error) {
-    statusHost.innerHTML = notice(esc(error.message), "danger", "⚠");
-  }
+function startDynamics(root) {
+  return pcApi.dynamics({
+    pdb_id: root.querySelector("#pc-pdb").value.trim(),
+    picoseconds: Number(root.querySelector("#pc-ps").value),
+    equilibration_ps: 10,
+    frame_interval_ps: 2,
+    force: true,
+  });
 }
+
 
 function renderDynamics(host, result) {
   if (!result.available) {

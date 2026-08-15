@@ -8,11 +8,12 @@
  * platform has no business choosing.
  */
 
-import { card, empty, esc, loading, notice } from "../../ui.js";
-import { awaitJob, labApi } from "../api.js";
+import { card, empty, esc, notice } from "../../ui.js";
+import { bindJob } from "../../jobstore.js";
+import { labApi } from "../api.js";
 import { needsStructure, needsSubject } from "../router.js";
 import { subjectStore, workbench } from "../store.js";
-import { jobChip, provBadge, wireProvenance } from "../ui.js";
+import { provBadge, wireProvenance } from "../ui.js";
 
 export async function designerView(root, params) {
   const subject = subjectStore.get();
@@ -49,7 +50,7 @@ export async function designerView(root, params) {
         <label class="row small">Generations
           <select id="d-gens"><option selected>1</option><option>2</option></select>
         </label>
-        <button class="sm primary" id="d-run">Generate</button>
+        <span id="d-run"></span>
       </div>
       <div class="small dim mt" id="d-mode-note"></div>
       <div id="d-parent" class="mt"></div>`
@@ -92,7 +93,6 @@ export async function designerView(root, params) {
       </div>`
     )}
 
-    <div id="d-status" class="mb"></div>
     <div id="d-results"></div>`;
 
   const modeSelect = root.querySelector("#d-mode");
@@ -145,53 +145,29 @@ export async function designerView(root, params) {
   if (startingSmiles) await showParent();
   else parentHost.innerHTML = needsStructure(subject);
 
-  root.querySelector("#d-run").addEventListener("click", () => run(root));
+  bindJob(root, "lab-designer", {
+    control: "#d-run",
+    output: "#d-results",
+    runLabel: "Generate",
+    start: () => startDesign(root),
+    render: (host, result, job) => renderResults(host, result, job),
+  });
 }
 
-async function run(root) {
-  const status = root.querySelector("#d-status");
-  const results = root.querySelector("#d-results");
+function startDesign(root) {
   const smiles = root.querySelector("#d-smiles").value.trim();
-  if (!smiles) {
-    status.innerHTML = notice("Supply a starting structure first.", "warn", "⚠");
-    return;
-  }
+  if (!smiles) throw new Error("Supply a starting structure first.");
 
-  const objectives = [...root.querySelectorAll("#d-objectives input:checked")].map(
-    (input) => input.value
-  );
-
-  status.innerHTML = loading("Queueing the design run…");
-  results.innerHTML = "";
-
-  try {
-    const { job } = await labApi.design({
-      smiles,
-      mode: root.querySelector("#d-mode").value,
-      max_candidates: Number(root.querySelector("#d-max").value),
-      generations: Number(root.querySelector("#d-gens").value),
-      objectives,
-      force: true,
-    });
-
-    const finished = await awaitJob(job.id, (update) => {
-      status.innerHTML = jobChip(update);
-    });
-
-    if (finished.status !== "completed") {
-      status.innerHTML = notice(
-        `The design run ${esc(finished.status)}: ${esc(finished.error || "no result")}`,
-        "danger",
-        "⚠"
-      );
-      return;
-    }
-
-    status.innerHTML = jobChip(finished);
-    renderResults(results, finished.result, finished);
-  } catch (error) {
-    status.innerHTML = notice(esc(error.message), "danger", "⚠");
-  }
+  return labApi.design({
+    smiles,
+    mode: root.querySelector("#d-mode").value,
+    max_candidates: Number(root.querySelector("#d-max").value),
+    generations: Number(root.querySelector("#d-gens").value),
+    objectives: [...root.querySelectorAll("#d-objectives input:checked")].map(
+      (input) => input.value
+    ),
+    force: true,
+  });
 }
 
 function renderResults(host, result, job) {
