@@ -386,10 +386,15 @@ export function installLensFilter() {
   });
   filter.appendChild(mapImage(lensMap, "map"));
 
+  // feDisplacementMap `scale` is in pixels of displacement, so it has to track
+  // the lens diameter: at a 12px lens the previous 58–70 would have displaced
+  // further than the lens is wide and turned it into noise. These are the same
+  // values scaled by 12/62, which keeps the magnification and the chromatic
+  // ratio identical at the smaller size.
   const CHANNELS = [
-    ["R", 58, "1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0"],
-    ["G", 64, "0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0"],
-    ["B", 70, "0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0"],
+    ["R", 11, "1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0"],
+    ["G", 12.5, "0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0"],
+    ["B", 14, "0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0"],
   ];
   CHANNELS.forEach(([name, scale, matrix]) => {
     filter.appendChild(
