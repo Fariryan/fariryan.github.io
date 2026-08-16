@@ -360,3 +360,39 @@
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
+
+/* -- components the first integration pass missed ------------------------- */
+
+/* The status legend explains the glyph that appears beside every number on
+   these pages, so it is a reference surface and belongs to the material. */
+.st-legend {
+  border: 0;
+  border-radius: var(--lg-r-pill);
+  width: fit-content;
+  max-width: 100%;
+  background-color: transparent;
+  -webkit-backdrop-filter: blur(var(--lg-blur-shallow)) saturate(var(--lg-saturate));
+  backdrop-filter: blur(var(--lg-blur-shallow)) saturate(var(--lg-saturate));
+  background-image: linear-gradient(180deg, var(--lg-fill-edge), var(--lg-fill-deep));
+  box-shadow:
+    var(--lg-shadow-1),
+    inset 0 0 0 1px var(--lg-edge-base),
+    inset 0 1px 0 -0.4px var(--lg-edge-lit);
+}
+.lg-t3 .st-legend { -webkit-backdrop-filter: none; backdrop-filter: none; background-color: var(--lg-scrim-strong); }
+
+/* `.not-implemented` and `.no-data` are deliberately left dashed and unfilled.
+   They mark work that does not exist yet and data that was never measured;
+   giving them the same material as a real result would be a scientific error,
+   not a styling inconsistency. They are the one place in this interface where
+   looking unfinished is the correct outcome. */
+
+/* A library row is a lens you can pick up. */
+.pc-library-item:hover {
+  background-image: linear-gradient(180deg, var(--lg-fill-edge), var(--lg-fill));
+  box-shadow:
+    var(--lg-shadow-2),
+    inset 0 0 0 1px color-mix(in srgb, var(--accent) 34%, transparent),
+    inset 0 1px 0 -0.4px var(--lg-edge-lit);
+  transform: translateY(-1px);
+}
