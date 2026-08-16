@@ -1,13 +1,22 @@
 /**
  * The Liquid Glass cursor.
  *
- * A small lens that travels with the pointer and genuinely refracts what is
- * underneath it, plus a dot that sits on the true pointer position. The lens
- * lags; the dot does not. That separation is deliberate — it is what makes
- * the inertia read as weight rather than as input lag, because the thing you
- * are aiming with never falls behind your hand.
+ * A small lens that sits on the pointer and refracts what is underneath it.
  *
- * The rules that keep it usable are more important than the effect:
+ * It tracks the pointer exactly. An earlier version smoothed the lens with a
+ * spring and put a separate dot on the true position, so that the thing you
+ * aim with never fell behind your hand — but the dot only existed to
+ * compensate for the lag, and a cursor that trails its own hotspot is a
+ * cursor that is slightly wrong all the time. Removing the lag removes the
+ * need for the dot, the spring, and the animation loop that drove them: the
+ * lens is now the pointer rather than a decoration following it.
+ *
+ * Writes are coalesced to one per frame. A high-polling-rate mouse can fire
+ * pointermove far faster than the display refreshes, and there is no value in
+ * moving the lens more often than it can be painted. The position written is
+ * always the latest one, so this costs no lag — only redundant work.
+ *
+ * The rules that keep it usable matter more than the effect:
  *
  *   · it never receives pointer events, so nothing under it changes behaviour
  *   · it hides over text, inputs, canvases, molecule and graph viewers, and
@@ -59,76 +68,31 @@ const ACTIONABLE = [
 const TEXTUAL = "p, li, td, th, dd, dt, h1, h2, h3, h4, h5, h6, code, pre, label";
 
 let lens = null;
-let dot = null;
 let running = false;
 
-// True pointer position, and the lens's own lagging position.
-let targetX = 0;
-let targetY = 0;
-let lensX = 0;
-let lensY = 0;
-let velocityX = 0;
-let velocityY = 0;
+let pointerX = 0;
+let pointerY = 0;
+let queued = false;
 
 let visible = false;
 let dragging = false;
-let frameHandle = 0;
-let idleFrames = 0;
-let lastFrame = 0;
 
-/* The spring, in the same terms the reference component states it:
-   stiffness 300, damping 26, unit mass. That works out to a natural frequency
-   of about 17 rad/s and a damping ratio near 0.75 — snappy, and just
-   underdamped enough that the lens overshoots slightly and settles rather
-   than gliding to a stop. Integrated semi-implicitly against real elapsed
-   time, so the feel does not change with frame rate. */
-const STIFFNESS = 300;
-const DAMPING = 26;
-
-function tick(now) {
-  frameHandle = 0;
-
-  // Clamped so a backgrounded tab returning does not fling the lens.
-  const dt = Math.min((now - lastFrame) / 1000 || 0.016, 0.05);
-  lastFrame = now;
-
-  const dx = targetX - lensX;
-  const dy = targetY - lensY;
-
-  velocityX += (STIFFNESS * dx - DAMPING * velocityX) * dt;
-  velocityY += (STIFFNESS * dy - DAMPING * velocityY) * dt;
-  lensX += velocityX * dt;
-  lensY += velocityY * dt;
-
-  lens.style.transform = `translate3d(${lensX.toFixed(2)}px, ${lensY.toFixed(2)}px, 0)`;
-
-  // Settle and stop. A cursor that keeps a rAF loop alive while the pointer
-  // is still is a permanent tax on every visualization on the page.
-  const moving = Math.abs(dx) + Math.abs(dy) + (Math.abs(velocityX) + Math.abs(velocityY)) * 0.02;
-  if (moving < 0.05) {
-    idleFrames += 1;
-    lensX = targetX;
-    lensY = targetY;
-    if (idleFrames > 2) return;
-  } else {
-    idleFrames = 0;
-  }
-  frameHandle = requestAnimationFrame(tick);
+/** Write the latest pointer position. One style write per frame, at most. */
+function paint() {
+  queued = false;
+  lens.style.transform = `translate3d(${pointerX}px, ${pointerY}px, 0)`;
 }
 
-function wake() {
-  if (!frameHandle) {
-    idleFrames = 0;
-    lastFrame = performance.now();
-    frameHandle = requestAnimationFrame(tick);
-  }
+function schedule() {
+  if (queued) return;
+  queued = true;
+  requestAnimationFrame(paint);
 }
 
 function show() {
   if (visible) return;
   visible = true;
   lens.classList.add("is-visible");
-  dot.classList.add("is-visible");
   document.documentElement.classList.add("lg-cursor-active");
 }
 
@@ -136,16 +100,12 @@ function hide() {
   if (!visible) return;
   visible = false;
   lens.classList.remove("is-visible");
-  dot.classList.remove("is-visible");
   document.documentElement.classList.remove("lg-cursor-active");
 }
 
 function onMove(event) {
-  targetX = event.clientX;
-  targetY = event.clientY;
-
-  // The dot is never smoothed: it must land exactly where the pointer is.
-  dot.style.transform = `translate3d(${targetX}px, ${targetY}px, 0)`;
+  pointerX = event.clientX;
+  pointerY = event.clientY;
 
   const target = event.target;
   const isElement = target instanceof Element;
@@ -154,21 +114,16 @@ function onMove(event) {
   // selecting text, moving a panel. Stand down until it ends.
   if (dragging || (isElement && target.closest(HANDS_OFF))) {
     hide();
-    lensX = targetX;
-    lensY = targetY;
-    velocityX = 0;
-    velocityY = 0;
     return;
   }
 
   show();
-  wake();
+  schedule();
 
   const actionable = isElement && target.closest(ACTIONABLE);
   const textual = !actionable && isElement && target.closest(TEXTUAL);
   lens.classList.toggle("is-hot", Boolean(actionable));
   lens.classList.toggle("is-text", Boolean(textual));
-  dot.classList.toggle("is-hot", Boolean(actionable));
 }
 
 function onDown(event) {
@@ -181,7 +136,6 @@ function onDown(event) {
 function onUp() {
   dragging = false;
   lens.classList.remove("is-down");
-  wake();
 }
 
 /** Start the cursor, if this device and this user should have one. */
@@ -189,7 +143,7 @@ export function startCursor() {
   if (running || !capability.cursor) return;
   running = true;
 
-  // Four layers, following lucasromerodb's macOS liquid-glass structure:
+  // Three layers, following lucasromerodb's macOS liquid-glass structure:
   //   effect  the backdrop blur, distorted by the lens filter
   //   tint    the faint body of the glass
   //   shine   the rim highlight and the catchlight
@@ -205,11 +159,7 @@ export function startCursor() {
     '<div class="lg-cursor-tint"></div>' +
     '<div class="lg-cursor-shine"></div>';
 
-  dot = document.createElement("div");
-  dot.className = "lg-cursor-dot";
-  dot.setAttribute("aria-hidden", "true");
-
-  document.body.append(lens, dot);
+  document.body.appendChild(lens);
 
   document.addEventListener("pointermove", onMove, { passive: true });
   document.addEventListener("pointerdown", onDown, { passive: true });
@@ -239,9 +189,5 @@ export function stopCursor() {
   document.removeEventListener("pointerup", onUp);
   document.removeEventListener("pointercancel", onUp);
   lens?.remove();
-  dot?.remove();
   lens = null;
-  dot = null;
-  if (frameHandle) cancelAnimationFrame(frameHandle);
-  frameHandle = 0;
 }

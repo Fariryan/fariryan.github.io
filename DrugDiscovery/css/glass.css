@@ -876,24 +876,8 @@
 /* Over text it shrinks to a thin ring so it never sits on top of a glyph. */
 .lg-cursor.is-text { --lg-cursor-size: 6px; opacity: 0.4; }
 
-/* The dot sits exactly on the pointer while the lens lags behind it. */
-.lg-cursor-dot {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 9999;
-  width: 2px;
-  height: 2px;
-  margin: -1px 0 0 -1px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 70%, transparent);
-  pointer-events: none;
-  opacity: 0;
-  will-change: transform;
-  transition: opacity 180ms var(--lg-ease);
-}
-.lg-cursor-dot.is-visible { opacity: 0.85; }
+/* There is no companion dot. The lens sits on the pointer itself, so there is
+   no lag for a dot to compensate for — see js/glass/cursor.js. */
 
 /* The native cursor is hidden only where the lens actually stands in for it.
    Text, fields, canvases and viewers keep the real one: losing an I-beam or a
@@ -929,7 +913,7 @@ html.lg-cursor-active .lg-no-cursor * { cursor: auto; }
   .lg-interactive:hover,
   .lg-btn:hover,
   .lg-magnetic:hover { transform: none; }
-  .lg-cursor, .lg-cursor-dot { display: none !important; }
+  .lg-cursor { display: none !important; }
   .lg-env canvas { display: none; }
   /* Highlights become static: nothing follows the pointer, but the surfaces
      keep their lit edges. */
@@ -944,7 +928,7 @@ html.lg-cursor-active .lg-no-cursor * { cursor: auto; }
   }
   .lg-surface, .lg { background-color: var(--bg-panel); }
   .lg-btn, .lg-field { background-color: var(--bg-hover); }
-  .lg-cursor, .lg-cursor-dot { display: none !important; }
+  .lg-cursor { display: none !important; }
 }
 
 @media (forced-colors: active) {
@@ -955,14 +939,14 @@ html.lg-cursor-active .lg-no-cursor * { cursor: auto; }
     box-shadow: none;
   }
   .lg-surface::after, .lg::after, .lg-btn::after { display: none; }
-  .lg-cursor, .lg-cursor-dot, .lg-env { display: none !important; }
+  .lg-cursor, .lg-env { display: none !important; }
 }
 
 /* Coarse pointers have no hover and no cursor to replace. Highlights freeze
    at a plausible fixed angle rather than at zero, so the glass still looks
    lit, and touch targets grow. */
 @media (hover: none), (pointer: coarse) {
-  .lg-cursor, .lg-cursor-dot { display: none !important; }
+  .lg-cursor { display: none !important; }
   .lg-surface, .lg, .lg-btn { --lg-mx: 30%; --lg-my: 20%; --lg-hot: 0.3; }
   .lg-interactive:hover, .lg-btn:hover, .lg-magnetic:hover { transform: none; }
   .lg-btn { min-height: 40px; padding: 10px 16px; }
@@ -970,7 +954,7 @@ html.lg-cursor-active .lg-no-cursor * { cursor: auto; }
 }
 
 @media print {
-  .lg-env, .lg-cursor, .lg-cursor-dot { display: none !important; }
+  .lg-env, .lg-cursor { display: none !important; }
   .lg-surface, .lg, .lg-btn {
     background: #fff !important;
     color: #000 !important;
