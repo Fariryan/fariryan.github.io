@@ -620,3 +620,144 @@
   .edge-panel { position: static; width: auto; max-height: none; margin-top: 10px; }
   .lab-graph { height: 460px; }
 }
+
+/* ==========================================================================
+   Liquid Glass integration
+   ==========================================================================
+
+   Everything above this line keeps its layout, its structure and — critically
+   — its semantic colours: the provenance chips, the recommendation tones and
+   the evidence borders all still mean exactly what they meant before. What
+   changes here is only the material the surfaces are made of, so the lab
+   reads as part of one instrument rather than as a second design system
+   bolted to the side of the first.
+
+   The panes are listed explicitly rather than restyled by a blanket rule,
+   because several surfaces in this module are deliberately *not* glass — the
+   dashed "unavailable" placeholders and the readout grids need to stay flat
+   so that missing data still looks missing.
+   ========================================================================== */
+
+.lab-subject,
+.paper-card,
+.finding,
+.lab-graph,
+.objective-toggle,
+.cand,
+.why-panel,
+.prov-detail,
+.side,
+.bbb-stage {
+  border: 0;
+  border-radius: var(--lg-r);
+  background-color: transparent;
+  -webkit-backdrop-filter: blur(var(--lg-blur-shallow)) saturate(var(--lg-saturate));
+  backdrop-filter: blur(var(--lg-blur-shallow)) saturate(var(--lg-saturate));
+  background-image:
+    radial-gradient(
+      110% 90% at var(--lg-mx) var(--lg-my),
+      color-mix(in srgb, var(--lg-spec-soft) calc(4% + 46% * var(--lg-hot)), transparent) 0%,
+      transparent 62%
+    ),
+    linear-gradient(160deg, var(--lg-fill-edge) 0%, var(--lg-fill) 40%, var(--lg-fill-deep) 100%);
+  box-shadow:
+    var(--lg-shadow-1),
+    inset 0 0 0 1px var(--lg-edge-base),
+    inset 0 1px 0 -0.4px var(--lg-edge-lit),
+    inset 0 -1px 0 -0.4px var(--lg-edge-shade);
+}
+.lg-t3 .lab-subject,
+.lg-t3 .paper-card,
+.lg-t3 .finding,
+.lg-t3 .lab-graph,
+.lg-t3 .objective-toggle,
+.lg-t3 .cand,
+.lg-t3 .why-panel,
+.lg-t3 .prov-detail,
+.lg-t3 .side,
+.lg-t3 .bbb-stage {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background-color: var(--lg-scrim-strong);
+}
+
+/* A candidate on the Pareto front keeps its accent edge; it is now a lit rim
+   rather than a border colour, which reads at a glance across a long list. */
+.cand.front-1 {
+  box-shadow:
+    var(--lg-shadow-2),
+    inset 0 0 0 1px color-mix(in srgb, var(--accent) 45%, transparent),
+    inset 0 1px 0 -0.4px var(--lg-edge-lit),
+    0 0 22px -10px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+
+/* The lab's own tab strip becomes the same segmented glass control the atlas
+   uses, so moving between the two does not feel like changing application. */
+.lab-tabs {
+  border-bottom: 0;
+  padding: 4px;
+  gap: 3px;
+  border-radius: var(--lg-r-pill);
+  width: fit-content;
+  max-width: 100%;
+  -webkit-backdrop-filter: blur(var(--lg-blur-shallow)) saturate(140%);
+  backdrop-filter: blur(var(--lg-blur-shallow)) saturate(140%);
+  background-image: linear-gradient(180deg, var(--lg-fill-deep), color-mix(in srgb, var(--lg-fill) 40%, transparent));
+  box-shadow: inset 0 0 0 1px var(--lg-edge-base), inset 0 1.5px 3px -1px var(--lg-edge-shade);
+}
+.lab-tabs a {
+  border-bottom: 0 !important;
+  border-radius: var(--lg-r-pill);
+  transition: color var(--lg-t-fast) var(--lg-ease), background-image var(--lg-t) var(--lg-ease),
+    box-shadow var(--lg-t) var(--lg-ease);
+}
+.lab-tabs a:hover { background-image: linear-gradient(180deg, var(--lg-fill-edge), transparent); }
+.lab-tabs a.active {
+  background-image: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--accent) 20%, transparent),
+    color-mix(in srgb, var(--accent) 7%, transparent)
+  );
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--accent) 38%, transparent),
+    inset 0 1px 0 -0.4px var(--lg-edge-lit),
+    0 2px 10px -4px color-mix(in srgb, var(--accent) 60%, transparent);
+}
+
+/* Provenance and recommendation chips: same lens treatment as the atlas's
+   chips, colours untouched. */
+.prov-chip,
+.rec-chip,
+.job-chip {
+  background-image: linear-gradient(180deg, var(--lg-fill-edge), var(--lg-fill-deep));
+  box-shadow: inset 0 1px 0 -0.4px var(--lg-edge-lit);
+}
+
+/* The readout grids stay flat on purpose: they are dense numeric tables, and
+   a bezel around every cell would be noise. They get a glass frame instead. */
+.coverage,
+.bbb-readout {
+  border: 0;
+  border-radius: var(--lg-r);
+  overflow: hidden;
+  background-color: var(--lg-edge-base);
+  box-shadow: inset 0 0 0 1px var(--lg-edge-base), var(--lg-shadow-1);
+}
+.coverage .cell,
+.bbb-readout .cell {
+  background: color-mix(in srgb, var(--bg-panel) 82%, transparent);
+}
+
+/* Unavailable and gap states keep their dashed, unfilled treatment. A missing
+   result must not be dressed up as a present one. */
+.unavailable,
+.no-data {
+  background-image: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.lab-disclaimer {
+  border-radius: var(--lg-r);
+  box-shadow: inset 0 0 0 1px var(--lg-edge-base), inset 0 1px 0 -0.4px var(--lg-edge-lit);
+}

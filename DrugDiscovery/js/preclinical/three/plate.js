@@ -61,12 +61,16 @@ export class PlateViewer {
       document.documentElement.getAttribute("data-theme") === "light";
 
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(isLight ? 0xf6f8fa : 0x0d141d);
+    // No opaque scene background: the plate sits inside a glass frame, and the
+    // workspace environment showing through it is what makes the viewer read
+    // as a vessel rather than a hole cut in the page. Lighting below is
+    // unchanged, so the wells look exactly as they did.
+    this.scene.background = null;
 
     this.camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 400);
     this.camera.position.set(0, 11, 11);
 
-    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     this.renderer.setSize(width, height);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.container.innerHTML = "";

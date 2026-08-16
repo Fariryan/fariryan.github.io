@@ -7,6 +7,7 @@
 
 import { api } from "./api.js";
 import { compareStore } from "./compare-store.js";
+import { refreshGlass, retheme, startGlass } from "./glass/index.js";
 import { requireAcceptance, termsView } from "./terms.js";
 import { esc, kindBadge, notice } from "./ui.js";
 
@@ -183,6 +184,13 @@ async function route() {
       "⚠"
     );
     console.error(error);
+  } finally {
+    // The view has replaced its whole subtree, so the optical budget has to
+    // be recomputed against whatever it rendered, remembered panel positions
+    // reapplied, and the adaptive frosting re-measured against any viewer the
+    // route just mounted. Runs on the error path too: a failed route still
+    // rendered a notice, and that notice is a glass surface.
+    refreshGlass();
   }
 }
 
@@ -194,7 +202,34 @@ async function route() {
  * entry still matches its own sub-paths, so `#/mechanism/12` keeps highlighting
  * "Mechanisms" exactly as it did before.
  */
+/** Routes whose visualization is the page, rather than an illustration on it. */
+const WORKSPACE_ROUTES = new Set([
+  "brain",
+  "cells",
+  "explorer",
+  "graph",
+  "matrix",
+  "lab/graph",
+  "lab/molecular3d",
+  "lab/bbb",
+  "discovery/graph",
+  "discovery/chemistry",
+  "preclinical/molecule",
+  "preclinical/insilico",
+  "preclinical/invitro",
+]);
+
 function markActive(path) {
+  // Published on <body> so the stylesheet can tell a reading view from a
+  // workspace one. A workspace gives its canvas the whole viewport and floats
+  // its controls over it; a reading view keeps them in the flow. Nothing else
+  // depends on this, and no view has to know it exists.
+  document.body.dataset.route = path;
+  document.body.toggleAttribute(
+    "data-workspace",
+    WORKSPACE_ROUTES.has(path) || WORKSPACE_ROUTES.has(path.split("/")[0])
+  );
+
   navHost.querySelectorAll("a").forEach((link) => {
     const route = link.dataset.route;
     const active =
@@ -341,6 +376,9 @@ function setupTheme() {
     const next = current === "light" ? "dark" : "light";
     document.documentElement.setAttribute("data-theme", next);
     localStorage.setItem("neuroatlas.theme", next);
+    // The ambient field's palette follows the theme, and it is a canvas, so
+    // it has to be told rather than inheriting the change through CSS.
+    retheme();
     // Viewers bake the background colour in at creation time, so re-render the
     // current route rather than leaving a mismatched canvas on screen.
     route();
@@ -364,6 +402,12 @@ function setupCompare() {
 /* ----------------------------------------------------------------- boot */
 
 window.addEventListener("hashchange", route);
+
+// The optical layer starts before anything is rendered, so the environment is
+// already behind the terms gate and the first view never appears un-materialised.
+// It is entirely additive: remove this call and every route, viewer and
+// calculation still works, unstyled by the glass.
+startGlass();
 
 // The shell is built first so there is something coherent behind the gate, but
 // routing is held back until the terms are accepted: no record should be

@@ -432,7 +432,32 @@ export async function graphView(root, id) {
     </div>
     <div id="graph-canvas"></div>
     <div class="graph-legend" id="legend"></div>
-    <div id="edge-detail" class="mt"></div>`;
+
+    <!-- The relationship inspector. A floating pane rather than a card below
+         the canvas: selecting an edge should not scroll the graph you are
+         reading out of view. It is draggable because a relationship near the
+         right-hand edge would otherwise be inspected from underneath the
+         panel describing it. -->
+    <aside
+      class="lg-inspector lg-panel"
+      id="edge-detail"
+      data-lg-panel="graph-edge"
+      hidden
+      aria-live="polite"
+      aria-label="Selected relationship"
+    >
+      <header class="lg-panel-head" data-lg-drag>
+        <span class="lg-panel-title">Selected relationship</span>
+        <button
+          class="lg-panel-btn"
+          data-lg-collapse
+          aria-expanded="true"
+          title="Collapse"
+        >—</button>
+        <button class="lg-panel-btn" id="edge-close" title="Close">✕</button>
+      </header>
+      <div class="lg-panel-body" id="edge-body"></div>
+    </aside>`;
 
   const data = await api.graph(id, { depth: 2, max_nodes: 60 });
   root.querySelector("#graph-title").innerHTML = `Knowledge graph — ${esc(
@@ -444,7 +469,12 @@ export async function graphView(root, id) {
   const viewer = new GraphViewer(container);
   activeGraph = viewer;
 
+  // Endpoint names for the inspector. The edge itself only carries node ids,
+  // and an inspector that said "12 → 4471" would be useless.
+  const nodesById = new Map();
+
   const draw = (payload) => {
+    payload.nodes.forEach((n) => nodesById.set(String(n.id), n));
     viewer.render(payload);
     root.querySelector("#graph-stats").textContent = `${payload.nodes.length} nodes · ${
       payload.edges.length
@@ -470,18 +500,46 @@ export async function graphView(root, id) {
   viewer.onNodeTap = (nodeId) => {
     window.location.hash = `#/entity/${nodeId}`;
   };
+  const inspector = root.querySelector("#edge-detail");
+  const inspectorBody = root.querySelector("#edge-body");
+
+  root.querySelector("#edge-close").addEventListener("click", () => {
+    inspector.hidden = true;
+    inspector.classList.remove("is-active");
+  });
+
   viewer.onEdgeTap = (edge) => {
-    root.querySelector("#edge-detail").innerHTML = card(
-      "Selected relationship",
-      `<div class="row">
-         <strong>${esc(edge.label)}</strong>
-         ${evidenceBadge({
-           tone: edge.level,
-           label: edge.level.replace(/_/g, " "),
-           description: "",
-         })}
-       </div>`
-    );
+    const from = nodesById.get(String(edge.source));
+    const to = nodesById.get(String(edge.target));
+
+    // Every field below comes from the graph payload the API returned. Where
+    // an endpoint is not in the current view — it can be, if the graph was
+    // truncated — the panel says so rather than inventing a name.
+    inspectorBody.innerHTML = `
+      <div class="lg-panel-relation">
+        <div class="lg-panel-node">
+          ${from ? kindBadge(from.kind) : ""}
+          ${from ? entityLink(from) : '<span class="dim">outside this view</span>'}
+        </div>
+        <div class="lg-panel-predicate">
+          <span class="lg-panel-arrow" aria-hidden="true">↓</span>
+          <strong>${esc(edge.label)}</strong>
+        </div>
+        <div class="lg-panel-node">
+          ${to ? kindBadge(to.kind) : ""}
+          ${to ? entityLink(to) : '<span class="dim">outside this view</span>'}
+        </div>
+      </div>
+      <div class="row mt">
+        ${evidenceBadge({
+          tone: edge.level,
+          label: edge.level.replace(/_/g, " "),
+          description: "",
+        })}
+      </div>`;
+
+    inspector.hidden = false;
+    inspector.classList.add("is-active");
   };
 
   const reload = async () => {

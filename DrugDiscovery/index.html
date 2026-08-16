@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Drug Discovery — Disease · Drug · Molecule · Mechanism</title>
   <meta name="description" content="Interconnected scientific atlas of neurological diseases, therapeutics, molecular targets, chemical structures, pathways, and clinical evidence." />
+  <!-- The optical material first, the application's use of it second. -->
+  <link rel="stylesheet" href="css/glass.css" />
   <link rel="stylesheet" href="css/app.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>" />
 
@@ -18,7 +20,11 @@
 </head>
 <body>
   <div class="app">
-    <aside class="sidebar">
+    <!-- The shell is three floating planes over one environment: the
+         navigation rail, the command bar, and the workspace. The `lg-`
+         classes name each one for the design system, which uses them to
+         decide where the expensive optics are spent. -->
+    <aside class="sidebar lg-rail">
       <div class="brand">
         <h1><span class="mark">D</span> Drug Discovery</h1>
         <p>Disease · Drug · Molecule · Mechanism</p>
@@ -34,7 +40,7 @@
     </aside>
 
     <div class="main">
-      <header class="topbar">
+      <header class="topbar lg-commandbar">
         <div class="search-wrap">
           <span class="search-icon">⌕</span>
           <input

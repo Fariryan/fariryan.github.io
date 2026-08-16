@@ -347,3 +347,85 @@
 .graph-line { display: inline-block; width: 22px; height: 0; vertical-align: middle; }
 .graph-line.solid { border-top: 2px solid var(--text-dim); }
 .graph-line.dashed { border-top: 2px dashed var(--text-dim); }
+
+/* ==========================================================================
+   Liquid Glass integration
+
+   The one thing this workspace's visual grammar has to keep doing is
+   separating reasoning from result: anything a model said carries the ✦ chip
+   and a tinted surround, anything computed does not. That distinction is
+   preserved exactly — the tint moves onto the glass rather than being
+   replaced by it.
+   ========================================================================== */
+
+.disc-tile,
+.disc-campaign-card,
+.disc-candidate,
+.disc-hypothesis,
+.disc-target,
+.disc-ai-card,
+.disc-campaign-bar,
+.disc-command-head,
+.space-readout,
+.graph-stage {
+  border: 0;
+  border-radius: var(--lg-r);
+  background-color: transparent;
+  -webkit-backdrop-filter: blur(var(--lg-blur-shallow)) saturate(var(--lg-saturate));
+  backdrop-filter: blur(var(--lg-blur-shallow)) saturate(var(--lg-saturate));
+  background-image:
+    radial-gradient(
+      110% 90% at var(--lg-mx) var(--lg-my),
+      color-mix(in srgb, var(--lg-spec-soft) calc(4% + 46% * var(--lg-hot)), transparent) 0%,
+      transparent 62%
+    ),
+    linear-gradient(160deg, var(--lg-fill-edge) 0%, var(--lg-fill) 40%, var(--lg-fill-deep) 100%);
+  box-shadow:
+    var(--lg-shadow-1),
+    inset 0 0 0 1px var(--lg-edge-base),
+    inset 0 1px 0 -0.4px var(--lg-edge-lit),
+    inset 0 -1px 0 -0.4px var(--lg-edge-shade);
+  transition: box-shadow var(--lg-t) var(--lg-ease), transform var(--lg-t) var(--lg-spring);
+}
+.lg-t3 .disc-tile,
+.lg-t3 .disc-campaign-card,
+.lg-t3 .disc-candidate,
+.lg-t3 .disc-hypothesis,
+.lg-t3 .disc-target,
+.lg-t3 .disc-ai-card,
+.lg-t3 .disc-campaign-bar,
+.lg-t3 .disc-command-head,
+.lg-t3 .space-readout,
+.lg-t3 .graph-stage {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background-color: var(--lg-scrim-strong);
+}
+
+/* An offline reasoning service is a state the scientist has to notice, so it
+   keeps a warning rim rather than becoming quietly translucent. */
+.disc-ai-card.offline {
+  box-shadow:
+    var(--lg-shadow-1),
+    inset 0 0 0 1px color-mix(in srgb, var(--warning) 55%, transparent),
+    inset 0 1px 0 -0.4px var(--lg-edge-lit);
+}
+
+.disc-tabs { border-bottom: 0; }
+.disc-tab {
+  border-radius: var(--lg-r-pill);
+  transition: color var(--lg-t-fast) var(--lg-ease), background-image var(--lg-t) var(--lg-ease);
+}
+.disc-tab:hover { background-image: linear-gradient(180deg, var(--lg-fill-edge), transparent); }
+.disc-tab.active {
+  background-image: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--accent) 20%, transparent),
+    color-mix(in srgb, var(--accent) 7%, transparent)
+  );
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--accent) 38%, transparent),
+    inset 0 1px 0 -0.4px var(--lg-edge-lit);
+}
+
+.status-chip { box-shadow: inset 0 1px 0 -0.4px var(--lg-edge-lit); }

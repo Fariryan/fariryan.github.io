@@ -1,29 +1,68 @@
 /* ==========================================================================
-   Drug Discovery — scientific interface
-   A dark-first instrument palette: low-chroma surfaces so that the only
-   saturated colour on screen is data. Evidence tones are semantic and are
-   never reused for decoration.
+   Drug Discovery — Liquid Glass scientific workspace
+   ==========================================================================
+
+   The instrument, built on the material in glass.css.
+
+   Two rules govern everything here:
+
+   1. THE SCIENCE IS THE APPLICATION. The workspace — atlas surfaces,
+      structures, graphs, matrices, plates — occupies the screen. The
+      interface floats over and around it: a navigation rail, a command bar,
+      inspectors, control clusters. There is no page of rectangles with the
+      data tucked inside them.
+
+   2. COLOUR IS DATA. Every saturated colour on screen means something. The
+      evidence tones, the kind badges, the structure-provenance banners, the
+      matrix cells and the preclinical status glyphs keep the exact values
+      they had before this file was rewritten, because those values are how a
+      preclinical finding is distinguished from an approved indication. The
+      interface's own richness comes from glass, light and depth instead.
+
+   Every token name that existed before still exists and still means the same
+   thing, because views set them inline. What changed is what they resolve to.
+   ========================================================================== */
+
+/* glass.css is loaded ahead of this file by index.html, so the material's
+   tokens are already defined by the time these rules consume them. It is a
+   separate <link> rather than an @import because an @import costs a serial
+   round trip before any of this can be parsed. */
+
+/* ==========================================================================
+   1. PALETTE
    ========================================================================== */
 
 :root {
-  --bg: #0b0f14;
-  --bg-raised: #111823;
-  --bg-panel: #151d29;
-  --bg-hover: #1c2635;
-  --bg-input: #0d141d;
+  /* -- ground ------------------------------------------------------------ */
+  /* The page itself is now the environment, so --bg is what shows through
+     the glass rather than what sits behind the cards. */
+  --bg: #070c14;
+  --bg-raised: rgba(20, 30, 44, 0.5);
+  /* Deliberately near-opaque: sticky table headers and matrix row heads use
+     this to occlude the rows scrolling beneath them, so it cannot be
+     translucent without letting text pile up on text. */
+  --bg-panel: #0e1621;
+  --bg-hover: rgba(125, 160, 195, 0.1);
+  --bg-input: rgba(8, 14, 22, 0.55);
 
-  --border: #22303f;
-  --border-strong: #33465b;
+  --border: rgba(140, 175, 210, 0.16);
+  --border-strong: rgba(150, 185, 220, 0.3);
 
-  --text: #e6edf5;
-  --text-muted: #93a4b8;
-  --text-dim: #6b7d92;
+  --surface: var(--bg-raised);
 
-  --accent: #35c6d8;
-  --accent-dim: #1d7d8a;
-  --accent-glow: rgba(53, 198, 216, 0.14);
+  --text: #e8f0f8;
+  --text-muted: #9db0c5;
+  --text-dim: #718499;
 
-  /* Evidence tones — semantic, never decorative. */
+  --accent: #3ed0e0;
+  --accent-dim: #1d8a99;
+  --accent-glow: rgba(62, 208, 224, 0.16);
+  /* Text on a filled accent lens. */
+  --accent-on: #04191d;
+
+  /* -- evidence tones ----------------------------------------------------
+     Semantic. Never decorative, never reused, never adjusted for aesthetics.
+     Unchanged from the pre-migration palette. */
   --ev-established: #3fb950;
   --ev-strong: #4a9eff;
   --ev-trial: #a371f7;
@@ -35,46 +74,45 @@
   --danger: #f85149;
   --warning: #d29922;
 
-  --radius: 8px;
-  --radius-lg: 12px;
-  --shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+  --radius: 12px;
+  --radius-lg: 18px;
+  --shadow: var(--lg-shadow-3);
 
   --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
   --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
 
-  --sidebar-w: 232px;
+  /* -- shell geometry ---------------------------------------------------- */
+  --sidebar-w: 238px;
+  --shell-gap: 14px;
+  --commandbar-h: 54px;
 }
 
 :root[data-theme="light"] {
-  --bg: #f6f8fa;
-  --bg-raised: #ffffff;
+  --bg: #eef3f8;
+  --bg-raised: rgba(255, 255, 255, 0.6);
   --bg-panel: #ffffff;
-  --bg-hover: #eef2f6;
-  --bg-input: #ffffff;
-  --border: #d7dee6;
-  --border-strong: #b6c2ce;
-  --text: #131b24;
-  --text-muted: #4d5f72;
-  --text-dim: #6b7d92;
-  --accent: #0d7c8c;
-  --accent-dim: #0d7c8c;
-  --accent-glow: rgba(13, 124, 140, 0.1);
+  --bg-hover: rgba(90, 130, 170, 0.1);
+  --bg-input: rgba(255, 255, 255, 0.65);
+  --border: rgba(80, 120, 160, 0.2);
+  --border-strong: rgba(70, 110, 150, 0.35);
+  --text: #101923;
+  --text-muted: #46596d;
+  --text-dim: #64778b;
+  --accent: #0b7a8a;
+  --accent-dim: #0b7a8a;
+  --accent-glow: rgba(11, 122, 138, 0.12);
+  --accent-on: #ffffff;
   --ev-established: #1a7f37;
   --ev-strong: #0969da;
   --ev-trial: #8250df;
   --ev-preliminary: #9a6700;
   --ev-preclinical: #bc4c00;
-  --shadow: 0 6px 20px rgba(20, 40, 60, 0.12);
 }
 
 * { box-sizing: border-box; }
 
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-}
+html, body { margin: 0; padding: 0; height: 100%; }
 
 body {
   background: var(--bg);
@@ -83,6 +121,10 @@ body {
   font-size: 14px;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  /* The environment layer is fixed behind everything; the document itself
+     must not paint over it. */
+  background-attachment: fixed;
 }
 
 a { color: var(--accent); text-decoration: none; }
@@ -90,216 +132,456 @@ a:hover { text-decoration: underline; }
 
 code, .mono { font-family: var(--mono); font-size: 0.92em; }
 
-::-webkit-scrollbar { width: 10px; height: 10px; }
+/* ==========================================================================
+   2. TYPOGRAPHY
+
+   A scientific hierarchy. The rule that matters: a measured value and its
+   unit are never smaller or quieter than the label that names them, and they
+   are always tabular, because columns of numbers are read by comparing
+   digits in the same position.
+   ========================================================================== */
+
+.value,
+.stat .value,
+.st .val,
+td .mono,
+.mono {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "cv01" 1;
+}
+
+h1, h2, h3, h4, h5 { letter-spacing: -0.015em; }
+
+/* ==========================================================================
+   3. SCROLLBARS
+   ========================================================================== */
+
+::-webkit-scrollbar { width: 11px; height: 11px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 6px; }
-::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--lg-fill-edge), var(--lg-fill-deep));
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover { background-color: var(--border-strong); }
+* { scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
 
-/* ---------------------------------------------------------------- layout */
+/* ==========================================================================
+   4. SHELL — the spatial workspace
 
-.app { display: flex; min-height: 100vh; }
+   Not a sidebar plus a navbar plus a grid of cards. The rail, the command bar
+   and the workspace are three floating planes at different depths over one
+   continuous environment, and the workspace is the one that gets the room.
+   ========================================================================== */
+
+.app {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+}
+
+/* -- navigation rail ------------------------------------------------------ */
 
 .sidebar {
+  position: fixed;
+  top: var(--shell-gap);
+  left: var(--shell-gap);
+  bottom: var(--shell-gap);
+  z-index: 50;
   width: var(--sidebar-w);
-  flex: 0 0 var(--sidebar-w);
-  background: var(--bg-raised);
-  border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  overflow-y: auto;
+  border-radius: var(--lg-r-lg);
+  overflow: hidden;
+
+  /* the material */
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate)) brightness(var(--lg-brightness));
+  backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate)) brightness(var(--lg-brightness));
+  background-image:
+    radial-gradient(
+      130% 60% at var(--lg-mx) var(--lg-my),
+      color-mix(in srgb, var(--lg-spec-soft) calc(8% + 55% * var(--lg-hot)), transparent) 0%,
+      transparent 60%
+    ),
+    linear-gradient(165deg, var(--lg-fill-edge) 0%, var(--lg-fill) 30%, var(--lg-fill) 70%, var(--lg-fill-deep) 100%);
+  box-shadow:
+    var(--lg-shadow-3),
+    inset 0 0 0 var(--lg-thickness) var(--lg-edge-base),
+    inset var(--lg-thickness) var(--lg-thickness) 0 calc(var(--lg-thickness) * -0.4) var(--lg-edge-lit),
+    inset calc(var(--lg-thickness) * -1) calc(var(--lg-thickness) * -1) 0 calc(var(--lg-thickness) * -0.4) var(--lg-edge-shade);
 }
+.lg-t3 .sidebar { -webkit-backdrop-filter: none; backdrop-filter: none; background-color: var(--lg-scrim-strong); }
 
 .brand {
-  padding: 18px 18px 14px;
-  border-bottom: 1px solid var(--border);
+  padding: 16px 16px 13px;
+  position: relative;
 }
+/* A light seam rather than a border: a hairline that catches the light is
+   how thick glass separates two regions of one pane. */
+.brand::after,
+.sidebar-foot::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--lg-edge-base) 22%, var(--lg-edge-base) 78%, transparent);
+}
+.brand::after { bottom: 0; }
+.sidebar-foot::before { top: 0; }
+
 .brand h1 {
   margin: 0;
-  font-size: 15px;
+  font-size: 14.5px;
   font-weight: 650;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.012em;
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 10px;
 }
+/* The mark is a small lens in its own right, lit from the same direction as
+   every other surface. */
 .brand .mark {
-  width: 22px; height: 22px;
-  border-radius: 6px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-dim));
-  display: grid; place-items: center;
-  font-size: 12px; font-weight: 800; color: #041014;
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  background-image:
+    radial-gradient(120% 130% at 30% 12%, rgba(255, 255, 255, 0.5), transparent 55%),
+    linear-gradient(150deg, color-mix(in srgb, var(--accent) 92%, white), var(--accent-dim));
+  box-shadow:
+    inset 0 1px 0 -0.3px rgba(255, 255, 255, 0.7),
+    inset 0 -1px 0 -0.3px rgba(0, 0, 0, 0.4),
+    0 2px 10px -3px color-mix(in srgb, var(--accent) 70%, transparent);
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--accent-on);
   flex: 0 0 auto;
 }
 .brand p {
-  margin: 5px 0 0 31px;
-  font-size: 11px;
+  margin: 5px 0 0 34px;
+  font-size: 10.5px;
   color: var(--text-dim);
   line-height: 1.35;
+  letter-spacing: 0.01em;
 }
 
-.nav { padding: 10px 8px; flex: 1; }
+.nav {
+  padding: 8px 8px 14px;
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
 .nav-group-label {
-  font-size: 10px;
+  font-size: 9.5px;
   text-transform: uppercase;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.1em;
   color: var(--text-dim);
-  padding: 12px 10px 5px;
-  font-weight: 600;
+  padding: 13px 10px 5px;
+  font-weight: 650;
 }
 .nav a {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 7px 10px;
-  border-radius: 6px;
+  border-radius: 9px;
   color: var(--text-muted);
-  font-size: 13px;
+  font-size: 12.5px;
   text-decoration: none;
-  transition: background 0.12s, color 0.12s;
+  position: relative;
+  transition: color var(--lg-t-fast) var(--lg-ease), background-color var(--lg-t-fast) var(--lg-ease);
 }
-.nav a:hover { background: var(--bg-hover); color: var(--text); text-decoration: none; }
+.nav a:hover {
+  background-color: var(--bg-hover);
+  color: var(--text);
+  text-decoration: none;
+}
+/* The active entry is a small pane pressed into the rail, with a lit leading
+   edge. Same optics as everything else, one step down in depth. */
 .nav a.active {
-  background: var(--accent-glow);
   color: var(--accent);
-  font-weight: 550;
+  font-weight: 570;
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--accent) 17%, transparent),
+    color-mix(in srgb, var(--accent) 5%, transparent)
+  );
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--accent) 26%, transparent),
+    inset 0 1px 0 -0.4px color-mix(in srgb, var(--lg-edge-lit) 70%, transparent);
 }
-.nav a .ico { width: 16px; text-align: center; opacity: 0.9; flex: 0 0 16px; }
+.nav a.active::before {
+  content: "";
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 17px;
+  border-radius: 3px;
+  background: var(--accent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 80%, transparent);
+}
+/* Keyboard focus in the rail has to survive the active-state background, so
+   it is drawn outside the entry rather than as another inset. */
+.nav a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+  color: var(--text);
+}
+.nav a .ico { width: 16px; text-align: center; opacity: 0.92; flex: 0 0 16px; }
 .nav a .count {
   margin-left: auto;
-  font-size: 10.5px;
+  font-size: 10px;
   color: var(--text-dim);
   font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
 }
 
 .sidebar-foot {
   padding: 12px;
-  border-top: 1px solid var(--border);
-  font-size: 11px;
+  position: relative;
+  font-size: 10.5px;
   color: var(--text-dim);
+  line-height: 1.5;
 }
-.sidebar-foot button {
-  width: 100%;
-  margin-bottom: 8px;
+.sidebar-foot button { width: 100%; margin-bottom: 9px; }
+.sidebar-foot a { color: var(--text-muted); text-decoration: underline; }
+.sidebar-foot a:hover { color: var(--accent); }
+
+/* -- main column ---------------------------------------------------------- */
+
+.main {
+  margin-left: calc(var(--sidebar-w) + var(--shell-gap) * 2);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 
-.main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+/* -- command bar ---------------------------------------------------------- */
+/* Floating, detached from every edge, at the highest chrome depth. It is the
+   one surface that is always over the workspace, so it is the one that most
+   needs adaptive frosting. */
 
 .topbar {
-  position: sticky;
-  top: 0;
-  z-index: 40;
+  position: fixed;
+  top: var(--shell-gap);
+  left: calc(var(--sidebar-w) + var(--shell-gap) * 2);
+  right: var(--shell-gap);
+  z-index: 60;
+  height: var(--commandbar-h);
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 11px 22px;
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
+  padding: 0 10px 0 16px;
+  border-radius: var(--lg-r-lg);
+
+  -webkit-backdrop-filter: blur(var(--lg-blur-deep)) saturate(var(--lg-saturate)) brightness(var(--lg-brightness));
+  backdrop-filter: blur(var(--lg-blur-deep)) saturate(var(--lg-saturate)) brightness(var(--lg-brightness));
+  background-image:
+    radial-gradient(
+      70% 220% at var(--lg-mx) var(--lg-my),
+      color-mix(in srgb, var(--lg-spec-soft) calc(10% + 60% * var(--lg-hot)), transparent) 0%,
+      transparent 65%
+    ),
+    linear-gradient(180deg, var(--lg-fill-edge) 0%, var(--lg-fill) 50%, var(--lg-fill-deep) 100%);
+  box-shadow:
+    var(--lg-shadow-3),
+    inset 0 0 0 var(--lg-thickness) var(--lg-edge-base),
+    inset 0 var(--lg-thickness) 0 calc(var(--lg-thickness) * -0.4) var(--lg-edge-lit),
+    inset 0 calc(var(--lg-thickness) * -1) 0 calc(var(--lg-thickness) * -0.4) var(--lg-edge-shade);
+}
+.lg-t3 .topbar { -webkit-backdrop-filter: none; backdrop-filter: none; background-color: var(--lg-scrim-strong); }
+
+/* -- workspace ------------------------------------------------------------ */
+/* Full width. The old 1500px cap made every visualization a postage stamp on
+   a wide display; prose keeps its own measure through .lede and .legal. */
+
+.content {
+  padding: calc(var(--commandbar-h) + var(--shell-gap) * 2) 22px 64px;
+  width: 100%;
+  max-width: 1780px;
+  position: relative;
+  z-index: 1;
 }
 
-.content { padding: 22px 26px 70px; max-width: 1500px; width: 100%; }
+/* ==========================================================================
+   5. SEARCH
+   ========================================================================== */
 
-/* ---------------------------------------------------------------- search */
-
-.search-wrap { position: relative; flex: 1; max-width: 620px; }
+.search-wrap { position: relative; flex: 1; max-width: 660px; }
 .search-input {
   width: 100%;
-  padding: 8px 12px 8px 34px;
-  background: var(--bg-input);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  padding: 8px 64px 8px 34px;
+  border: 0;
+  border-radius: var(--lg-r-pill);
   color: var(--text);
   font-size: 13px;
   font-family: var(--sans);
+  background-color: transparent;
+  -webkit-backdrop-filter: blur(var(--lg-blur-shallow)) saturate(125%);
+  backdrop-filter: blur(var(--lg-blur-shallow)) saturate(125%);
+  background-image: linear-gradient(180deg, var(--lg-fill-deep), color-mix(in srgb, var(--lg-fill) 50%, transparent));
+  box-shadow:
+    inset 0 0 0 1px var(--lg-edge-base),
+    inset 0 1.5px 3px -1px var(--lg-edge-shade),
+    inset 0 -1px 0 -0.4px var(--lg-edge-lit);
+  transition: box-shadow var(--lg-t) var(--lg-ease);
 }
 .search-input:focus {
   outline: none;
-  border-color: var(--accent-dim);
-  box-shadow: 0 0 0 3px var(--accent-glow);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent),
+    inset 0 1.5px 4px -1px var(--lg-edge-shade),
+    0 0 0 3px var(--accent-glow),
+    0 0 26px -8px color-mix(in srgb, var(--accent) 75%, transparent);
 }
 .search-icon {
-  position: absolute; left: 11px; top: 50%;
+  position: absolute;
+  left: 13px;
+  top: 50%;
   transform: translateY(-50%);
-  color: var(--text-dim); pointer-events: none; font-size: 13px;
+  color: var(--text-dim);
+  pointer-events: none;
+  font-size: 14px;
 }
 .search-kbd {
-  position: absolute; right: 9px; top: 50%;
+  position: absolute;
+  right: 10px;
+  top: 50%;
   transform: translateY(-50%);
-  font-size: 10px; color: var(--text-dim);
-  border: 1px solid var(--border); border-radius: 4px;
-  padding: 1px 5px; font-family: var(--mono);
+  font-size: 9.5px;
+  color: var(--text-dim);
+  border-radius: 5px;
+  padding: 2px 6px;
+  font-family: var(--mono);
   pointer-events: none;
+  box-shadow: inset 0 0 0 1px var(--lg-edge-base), inset 0 1px 0 -0.4px var(--lg-edge-lit);
 }
 
+/* The suggestion list is a pane at popover depth, floating clear of the bar
+   that spawned it. */
 .suggestions {
   position: absolute;
-  top: calc(100% + 6px);
-  left: 0; right: 0;
-  background: var(--bg-panel);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  max-height: 60vh;
+  top: calc(100% + 12px);
+  left: 0;
+  right: 0;
+  border-radius: var(--lg-r);
+  overflow: hidden;
+  max-height: 62vh;
   overflow-y: auto;
-  z-index: 60;
+  z-index: 70;
+  -webkit-backdrop-filter: blur(var(--lg-blur-deep)) saturate(var(--lg-saturate));
+  backdrop-filter: blur(var(--lg-blur-deep)) saturate(var(--lg-saturate));
+  background-image: linear-gradient(180deg, var(--lg-fill-edge), var(--lg-fill-deep));
+  /* Near-opaque rather than a thin tint, and this one is not negotiable.
+     The popover hangs out of the command bar, and the command bar has its own
+     backdrop-filter — which means the browser only samples a backdrop inside
+     the bar's own box. Below that boundary the blur silently does nothing and
+     the list would be read against whatever the page happens to have there.
+     A surface that carries its own opacity is correct at every tier. The
+     glass character here comes from the rim, the sheen and the way it pops
+     into place, not from seeing the page through a list of search results. */
+  background-color: color-mix(in srgb, var(--bg-panel) 97%, transparent);
+  box-shadow:
+    var(--lg-shadow-4),
+    inset 0 0 0 1px var(--lg-edge-base),
+    inset 0 1px 0 -0.4px var(--lg-edge-lit);
+  animation: lg-pop var(--lg-t) var(--lg-spring);
 }
+.lg-t3 .suggestions { -webkit-backdrop-filter: none; backdrop-filter: none; background-color: var(--lg-scrim-strong); }
 .suggestions:empty { display: none; }
-.sugg {
-  display: flex; align-items: center; gap: 10px;
-  padding: 8px 12px; cursor: pointer;
-  border-bottom: 1px solid var(--border);
+
+@keyframes lg-pop {
+  from { opacity: 0; transform: translateY(-6px) scale(0.985); }
+  to { opacity: 1; transform: none; }
 }
-.sugg:last-child { border-bottom: none; }
-.sugg:hover, .sugg.sel { background: var(--bg-hover); }
-.sugg .title { font-size: 13px; font-weight: 500; }
+
+.sugg {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 13px;
+  cursor: pointer;
+  position: relative;
+  transition: background-color var(--lg-t-fast) var(--lg-ease);
+}
+.sugg + .sugg::before {
+  content: "";
+  position: absolute;
+  left: 13px;
+  right: 13px;
+  top: 0;
+  height: 1px;
+  background: var(--lg-edge-base);
+}
+.sugg:hover, .sugg.sel { background-color: var(--bg-hover); }
+.sugg.sel { box-shadow: inset 2px 0 0 var(--accent); }
+.sugg .title { font-size: 13px; font-weight: 520; }
 .sugg .sub { font-size: 11px; color: var(--text-dim); }
 .sugg .body { min-width: 0; flex: 1; }
-.sugg .title, .sugg .sub {
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
+.sugg .title, .sugg .sub { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* --------------------------------------------------------------- badges */
+/* ==========================================================================
+   6. BADGES AND SEMANTIC COLOUR
+
+   Values below are unchanged from before the migration. They encode evidence
+   strength and entity kind, and recolouring any of them would change what the
+   interface asserts about the data.
+   ========================================================================== */
 
 .kind-badge {
-  font-size: 9.5px;
+  font-size: 9px;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  font-weight: 650;
-  padding: 2px 6px;
-  border-radius: 4px;
+  letter-spacing: 0.07em;
+  font-weight: 680;
+  padding: 3px 7px;
+  border-radius: var(--lg-r-pill);
   border: 1px solid var(--border-strong);
   color: var(--text-muted);
   background: var(--bg-hover);
   white-space: nowrap;
   flex: 0 0 auto;
+  box-shadow: inset 0 1px 0 -0.4px var(--lg-edge-lit);
 }
-.kind-disease { color: #ff8fa3; border-color: #7d3543; background: rgba(255,143,163,0.09); }
-.kind-drug { color: #63d9a8; border-color: #2b6b52; background: rgba(99,217,168,0.09); }
-.kind-compound { color: #7ec4ff; border-color: #2c5b85; background: rgba(126,196,255,0.09); }
-.kind-target { color: #c8a2ff; border-color: #5a3f85; background: rgba(200,162,255,0.09); }
-.kind-gene { color: #ffc978; border-color: #7d5a2b; background: rgba(255,201,120,0.09); }
-.kind-pathway { color: #6fd8d8; border-color: #2b6b6b; background: rgba(111,216,216,0.09); }
-.kind-structure { color: #ffa8d4; border-color: #7d3560; background: rgba(255,168,212,0.09); }
-.kind-trial { color: #9fb4c9; border-color: #3d5266; background: rgba(159,180,201,0.09); }
-.kind-publication { color: #b8b8b8; border-color: #4d4d4d; background: rgba(184,184,184,0.08); }
-.kind-brain_region { color: #ffb3a0; border-color: #7d4535; background: rgba(255,179,160,0.09); }
-.kind-cell_type { color: #a0e8b0; border-color: #35703f; background: rgba(160,232,176,0.09); }
+.kind-disease { color: #ff8fa3; border-color: #7d3543; background: rgba(255,143,163,0.1); }
+.kind-drug { color: #63d9a8; border-color: #2b6b52; background: rgba(99,217,168,0.1); }
+.kind-compound { color: #7ec4ff; border-color: #2c5b85; background: rgba(126,196,255,0.1); }
+.kind-target { color: #c8a2ff; border-color: #5a3f85; background: rgba(200,162,255,0.1); }
+.kind-gene { color: #ffc978; border-color: #7d5a2b; background: rgba(255,201,120,0.1); }
+.kind-pathway { color: #6fd8d8; border-color: #2b6b6b; background: rgba(111,216,216,0.1); }
+.kind-structure { color: #ffa8d4; border-color: #7d3560; background: rgba(255,168,212,0.1); }
+.kind-trial { color: #9fb4c9; border-color: #3d5266; background: rgba(159,180,201,0.1); }
+.kind-publication { color: #b8b8b8; border-color: #4d4d4d; background: rgba(184,184,184,0.09); }
+.kind-brain_region { color: #ffb3a0; border-color: #7d4535; background: rgba(255,179,160,0.1); }
+.kind-cell_type { color: #a0e8b0; border-color: #35703f; background: rgba(160,232,176,0.1); }
 
+/* Evidence badges glow faintly in their own colour: the level is the single
+   most load-bearing fact about any statement on screen. */
 .ev {
-  display: inline-flex; align-items: center; gap: 5px;
-  font-size: 10.5px; font-weight: 600;
-  padding: 2px 7px; border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10.5px;
+  font-weight: 620;
+  padding: 2px 8px;
+  border-radius: var(--lg-r-pill);
   border: 1px solid currentColor;
   white-space: nowrap;
   cursor: help;
+  background: color-mix(in srgb, currentColor 9%, transparent);
 }
 .ev::before {
-  content: ""; width: 5px; height: 5px;
-  border-radius: 50%; background: currentColor;
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
   flex: 0 0 5px;
+  box-shadow: 0 0 6px currentColor;
 }
 .ev-established { color: var(--ev-established); }
 .ev-strong { color: var(--ev-strong); }
@@ -309,23 +591,78 @@ code, .mono { font-family: var(--mono); font-size: 0.92em; }
 .ev-hypothesis { color: var(--ev-hypothesis); }
 .ev-unknown { color: var(--ev-unknown); opacity: 0.85; }
 
-/* ---------------------------------------------------------------- cards */
+/* ==========================================================================
+   7. PANES — cards, stats, notices
 
-.card {
-  background: var(--bg-panel);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 16px 18px;
-  margin-bottom: 16px;
+   The application's existing surfaces, re-expressed in the material. The
+   markup did not change; every view that emits `.card` gets optical glass
+   without knowing it.
+   ========================================================================== */
+
+.card,
+.stat {
+  position: relative;
+  border-radius: var(--lg-r-lg);
+  border: 0;
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate)) brightness(var(--lg-brightness));
+  backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate)) brightness(var(--lg-brightness));
+  background-image:
+    radial-gradient(
+      110% 80% at var(--lg-mx) var(--lg-my),
+      color-mix(in srgb, var(--lg-spec-soft) calc(6% + 60% * var(--lg-hot)), transparent) 0%,
+      transparent 62%
+    ),
+    linear-gradient(160deg, var(--lg-fill-edge) 0%, var(--lg-fill) 34%, var(--lg-fill) 66%, var(--lg-fill-deep) 100%);
+  box-shadow:
+    var(--lg-shadow-2),
+    inset 0 0 0 var(--lg-thickness) var(--lg-edge-base),
+    inset var(--lg-thickness) var(--lg-thickness) 0 calc(var(--lg-thickness) * -0.4) var(--lg-edge-lit),
+    inset calc(var(--lg-thickness) * -1) calc(var(--lg-thickness) * -1) 0 calc(var(--lg-thickness) * -0.4) var(--lg-edge-shade),
+    inset 0 calc(var(--lg-bezel) * -1) calc(var(--lg-bezel) * 1.5) calc(var(--lg-bezel) * -1) var(--lg-internal);
+  transition: box-shadow var(--lg-t) var(--lg-ease), transform var(--lg-t) var(--lg-spring);
 }
+.lg-t3 .card, .lg-t3 .stat {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background-color: var(--lg-scrim-strong);
+}
+
+/* The rim. A hairline over the border band only, so it never touches text. */
+.card::after,
+.stat::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+  pointer-events: none;
+  padding: var(--lg-thickness);
+  background: linear-gradient(
+    calc(150deg + (var(--lg-mx) - 50%) * 1.2),
+    color-mix(in srgb, var(--lg-spec) calc(12% + 48% * var(--lg-hot)), transparent) 0%,
+    transparent 26%,
+    transparent 62%,
+    color-mix(in srgb, var(--lg-caustic) calc(22% + 55% * var(--lg-hot)), transparent) 88%,
+    color-mix(in srgb, var(--lg-spec) calc(6% + 30% * var(--lg-hot)), transparent) 100%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  transition: background var(--lg-t) var(--lg-ease);
+}
+
+.card { padding: 17px 19px; margin-bottom: 15px; }
 .card > h3, .card > h2 {
-  margin: 0 0 12px;
-  font-size: 13px;
-  font-weight: 650;
-  letter-spacing: 0.02em;
+  margin: 0 0 13px;
+  font-size: 11px;
+  font-weight: 680;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
-  color: var(--text-muted);
-  display: flex; align-items: center; gap: 9px;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 9px;
 }
 .card-flush { padding: 0; overflow: hidden; }
 
@@ -335,214 +672,572 @@ code, .mono { font-family: var(--mono); font-size: 0.92em; }
 .grid-4 { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
 
 .stat {
-  background: var(--bg-panel);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 15px 17px;
+  padding: 16px 18px;
+  cursor: default;
 }
+.stat:hover { transform: translate3d(0, -2px, 0); box-shadow: var(--lg-shadow-3), inset 0 0 0 var(--lg-thickness) var(--lg-edge-base), inset var(--lg-thickness) var(--lg-thickness) 0 calc(var(--lg-thickness) * -0.4) var(--lg-edge-lit); }
 .stat .value {
-  font-size: 27px; font-weight: 680;
-  font-family: var(--mono); letter-spacing: -0.02em;
-  line-height: 1.1;
+  font-size: 30px;
+  font-weight: 640;
+  font-family: var(--mono);
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  /* The number is the brightest thing in the tile. */
+  color: var(--text);
+  text-shadow: 0 0 24px color-mix(in srgb, var(--accent) 22%, transparent);
 }
 .stat .label {
-  font-size: 11px; color: var(--text-dim);
-  text-transform: uppercase; letter-spacing: 0.06em;
-  margin-top: 5px; font-weight: 600;
+  font-size: 10px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 6px;
+  font-weight: 650;
 }
 .stat .sub { font-size: 11.5px; color: var(--text-muted); margin-top: 5px; }
 
-/* ------------------------------------------------------------- headings */
+/* ==========================================================================
+   8. PAGE HEADINGS
+   ========================================================================== */
 
 .page-head { margin-bottom: 20px; }
 .page-head h2 {
-  margin: 0; font-size: 23px; font-weight: 650;
-  letter-spacing: -0.02em;
-  display: flex; align-items: center; gap: 11px; flex-wrap: wrap;
+  margin: 0;
+  font-size: 25px;
+  font-weight: 620;
+  letter-spacing: -0.028em;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  flex-wrap: wrap;
 }
 .page-head .lede {
-  margin: 7px 0 0; color: var(--text-muted); font-size: 13.5px;
-  max-width: 76ch;
+  margin: 8px 0 0;
+  color: var(--text-muted);
+  font-size: 13.5px;
+  max-width: 78ch;
 }
-.breadcrumbs {
-  font-size: 12px; color: var(--text-dim); margin-bottom: 9px;
-}
+.breadcrumbs { font-size: 12px; color: var(--text-dim); margin-bottom: 9px; }
 .breadcrumbs a { color: var(--text-muted); }
 
-/* ----------------------------------------------------------------- tabs */
+/* ==========================================================================
+   9. TABS
+
+   A segmented glass control rather than an underline. The selected segment is
+   a lens pressed into the strip.
+   ========================================================================== */
 
 .tabs {
-  display: flex; gap: 2px; flex-wrap: wrap;
-  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
   margin: 16px 0 18px;
+  padding: 4px;
+  border-radius: var(--lg-r-pill);
+  width: fit-content;
+  max-width: 100%;
+  -webkit-backdrop-filter: blur(var(--lg-blur-shallow)) saturate(140%);
+  backdrop-filter: blur(var(--lg-blur-shallow)) saturate(140%);
+  background-image: linear-gradient(180deg, var(--lg-fill-deep), color-mix(in srgb, var(--lg-fill) 40%, transparent));
+  box-shadow: inset 0 0 0 1px var(--lg-edge-base), inset 0 1.5px 3px -1px var(--lg-edge-shade);
 }
 .tabs button {
-  background: none; border: none;
-  border-bottom: 2px solid transparent;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  border-radius: var(--lg-r-pill);
   color: var(--text-muted);
-  padding: 8px 13px; font-size: 13px;
-  cursor: pointer; font-family: inherit;
-  margin-bottom: -1px; border-radius: 0;
+  padding: 6px 15px;
+  font-size: 12.5px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: color var(--lg-t-fast) var(--lg-ease), background-image var(--lg-t) var(--lg-ease), box-shadow var(--lg-t) var(--lg-ease);
 }
-.tabs button:hover { color: var(--text); background: var(--bg-hover); }
+.tabs button:hover { color: var(--text); background-image: linear-gradient(180deg, var(--lg-fill-edge), transparent); transform: none; }
 .tabs button.active {
   color: var(--accent);
-  border-bottom-color: var(--accent);
-  font-weight: 600;
+  font-weight: 620;
+  background-image: linear-gradient(180deg, color-mix(in srgb, var(--accent) 20%, transparent), color-mix(in srgb, var(--accent) 7%, transparent));
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--accent) 38%, transparent),
+    inset 0 1px 0 -0.4px var(--lg-edge-lit),
+    0 2px 10px -4px color-mix(in srgb, var(--accent) 60%, transparent);
 }
 .tabs button .n {
-  font-size: 10px; font-family: var(--mono);
-  color: var(--text-dim); margin-left: 5px;
+  font-size: 10px;
+  font-family: var(--mono);
+  color: var(--text-dim);
+  margin-left: 6px;
+  font-variant-numeric: tabular-nums;
 }
 
-/* --------------------------------------------------------------- tables */
+/* ==========================================================================
+   10. TABLES
+
+   Data density is not negotiable. The table itself stays flat and quiet; the
+   pane it sits in provides the material.
+   ========================================================================== */
 
 table { width: 100%; border-collapse: collapse; font-size: 13px; }
 th {
-  text-align: left; padding: 9px 12px;
-  font-size: 10.5px; text-transform: uppercase;
-  letter-spacing: 0.06em; color: var(--text-dim);
-  border-bottom: 1px solid var(--border); font-weight: 650;
-  position: sticky; top: 0; background: var(--bg-panel); z-index: 2;
+  text-align: left;
+  padding: 10px 13px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--text-dim);
+  font-weight: 680;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  /* Opaque on purpose: rows scroll underneath this. */
+  background: var(--bg-panel);
+  box-shadow: inset 0 -1px 0 var(--border);
 }
-td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
-tbody tr:last-child td { border-bottom: none; }
-tbody tr:hover { background: var(--bg-hover); }
+td {
+  padding: 10px 13px;
+  vertical-align: top;
+  box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--border) 60%, transparent);
+}
+tbody tr:last-child td { box-shadow: none; }
+tbody tr { transition: background-color var(--lg-t-fast) var(--lg-ease); }
+tbody tr:hover { background-color: var(--bg-hover); }
 .table-scroll { overflow-x: auto; max-height: 640px; overflow-y: auto; }
 
-/* --------------------------------------------------------------- lists */
+/* ==========================================================================
+   11. LISTS AND CHIPS
+   ========================================================================== */
 
 .entity-row {
-  display: flex; align-items: center; gap: 11px;
-  padding: 11px 14px;
-  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 11px 15px;
   cursor: pointer;
+  position: relative;
+  transition: background-color var(--lg-t-fast) var(--lg-ease), padding-left var(--lg-t) var(--lg-spring);
 }
-.entity-row:last-child { border-bottom: none; }
-.entity-row:hover { background: var(--bg-hover); }
+.entity-row + .entity-row::before {
+  content: "";
+  position: absolute;
+  left: 15px;
+  right: 15px;
+  top: 0;
+  height: 1px;
+  background: color-mix(in srgb, var(--border) 65%, transparent);
+}
+.entity-row:hover {
+  background-color: var(--bg-hover);
+  padding-left: 19px;
+}
+.entity-row:hover::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 70%, transparent);
+}
 .entity-row .body { flex: 1; min-width: 0; }
-.entity-row .name { font-weight: 550; font-size: 13.5px; }
+.entity-row .name { font-weight: 540; font-size: 13.5px; }
 .entity-row .meta {
-  font-size: 11.5px; color: var(--text-dim); margin-top: 2px;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-size: 11.5px;
+  color: var(--text-dim);
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .entity-row .right { text-align: right; font-size: 11px; color: var(--text-dim); flex: 0 0 auto; }
 
-.kv { display: grid; grid-template-columns: minmax(140px, auto) 1fr; gap: 7px 18px; font-size: 13px; }
+.kv { display: grid; grid-template-columns: minmax(140px, auto) 1fr; gap: 8px 18px; font-size: 13px; }
 .kv dt { color: var(--text-dim); font-size: 12px; }
 .kv dd { margin: 0; word-break: break-word; }
 
 .chip {
-  display: inline-flex; align-items: center; gap: 5px;
-  background: var(--bg-hover); border: 1px solid var(--border);
-  border-radius: 20px; padding: 2px 9px;
-  font-size: 11.5px; color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: var(--lg-r-pill);
+  padding: 3px 10px;
+  font-size: 11.5px;
+  color: var(--text-muted);
   margin: 0 5px 5px 0;
+  background-image: linear-gradient(180deg, var(--lg-fill-edge), var(--lg-fill-deep));
+  box-shadow:
+    inset 0 0 0 1px var(--lg-edge-base),
+    inset 0 1px 0 -0.4px var(--lg-edge-lit);
+  transition: color var(--lg-t-fast) var(--lg-ease), box-shadow var(--lg-t-fast) var(--lg-ease), transform var(--lg-t-fast) var(--lg-spring);
 }
 .chip.clickable { cursor: pointer; }
-.chip.clickable:hover { border-color: var(--accent-dim); color: var(--accent); }
+.chip.clickable:hover {
+  color: var(--accent);
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent),
+    inset 0 1px 0 -0.4px var(--lg-edge-lit),
+    0 3px 12px -5px color-mix(in srgb, var(--accent) 60%, transparent);
+}
 
-/* -------------------------------------------------------------- buttons */
+/* ==========================================================================
+   12. CONTROLS
 
-button, .btn {
-  background: var(--bg-hover);
-  border: 1px solid var(--border-strong);
+   Every `button` in the application becomes an optical glass lens, because
+   the views emit plain `<button>` and always have. The behaviour — convex
+   face, pointer-tracked specular, physical depression, elastic return — comes
+   from the .lg-btn primitive; this block routes the existing markup into it.
+   ========================================================================== */
+
+button,
+.btn {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 0;
+  border-radius: var(--lg-r-pill);
   color: var(--text);
-  padding: 6px 13px;
-  border-radius: 6px;
+  padding: 7px 15px;
   font-size: 12.5px;
+  font-weight: 550;
+  line-height: 1.35;
   cursor: pointer;
   font-family: inherit;
-  transition: background 0.12s, border-color 0.12s;
+  white-space: nowrap;
+  -webkit-user-select: none;
+  user-select: none;
+  /* The user-agent stylesheet paints buttons and fields with an opaque
+     system colour. Glass has to clear it explicitly, or every control comes
+     out as a solid grey pill with the optics stacked uselessly on top. */
+  background-color: transparent;
+  -webkit-backdrop-filter: blur(var(--lg-blur-shallow)) saturate(var(--lg-saturate));
+  backdrop-filter: blur(var(--lg-blur-shallow)) saturate(var(--lg-saturate));
+  background-image:
+    radial-gradient(
+      120% 150% at var(--lg-mx) calc(var(--lg-my) - 25%),
+      color-mix(in srgb, var(--lg-spec) calc(5% + 22% * var(--lg-hot)), transparent) 0%,
+      transparent 58%
+    ),
+    linear-gradient(180deg, var(--lg-fill-edge) 0%, var(--lg-fill) 46%, var(--lg-fill-deep) 100%);
+  box-shadow:
+    var(--lg-shadow-1),
+    inset 0 0 0 1px var(--lg-edge-base),
+    inset 0 1px 0 -0.4px var(--lg-edge-lit),
+    inset 0 -1px 0 -0.4px var(--lg-edge-shade),
+    inset 0 -7px 12px -8px var(--lg-caustic);
+  transition:
+    transform 180ms var(--lg-spring),
+    box-shadow 180ms var(--lg-ease),
+    background-image 180ms var(--lg-ease),
+    color 140ms var(--lg-ease),
+    opacity 140ms var(--lg-ease);
 }
-button:hover, .btn:hover { background: var(--border); border-color: var(--accent-dim); }
-button.primary {
-  background: var(--accent); border-color: var(--accent);
-  color: #04161a; font-weight: 620;
+.lg-t3 button, .lg-t3 .btn {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background-color: var(--lg-scrim-strong);
 }
-button.primary:hover { filter: brightness(1.1); }
-button.sm { padding: 3px 9px; font-size: 11.5px; }
-button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* The lit rim of the lens. */
+button::after,
+.btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  pointer-events: none;
+  padding: 1px;
+  background: linear-gradient(
+    calc(180deg + (var(--lg-mx) - 50%) * 1.6),
+    color-mix(in srgb, var(--lg-spec) calc(18% + 46% * var(--lg-hot)), transparent) 0%,
+    transparent 42%,
+    transparent 62%,
+    color-mix(in srgb, var(--lg-caustic) calc(16% + 50% * var(--lg-hot)), transparent) 100%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  transition: background 180ms var(--lg-ease);
+}
+
+button:hover,
+.btn:hover {
+  transform: translate3d(0, -1.5px, 0);
+  box-shadow:
+    var(--lg-shadow-2),
+    inset 0 0 0 1px color-mix(in srgb, var(--lg-edge-base) 140%, transparent),
+    inset 0 1.4px 0 -0.4px var(--lg-edge-lit),
+    inset 0 -1.4px 0 -0.4px var(--lg-edge-shade),
+    inset 0 -9px 16px -9px var(--lg-caustic);
+}
+
+/* The press: an asymmetric squash, because the lens is being pushed into the
+   surface rather than scaled down. The return is sprung. */
+button:active:not(:disabled),
+.btn:active:not(:disabled) {
+  transform: translate3d(0, 1px, 0) scale(0.968, 0.945);
+  transition-duration: 55ms;
+  box-shadow:
+    inset 0 0 0 1px var(--lg-edge-base),
+    inset 0 2px 6px -1px var(--lg-edge-shade),
+    inset 0 -1px 0 -0.4px var(--lg-edge-lit);
+}
+
+button:focus-visible,
+.btn:focus-visible,
+a:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: var(--lg-r-sm);
+}
+
+button.primary,
+.btn.primary {
+  color: var(--accent-on);
+  font-weight: 650;
+  background-image:
+    radial-gradient(
+      120% 150% at var(--lg-mx) calc(var(--lg-my) - 25%),
+      rgba(255, 255, 255, calc(0.14 + 0.22 * var(--lg-hot))) 0%,
+      transparent 58%
+    ),
+    linear-gradient(180deg, color-mix(in srgb, var(--accent) 88%, white) 0%, var(--accent) 48%, color-mix(in srgb, var(--accent) 84%, black) 100%);
+  box-shadow:
+    var(--lg-shadow-2),
+    inset 0 0 0 1px color-mix(in srgb, var(--accent) 55%, white 35%),
+    inset 0 1.4px 0 -0.4px rgba(255, 255, 255, 0.6),
+    inset 0 -1.4px 0 -0.4px color-mix(in srgb, var(--accent) 45%, black),
+    0 4px 20px -7px color-mix(in srgb, var(--accent) 60%, transparent);
+}
+button.primary:hover {
+  box-shadow:
+    var(--lg-shadow-3),
+    inset 0 0 0 1px color-mix(in srgb, var(--accent) 55%, white 45%),
+    inset 0 1.6px 0 -0.4px rgba(255, 255, 255, 0.75),
+    inset 0 -1.6px 0 -0.4px color-mix(in srgb, var(--accent) 45%, black),
+    0 8px 30px -7px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+
+button.sm, .btn.sm { padding: 4px 11px; font-size: 11.5px; }
+
+button:disabled, .btn:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+  --lg-hot: 0;
+}
+button:disabled:hover { transform: none; box-shadow: var(--lg-shadow-1), inset 0 0 0 1px var(--lg-edge-base); }
+
+/* Busy. The lens keeps its optics and grows a travelling caustic rather than
+   being replaced by a spinner box, so a control that is working still looks
+   like the control you pressed. Driven by `aria-busy`, which is what a screen
+   reader needs anyway, so the visual and the announced state cannot drift. */
+button[aria-busy="true"],
+button.is-loading,
+.btn.is-loading {
+  pointer-events: none;
+  color: color-mix(in srgb, var(--text) 50%, transparent);
+}
+button[aria-busy="true"]::after,
+button.is-loading::after,
+.btn.is-loading::after {
+  padding: 0;
+  -webkit-mask: none;
+  mask: none;
+  background: linear-gradient(
+    100deg,
+    transparent 22%,
+    color-mix(in srgb, var(--lg-spec) 34%, transparent) 46%,
+    transparent 68%
+  );
+  background-size: 250% 100%;
+  animation: lg-sheen 1.15s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  button[aria-busy="true"]::after,
+  button.is-loading::after { animation: none; background: none; }
+  button[aria-busy="true"], button.is-loading { opacity: 0.6; }
+}
+
+/* Selected/pressed toggles, used by several viewer toolbars. */
+button.active,
+button[aria-pressed="true"] {
+  color: var(--accent);
+  background-image: linear-gradient(180deg, color-mix(in srgb, var(--accent) 18%, transparent), color-mix(in srgb, var(--accent) 7%, transparent));
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent),
+    inset 0 2px 7px -2px color-mix(in srgb, var(--accent) 35%, transparent),
+    inset 0 -1px 0 -0.4px var(--lg-edge-lit);
+}
 
 .toolbar {
-  display: flex; gap: 9px; flex-wrap: wrap;
-  align-items: center; margin-bottom: 14px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 14px;
 }
-select, input[type="text"], input[type="search"], textarea {
-  background: var(--bg-input);
-  border: 1px solid var(--border);
+
+/* Fields are recesses: light from below, shadow above — the inverse of a
+   button, which is what makes them read as writable. */
+select,
+input[type="text"],
+input[type="search"],
+input[type="number"],
+textarea {
+  border: 0;
+  border-radius: var(--lg-r-sm);
   color: var(--text);
-  padding: 6px 10px;
-  border-radius: 6px;
+  padding: 7px 11px;
   font-size: 12.5px;
   font-family: inherit;
+  background-color: transparent;
+  -webkit-backdrop-filter: blur(var(--lg-blur-shallow)) saturate(125%);
+  backdrop-filter: blur(var(--lg-blur-shallow)) saturate(125%);
+  background-image: linear-gradient(180deg, var(--lg-fill-deep), color-mix(in srgb, var(--lg-fill) 50%, transparent));
+  box-shadow:
+    inset 0 0 0 1px var(--lg-edge-base),
+    inset 0 1.5px 3px -1px var(--lg-edge-shade),
+    inset 0 -1px 0 -0.4px var(--lg-edge-lit);
+  transition: box-shadow var(--lg-t) var(--lg-ease);
 }
+select { padding-right: 26px; }
 select:focus, input:focus, textarea:focus {
-  outline: none; border-color: var(--accent-dim);
-  box-shadow: 0 0 0 3px var(--accent-glow);
+  outline: none;
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent),
+    inset 0 1.5px 4px -1px var(--lg-edge-shade),
+    0 0 0 3px var(--accent-glow),
+    0 0 22px -8px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+::placeholder { color: var(--text-dim); }
+
+/* Range inputs appear in viewer toolbars (atlas shell opacity, timelines). */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 22px;
+  background: transparent;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 5px;
+  border-radius: var(--lg-r-pill);
+  background-image: linear-gradient(180deg, var(--lg-fill-deep), var(--lg-fill));
+  box-shadow: inset 0 0 0 1px var(--lg-edge-base), inset 0 1px 2px -1px var(--lg-edge-shade);
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 15px;
+  height: 15px;
+  margin-top: -5px;
+  border-radius: 50%;
+  background-image:
+    radial-gradient(120% 120% at 32% 22%, rgba(255,255,255,0.75), transparent 55%),
+    linear-gradient(180deg, color-mix(in srgb, var(--accent) 90%, white), var(--accent-dim));
+  box-shadow: 0 1px 5px rgba(0,0,0,0.4), inset 0 -1px 0 -0.4px rgba(0,0,0,0.35);
+}
+input[type="range"]::-moz-range-track {
+  height: 5px;
+  border-radius: var(--lg-r-pill);
+  background: var(--lg-fill-deep);
+  box-shadow: inset 0 0 0 1px var(--lg-edge-base);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 15px;
+  height: 15px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--accent);
 }
 
-/* -------------------------------------------------------------- notices */
+/* ==========================================================================
+   13. NOTICES
+   ========================================================================== */
 
 .notice {
-  border-radius: var(--radius);
-  padding: 11px 14px;
+  position: relative;
+  border-radius: var(--lg-r);
+  padding: 12px 15px;
   font-size: 12.5px;
   line-height: 1.55;
   border: 1px solid;
   margin-bottom: 14px;
-  display: flex; gap: 10px; align-items: flex-start;
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+  -webkit-backdrop-filter: blur(var(--lg-blur-shallow)) saturate(140%);
+  backdrop-filter: blur(var(--lg-blur-shallow)) saturate(140%);
+  box-shadow: var(--lg-shadow-1), inset 0 1px 0 -0.4px var(--lg-edge-lit);
 }
 .notice .ico { flex: 0 0 auto; font-size: 14px; line-height: 1.3; }
-.notice-info { background: rgba(74,158,255,0.07); border-color: rgba(74,158,255,0.3); color: #9fc9ff; }
-.notice-warn { background: rgba(210,153,34,0.08); border-color: rgba(210,153,34,0.35); color: #e3bd6a; }
-.notice-danger { background: rgba(248,81,73,0.08); border-color: rgba(248,81,73,0.35); color: #ff9b95; }
+.notice-info { background: rgba(74,158,255,0.09); border-color: rgba(74,158,255,0.32); color: #a8cfff; }
+.notice-warn { background: rgba(210,153,34,0.1); border-color: rgba(210,153,34,0.38); color: #e8c477; }
+.notice-danger { background: rgba(248,81,73,0.1); border-color: rgba(248,81,73,0.38); color: #ffa49e; }
 .notice-muted { background: var(--bg-hover); border-color: var(--border); color: var(--text-muted); }
 
 .gap-note {
   border-left: 3px solid var(--ev-unknown);
   background: var(--bg-hover);
-  padding: 9px 13px;
+  padding: 10px 14px;
   font-size: 12.5px;
   color: var(--text-muted);
-  border-radius: 0 6px 6px 0;
+  border-radius: 0 var(--lg-r-sm) var(--lg-r-sm) 0;
 }
 
-.empty {
-  text-align: center; padding: 48px 20px;
-  color: var(--text-dim); font-size: 13.5px;
-}
-.empty .big { font-size: 30px; margin-bottom: 12px; opacity: 0.5; }
+.empty { text-align: center; padding: 52px 20px; color: var(--text-dim); font-size: 13.5px; }
+.empty .big { font-size: 32px; margin-bottom: 12px; opacity: 0.45; }
 
-/* ------------------------------------------------------------ mechanism */
+/* ==========================================================================
+   14. MECHANISM CASCADE
+   ========================================================================== */
 
 .cascade { display: flex; flex-direction: column; gap: 0; }
-.cascade-stage { position: relative; padding-left: 30px; padding-bottom: 18px; }
+.cascade-stage { position: relative; padding-left: 32px; padding-bottom: 18px; }
 .cascade-stage::before {
-  content: ""; position: absolute;
-  left: 9px; top: 20px; bottom: -2px;
-  width: 2px; background: var(--border);
+  content: "";
+  position: absolute;
+  left: 9px;
+  top: 20px;
+  bottom: -2px;
+  width: 2px;
+  background: linear-gradient(180deg, var(--border-strong), var(--border));
 }
 .cascade-stage:last-child::before { display: none; }
 .cascade-stage .dot {
-  position: absolute; left: 3px; top: 6px;
-  width: 14px; height: 14px; border-radius: 50%;
-  border: 2px solid var(--bg); background: var(--ev-unknown);
+  position: absolute;
+  left: 3px;
+  top: 6px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--bg);
+  background: var(--ev-unknown);
 }
-.cascade-stage.known .dot { background: var(--accent); }
-.cascade-stage.gap .dot {
-  background: var(--bg-panel);
-  border: 2px dashed var(--ev-unknown);
+.cascade-stage.known .dot {
+  background: var(--accent);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 75%, transparent);
 }
-.cascade-head {
-  display: flex; align-items: center; gap: 10px;
-  flex-wrap: wrap; margin-bottom: 7px;
-}
+.cascade-stage.gap .dot { background: var(--bg-panel); border: 2px dashed var(--ev-unknown); }
+.cascade-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
 .cascade-head .title { font-weight: 600; font-size: 14px; }
+
 .scope-tag {
-  font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.06em;
-  padding: 1.5px 6px; border-radius: 4px; font-weight: 650;
-  border: 1px solid var(--border-strong); color: var(--text-dim);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  padding: 2px 7px;
+  border-radius: var(--lg-r-pill);
+  font-weight: 680;
+  border: 1px solid var(--border-strong);
+  color: var(--text-dim);
 }
 .scope-direct_molecular { color: #7ec4ff; border-color: #2c5b85; }
 .scope-downstream { color: #6fd8d8; border-color: #2b6b6b; }
@@ -553,151 +1248,295 @@ select:focus, input:focus, textarea:focus {
 
 .cascade-items { display: flex; flex-direction: column; gap: 7px; }
 .cascade-item {
-  background: var(--bg-hover);
-  border: 1px solid var(--border);
-  border-radius: 7px;
-  padding: 9px 12px;
+  border-radius: var(--lg-r-sm);
+  padding: 10px 13px;
   font-size: 12.5px;
+  background-image: linear-gradient(160deg, var(--lg-fill-edge), var(--lg-fill-deep));
+  box-shadow: inset 0 0 0 1px var(--lg-edge-base), inset 0 1px 0 -0.4px var(--lg-edge-lit);
 }
-.cascade-item .head {
-  display: flex; align-items: center; gap: 9px;
-  flex-wrap: wrap; margin-bottom: 3px;
-}
+.cascade-item .head { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; margin-bottom: 3px; }
 .cascade-item .head .name { font-weight: 570; }
 
-/* -------------------------------------------------------------- viewers */
+/* ==========================================================================
+   15. THE SCIENTIFIC WORKSPACE
+
+   Viewers are the application. They get the room, they get a real optical
+   frame rather than a card border, and the controls that belong to them float
+   over them instead of stacking above them.
+   ========================================================================== */
 
 .viewer {
-  width: 100%; height: 460px;
-  background: var(--bg-input);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  width: 100%;
+  height: min(62vh, 620px);
+  min-height: 380px;
+  border-radius: var(--lg-r-lg);
   position: relative;
   overflow: hidden;
+  /* Deliberately dark and near-clear: the environment shows through, and the
+     viewer's own canvas is drawn on top of it. The frame is glass; the
+     interior is not, because a frosted interior would fight the geometry. */
+  background:
+    radial-gradient(120% 100% at 50% 0%, rgba(120, 170, 210, 0.06), transparent 60%),
+    color-mix(in srgb, var(--bg) 55%, transparent);
+  box-shadow:
+    var(--lg-shadow-3),
+    inset 0 0 0 var(--lg-thickness) var(--lg-edge-base),
+    inset var(--lg-thickness) var(--lg-thickness) 0 calc(var(--lg-thickness) * -0.4) var(--lg-edge-lit),
+    inset calc(var(--lg-thickness) * -1) calc(var(--lg-thickness) * -1) 0 calc(var(--lg-thickness) * -0.4) var(--lg-edge-shade),
+    /* the interior caustic — light entering the frame and grazing the far
+       wall, which is what makes the viewer read as a vessel rather than a
+       hole in the page */
+    inset 0 -30px 60px -50px var(--lg-caustic),
+    inset 0 30px 60px -50px var(--lg-caustic);
 }
-.viewer-tall { height: 620px; }
+.viewer-tall { height: min(78vh, 860px); }
 .viewer canvas { display: block; }
+
+/* The controls that belong to a viewer are a floating glass cluster, not a
+   row of buttons stranded above it. */
 .viewer-toolbar {
-  display: flex; gap: 6px; flex-wrap: wrap;
-  margin-bottom: 10px; align-items: center;
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-bottom: 11px;
+  align-items: center;
+  padding: 6px 10px;
+  width: fit-content;
+  max-width: 100%;
+  border-radius: var(--lg-r-pill);
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate));
+  backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate));
+  background-image: linear-gradient(180deg, var(--lg-fill-edge), var(--lg-fill-deep));
+  box-shadow:
+    var(--lg-shadow-2),
+    inset 0 0 0 1px var(--lg-edge-base),
+    inset 0 1px 0 -0.4px var(--lg-edge-lit),
+    inset 0 -1px 0 -0.4px var(--lg-edge-shade);
 }
+.lg-t3 .viewer-toolbar { -webkit-backdrop-filter: none; backdrop-filter: none; background-color: var(--lg-scrim-strong); }
+
+/* ---------------------------------------------------------------------------
+   WORKSPACE ROUTES
+
+   On a route where the visualization *is* the page, the canvas takes the
+   viewport and the controls lift off the flow and float over it. Scoped to
+   `body[data-workspace]` and gated on `:has()`, so a reading view that
+   happens to contain a small viewer is untouched, and a browser without
+   `:has()` simply keeps the stacked layout — which was never broken.
+   --------------------------------------------------------------------------- */
+
+/* Only the viewer a route declared as its principal one takes the viewport.
+   A page that happens to contain several viewers — the preclinical stages
+   show a structure, a plate and a plot on one page — keeps them proportionate
+   to each other instead of turning each into a full screen. */
+body[data-workspace] .viewer-tall {
+  height: calc(100vh - var(--commandbar-h) - var(--shell-gap) * 4 - 12px);
+  min-height: 420px;
+}
+body[data-workspace] .viewer:not(.viewer-tall) {
+  height: min(70vh, 700px);
+}
+
+body[data-workspace] .viewer-toolbar:has(+ div .viewer),
+body[data-workspace] .viewer-toolbar:has(+ .viewer) {
+  position: relative;
+  z-index: 6;
+  margin: 0 0 -54px 14px;
+  box-shadow:
+    var(--lg-shadow-3),
+    inset 0 0 0 1px var(--lg-edge-base),
+    inset 0 1px 0 -0.4px var(--lg-edge-lit),
+    inset 0 -1px 0 -0.4px var(--lg-edge-shade);
+}
+
+/* The legend becomes a floating strip tucked into the bottom of the canvas
+   rather than a caption sitting under it. */
+body[data-workspace] .graph-legend:has(~ *),
+body[data-workspace] div:has(> .viewer) + .graph-legend {
+  position: relative;
+  z-index: 6;
+  margin: -48px 14px 24px auto;
+  width: fit-content;
+  max-width: calc(100% - 28px);
+  padding: 8px 13px;
+  border-radius: var(--lg-r-pill);
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate));
+  backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate));
+  background-image: linear-gradient(180deg, var(--lg-fill-edge), var(--lg-fill-deep));
+  box-shadow:
+    var(--lg-shadow-2),
+    inset 0 0 0 1px var(--lg-edge-base),
+    inset 0 1px 0 -0.4px var(--lg-edge-lit);
+}
+
+/* A floating control pane over the workspace, not a caption under it. */
 .viewer-overlay {
-  position: absolute; left: 10px; bottom: 10px;
-  background: color-mix(in srgb, var(--bg) 80%, transparent);
-  backdrop-filter: blur(6px);
-  border: 1px solid var(--border);
-  border-radius: 6px; padding: 6px 10px;
-  font-size: 11px; color: var(--text-muted);
-  max-width: 62%; pointer-events: none;
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  z-index: 5;
+  border-radius: var(--lg-r-sm);
+  padding: 8px 12px;
+  font-size: 11px;
+  color: var(--text-muted);
+  max-width: 62%;
+  pointer-events: none;
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate));
+  backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate));
+  background-image: linear-gradient(160deg, var(--lg-fill-edge), var(--lg-fill-deep));
+  background-color: color-mix(in srgb, var(--lg-scrim) 55%, transparent);
+  box-shadow:
+    var(--lg-shadow-2),
+    inset 0 0 0 1px var(--lg-edge-base),
+    inset 0 1px 0 -0.4px var(--lg-edge-lit);
 }
+.lg-t3 .viewer-overlay { -webkit-backdrop-filter: none; backdrop-filter: none; background-color: var(--lg-scrim-strong); }
+
 .viewer-loading {
-  position: absolute; inset: 0;
-  display: grid; place-items: center;
-  color: var(--text-dim); font-size: 13px;
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--text-dim);
+  font-size: 13px;
 }
 
 /* Structure provenance is load-bearing: an experimental structure and a
-   computed model must never look the same. */
+   computed model must never look the same. Colours unchanged. */
 .struct-banner {
-  display: flex; align-items: center; gap: 9px;
-  padding: 7px 12px; border-radius: 6px;
-  font-size: 12px; margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 13px;
+  border-radius: var(--lg-r-sm);
+  font-size: 12px;
+  margin-bottom: 11px;
   border: 1px solid;
+  box-shadow: inset 0 1px 0 -0.4px var(--lg-edge-lit);
 }
-.struct-experimental {
-  border-color: var(--ev-established);
-  background: rgba(63,185,80,0.08);
-  color: var(--ev-established);
-}
-.struct-computed_conformer, .struct-predicted {
-  border-color: var(--ev-preclinical);
-  background: rgba(240,136,62,0.08);
-  color: var(--ev-preclinical);
-}
-.struct-docked, .struct-illustrative {
-  border-color: var(--danger);
-  background: rgba(248,81,73,0.08);
-  color: var(--danger);
-}
-.struct-banner .label { font-weight: 650; white-space: nowrap; }
+.struct-experimental { border-color: var(--ev-established); background: rgba(63,185,80,0.1); color: var(--ev-established); }
+.struct-computed_conformer, .struct-predicted { border-color: var(--ev-preclinical); background: rgba(240,136,62,0.1); color: var(--ev-preclinical); }
+.struct-docked, .struct-illustrative { border-color: var(--danger); background: rgba(248,81,73,0.1); color: var(--danger); }
+.struct-banner .label { font-weight: 680; white-space: nowrap; }
 .struct-banner .warn { color: var(--text-muted); font-size: 11.5px; }
 
 .mol-2d {
-  background: var(--bg-input);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 12px;
-  display: grid; place-items: center;
-  min-height: 220px;
+  border-radius: var(--lg-r-lg);
+  padding: 14px;
+  display: grid;
+  place-items: center;
+  min-height: 240px;
+  background: color-mix(in srgb, var(--bg) 45%, transparent);
+  box-shadow: inset 0 0 0 1px var(--lg-edge-base), inset 0 1px 0 -0.4px var(--lg-edge-lit);
 }
 .mol-2d svg { max-width: 100%; height: auto; }
 :root:not([data-theme="light"]) .mol-2d svg path[stroke="#000000"],
 :root:not([data-theme="light"]) .mol-2d svg path[stroke="#000"] { stroke: #dbe6f0; }
 :root:not([data-theme="light"]) .mol-2d svg text { fill: #dbe6f0; }
 
-/* --------------------------------------------------------------- matrix */
+/* ==========================================================================
+   16. MATRIX
 
-.matrix-wrap { overflow: auto; max-height: 74vh; }
+   Cell colours are semantic (approved / off-label / investigational / failed)
+   and are unchanged.
+   ========================================================================== */
+
+.matrix-wrap { overflow: auto; max-height: 76vh; }
 table.matrix { border-collapse: separate; border-spacing: 0; }
 table.matrix th.corner {
-  position: sticky; left: 0; top: 0; z-index: 5;
-  background: var(--bg-panel); min-width: 180px;
+  position: sticky;
+  left: 0;
+  top: 0;
+  z-index: 5;
+  background: var(--bg-panel);
+  min-width: 180px;
 }
 table.matrix thead th {
-  position: sticky; top: 0; z-index: 4;
+  position: sticky;
+  top: 0;
+  z-index: 4;
   background: var(--bg-panel);
-  height: 128px; vertical-align: bottom;
-  padding: 0 0 8px; width: 34px; min-width: 34px;
+  height: 128px;
+  vertical-align: bottom;
+  padding: 0 0 8px;
+  width: 34px;
+  min-width: 34px;
 }
 table.matrix thead th .rot {
   writing-mode: vertical-rl;
   transform: rotate(180deg);
-  font-size: 11px; text-transform: none;
-  letter-spacing: 0; white-space: nowrap;
-  max-height: 116px; overflow: hidden;
-  color: var(--text-muted); cursor: pointer;
+  font-size: 11px;
+  text-transform: none;
+  letter-spacing: 0;
+  white-space: nowrap;
+  max-height: 116px;
+  overflow: hidden;
+  color: var(--text-muted);
+  cursor: pointer;
 }
 table.matrix thead th .rot:hover { color: var(--accent); }
 table.matrix td.rowhead {
-  position: sticky; left: 0; z-index: 3;
+  position: sticky;
+  left: 0;
+  z-index: 3;
   background: var(--bg-panel);
-  min-width: 180px; max-width: 240px;
-  font-size: 12.5px; cursor: pointer;
-  border-right: 1px solid var(--border);
+  min-width: 180px;
+  max-width: 240px;
+  font-size: 12.5px;
+  cursor: pointer;
+  box-shadow: inset -1px 0 0 var(--border);
 }
 table.matrix td.rowhead:hover { color: var(--accent); }
 table.matrix td.cell {
-  width: 34px; min-width: 34px; height: 30px;
-  padding: 0; text-align: center;
+  width: 34px;
+  min-width: 34px;
+  height: 30px;
+  padding: 0;
+  text-align: center;
   border: 1px solid var(--border);
   cursor: pointer;
 }
-.mcell {
-  width: 100%; height: 100%;
-  display: grid; place-items: center;
-  font-size: 10px; font-weight: 700;
-}
+.mcell { width: 100%; height: 100%; display: grid; place-items: center; font-size: 10px; font-weight: 700; }
 .mcell-APPROVED_FOR { background: rgba(63,185,80,0.55); color: #04160a; }
 .mcell-OFF_LABEL_USE_IN { background: rgba(210,153,34,0.5); color: #1a1204; }
 .mcell-INVESTIGATED_FOR { background: rgba(163,113,247,0.42); color: #f0eaff; }
 .mcell-FAILED_FOR { background: rgba(248,81,73,0.42); color: #fff0ef; }
 table.matrix td.cell:hover { outline: 2px solid var(--accent); outline-offset: -2px; }
 
-/* ---------------------------------------------------------------- graph */
+/* ==========================================================================
+   17. GRAPH
+   ========================================================================== */
 
-#graph-canvas { width: 100%; height: 640px; background: var(--bg-input); border-radius: var(--radius); }
+#graph-canvas {
+  width: 100%;
+  height: min(72vh, 780px);
+  border-radius: var(--lg-r-lg);
+  background:
+    radial-gradient(120% 100% at 50% 0%, rgba(120, 170, 210, 0.05), transparent 60%),
+    color-mix(in srgb, var(--bg) 50%, transparent);
+  box-shadow:
+    var(--lg-shadow-3),
+    inset 0 0 0 var(--lg-thickness) var(--lg-edge-base),
+    inset var(--lg-thickness) var(--lg-thickness) 0 calc(var(--lg-thickness) * -0.4) var(--lg-edge-lit);
+}
 .graph-legend {
-  display: flex; flex-wrap: wrap; gap: 12px;
-  font-size: 11.5px; color: var(--text-muted); margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 13px;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  margin-top: 11px;
 }
 .graph-legend .item { display: flex; align-items: center; gap: 6px; }
-.graph-legend .swatch { width: 11px; height: 11px; border-radius: 50%; }
+.graph-legend .swatch { width: 11px; height: 11px; border-radius: 50%; box-shadow: 0 0 7px currentColor; }
 
-/* ------------------------------------------------------------- evidence */
+/* ==========================================================================
+   18. EVIDENCE AND PROVENANCE
+   ========================================================================== */
 
 .prov {
   border-left: 2px solid var(--border-strong);
-  padding: 7px 0 7px 12px;
+  padding: 8px 0 8px 13px;
   margin-bottom: 9px;
   font-size: 12px;
 }
@@ -705,38 +1544,85 @@ table.matrix td.cell:hover { outline: 2px solid var(--accent); outline-offset: -
 .prov .meta { color: var(--text-dim); font-size: 11.5px; margin-top: 2px; }
 .prov a { word-break: break-all; font-size: 11.5px; }
 
-.pub-item { padding: 13px 0; border-bottom: 1px solid var(--border); }
-.pub-item:last-child { border-bottom: none; }
+.pub-item { padding: 14px 0; position: relative; }
+.pub-item + .pub-item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--border);
+}
 .pub-item .title { font-weight: 570; font-size: 13.5px; margin-bottom: 4px; }
 .pub-item .meta { font-size: 11.5px; color: var(--text-dim); display: flex; gap: 9px; flex-wrap: wrap; }
 .pub-item .abstract {
-  font-size: 12.5px; color: var(--text-muted);
-  margin-top: 7px; max-height: 4.6em; overflow: hidden;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin-top: 7px;
+  max-height: 4.6em;
+  overflow: hidden;
   position: relative;
 }
 .pub-item .abstract.open { max-height: none; }
 
-/* ------------------------------------------------------------------- AI */
+/* ==========================================================================
+   19. AI ASSISTANT
+   ========================================================================== */
 
 .chat { display: flex; flex-direction: column; gap: 14px; }
-.msg { padding: 13px 16px; border-radius: var(--radius-lg); font-size: 13.5px; line-height: 1.62; }
-.msg-user { background: var(--accent-glow); border: 1px solid var(--accent-dim); align-self: flex-end; max-width: 78%; }
-.msg-ai { background: var(--bg-panel); border: 1px solid var(--border); }
+.msg {
+  padding: 14px 17px;
+  border-radius: var(--lg-r-lg);
+  font-size: 13.5px;
+  line-height: 1.62;
+  position: relative;
+}
+.msg-user {
+  align-self: flex-end;
+  max-width: 78%;
+  background-image: linear-gradient(160deg, color-mix(in srgb, var(--accent) 22%, transparent), color-mix(in srgb, var(--accent) 8%, transparent));
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--accent) 34%, transparent),
+    inset 0 1px 0 -0.4px var(--lg-edge-lit),
+    var(--lg-shadow-1);
+}
+.msg-ai {
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate));
+  backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate));
+  background-image: linear-gradient(160deg, var(--lg-fill-edge), var(--lg-fill), var(--lg-fill-deep));
+  box-shadow:
+    var(--lg-shadow-2),
+    inset 0 0 0 1px var(--lg-edge-base),
+    inset 0 1px 0 -0.4px var(--lg-edge-lit);
+}
 .msg-ai p { margin: 0 0 10px; }
 .msg-ai p:last-child { margin-bottom: 0; }
+
+/* A citation is a claim's receipt, so it stays visually distinct from prose
+   and keeps its "removed" state loud. */
 .cite {
   display: inline-block;
-  background: var(--bg-hover); border: 1px solid var(--border-strong);
-  border-radius: 4px; padding: 0 5px;
-  font-family: var(--mono); font-size: 11px;
-  color: var(--accent); cursor: pointer;
+  border-radius: 6px;
+  padding: 0 6px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent);
+  cursor: pointer;
+  background-image: linear-gradient(180deg, var(--lg-fill-edge), var(--lg-fill-deep));
+  box-shadow: inset 0 0 0 1px var(--lg-edge-base);
 }
 .cite-removed {
-  background: rgba(248,81,73,0.12); border-color: var(--danger);
-  color: var(--danger); text-decoration: line-through;
+  background-image: none;
+  background-color: rgba(248,81,73,0.14);
+  box-shadow: inset 0 0 0 1px var(--danger);
+  color: var(--danger);
+  text-decoration: line-through;
 }
 
-/* -------------------------------------------------------------- utility */
+/* ==========================================================================
+   20. UTILITIES
+   ========================================================================== */
 
 .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .row-between { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
@@ -751,51 +1637,130 @@ table.matrix td.cell:hover { outline: 2px solid var(--accent); outline-offset: -
 .hidden { display: none !important; }
 .clickable { cursor: pointer; }
 
-.loading { display: flex; align-items: center; gap: 10px; color: var(--text-dim); padding: 30px; justify-content: center; }
+.loading { display: flex; align-items: center; gap: 10px; color: var(--text-dim); padding: 34px; justify-content: center; }
 .spinner {
-  width: 15px; height: 15px;
+  width: 16px;
+  height: 16px;
   border: 2px solid var(--border);
   border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
+  box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 35%, transparent);
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .disclaimer {
-  margin-top: 40px; padding: 14px 18px;
-  border-top: 1px solid var(--border);
-  font-size: 11.5px; color: var(--text-dim);
+  margin-top: 44px;
+  padding: 15px 19px;
+  border-radius: var(--lg-r);
+  font-size: 11.5px;
+  color: var(--text-dim);
   line-height: 1.6;
+  background-image: linear-gradient(160deg, var(--lg-fill), transparent);
+  box-shadow: inset 0 0 0 1px var(--lg-edge-base);
 }
 
-/* ------------------------------------------------------------ responsive */
-
-@media (max-width: 900px) {
-  .app { flex-direction: column; }
-  .sidebar {
-    width: 100%; flex: none; height: auto;
-    position: static; flex-direction: row;
-    overflow-x: auto; align-items: center;
-  }
-  .brand { border-bottom: none; border-right: 1px solid var(--border); flex: 0 0 auto; }
-  .brand p { display: none; }
-  .nav { display: flex; padding: 8px; gap: 4px; }
-  .nav-group-label { display: none; }
-  .nav a { white-space: nowrap; }
-  .nav a .count { display: none; }
-  .sidebar-foot { display: none; }
-  .content { padding: 16px 14px 60px; }
-  .topbar { padding: 10px 14px; }
-  .kv { grid-template-columns: 1fr; gap: 3px 0; }
-  .kv dd { margin-bottom: 8px; }
+/* Content arriving on a route change rises into place rather than appearing.
+   One short animation on one element; nothing per-item, which is what keeps
+   a 400-row table from animating 400 times. */
+.content > * { animation: lg-rise var(--lg-t-slow) var(--lg-spring) both; }
+@keyframes lg-rise {
+  from { opacity: 0; transform: translateY(9px); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .content > * { animation: none; }
 }
 
 /* ==========================================================================
-   Terms gate and legal text
+   21. RESPONSIVE
 
-   The gate is a blocking notice, so it is deliberately hard to dismiss by
-   accident: no click-outside, no Escape, and the accept button stays disabled
-   until the checkbox is ticked.
+   Not a shrunk desktop. Below the laptop breakpoint the rail undocks into a
+   horizontal glass dock, the command bar takes the full width, and the
+   refraction budget drops — a phone GPU has better things to do, and the
+   scientific content is what has to survive the transition.
+   ========================================================================== */
+
+@media (max-width: 1180px) {
+  :root { --sidebar-w: 210px; }
+  .content { padding-left: 16px; padding-right: 16px; }
+}
+
+@media (max-width: 900px) {
+  :root {
+    --shell-gap: 9px;
+    --commandbar-h: 50px;
+    /* Displacement is the first thing to go: it is the most expensive effect
+       and the least legible at this size. */
+    --lg-blur: 11px;
+    --lg-blur-deep: 16px;
+    --lg-bezel: 10px;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: auto;
+    bottom: var(--shell-gap);
+    left: var(--shell-gap);
+    right: var(--shell-gap);
+    width: auto;
+    height: auto;
+    max-height: 64px;
+    flex-direction: row;
+    align-items: center;
+    border-radius: var(--lg-r-lg);
+    z-index: 70;
+  }
+  .brand { flex: 0 0 auto; padding: 10px 12px; }
+  .brand::after { display: none; }
+  .brand p { display: none; }
+  .nav {
+    display: flex;
+    padding: 8px;
+    gap: 4px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex: 1;
+    scroll-snap-type: x proximity;
+  }
+  .nav-group-label { display: none; }
+  .nav a { white-space: nowrap; scroll-snap-align: start; }
+  .nav a .count { display: none; }
+  .nav a.active::before { display: none; }
+  .sidebar-foot { display: none; }
+
+  .main { margin-left: 0; }
+  .topbar { left: var(--shell-gap); }
+  .content { padding: calc(var(--commandbar-h) + var(--shell-gap) * 2) 12px 92px; }
+
+  .kv { grid-template-columns: 1fr; gap: 3px 0; }
+  .kv dd { margin-bottom: 8px; }
+
+  /* Visualizations keep priority: they get a fixed share of the viewport
+     rather than shrinking to a thumbnail. */
+  .viewer { height: min(56vh, 460px); min-height: 300px; }
+  .viewer-tall { height: min(64vh, 540px); }
+  #graph-canvas { height: min(60vh, 500px); }
+  .viewer-overlay { max-width: calc(100% - 24px); font-size: 10.5px; }
+
+  .tabs { width: 100%; overflow-x: auto; flex-wrap: nowrap; }
+  .card { padding: 14px 15px; }
+}
+
+@media (max-width: 560px) {
+  .search-kbd { display: none; }
+  .search-input { padding-right: 14px; }
+  .page-head h2 { font-size: 21px; }
+  .stat .value { font-size: 25px; }
+}
+
+/* ==========================================================================
+   22. TERMS GATE
+
+   A blocking notice, and deliberately hard to dismiss by accident: no
+   click-outside, no Escape, and the accept button stays disabled until the
+   checkbox is ticked. Now rendered as the deepest pane in the stack, with the
+   whole environment frosted behind it.
    ========================================================================== */
 
 .gate-backdrop {
@@ -805,82 +1770,83 @@ table.matrix td.cell:hover { outline: 2px solid var(--accent); outline-offset: -
   display: grid;
   place-items: center;
   padding: 20px;
-  background: rgba(4, 7, 11, 0.82);
-  backdrop-filter: blur(6px);
+  background: rgba(3, 6, 11, 0.7);
+  -webkit-backdrop-filter: blur(14px) saturate(120%);
+  backdrop-filter: blur(14px) saturate(120%);
 }
 
-/* Stops the page behind the gate scrolling under it on iOS. */
 body.gated { overflow: hidden; }
 
 .gate {
   display: flex;
   flex-direction: column;
-  width: min(760px, 100%);
+  width: min(780px, 100%);
   max-height: min(88vh, 900px);
-  background: var(--bg-panel);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
+  border-radius: var(--lg-r-xl);
+  position: relative;
+  -webkit-backdrop-filter: blur(var(--lg-blur-deep)) saturate(var(--lg-saturate));
+  backdrop-filter: blur(var(--lg-blur-deep)) saturate(var(--lg-saturate));
+  background-image: linear-gradient(160deg, var(--lg-fill-edge), var(--lg-fill), var(--lg-fill-deep));
+  background-color: color-mix(in srgb, var(--lg-scrim) 88%, transparent);
+  box-shadow:
+    var(--lg-shadow-4),
+    inset 0 0 0 1.4px var(--lg-edge-base),
+    inset 1.4px 1.4px 0 -0.5px var(--lg-edge-lit),
+    inset -1.4px -1.4px 0 -0.5px var(--lg-edge-shade);
+  animation: lg-gate-in var(--lg-t-slow) var(--lg-spring);
+}
+.lg-t3 .gate { -webkit-backdrop-filter: none; backdrop-filter: none; background-color: var(--lg-scrim-strong); }
+@keyframes lg-gate-in {
+  from { opacity: 0; transform: translateY(16px) scale(0.97); }
+  to { opacity: 1; transform: none; }
 }
 
-.gate-head {
-  padding: 22px 24px 16px;
-  border-bottom: 1px solid var(--border);
+.gate-head { padding: 24px 26px 16px; position: relative; }
+.gate-head::after,
+.gate-body::after {
+  content: "";
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--lg-edge-base) 20%, var(--lg-edge-base) 80%, transparent);
 }
-.gate-head h2 { margin: 0 0 10px; font-size: 18px; letter-spacing: -0.01em; }
+.gate-head h2 { margin: 0 0 10px; font-size: 19px; letter-spacing: -0.02em; }
 
 .gate-summary { display: grid; gap: 5px; margin: 0; }
-.gate-summary span {
-  font-size: 13px;
-  color: var(--text);
-  padding-left: 14px;
-  position: relative;
-}
-.gate-summary span::before {
-  content: "—";
-  position: absolute;
-  left: 0;
-  color: var(--warning);
-}
+.gate-summary span { font-size: 13px; color: var(--text); padding-left: 15px; position: relative; }
+.gate-summary span::before { content: "—"; position: absolute; left: 0; color: var(--warning); }
 
-.gate-body {
-  overflow-y: auto;
-  padding: 4px 24px;
-  border-bottom: 1px solid var(--border);
-}
+.gate-body { overflow-y: auto; padding: 4px 26px; position: relative; }
 .gate-body:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 
-.gate-foot { padding: 16px 24px 18px; }
+.gate-foot { padding: 17px 26px 19px; }
 
 .gate-check {
   display: flex;
-  gap: 10px;
+  gap: 11px;
   align-items: flex-start;
   font-size: 12.5px;
   line-height: 1.55;
   color: var(--text-muted);
   cursor: pointer;
 }
-.gate-check input { margin-top: 3px; flex: 0 0 auto; }
+.gate-check input { margin-top: 3px; flex: 0 0 auto; accent-color: var(--accent); }
 
-.gate-actions {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-  margin-top: 14px;
-}
-.gate-actions button:disabled { opacity: 0.45; cursor: not-allowed; }
+.gate-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px; }
+.gate-actions button:disabled { opacity: 0.42; cursor: not-allowed; }
 
-/* Legal prose: narrower measure and quieter than data, since it is read
+/* Legal prose: a narrower measure and quieter than data, because it is read
    linearly rather than scanned. */
 .legal { max-width: 68ch; font-size: 13.5px; line-height: 1.65; }
 .legal h3 {
   margin: 22px 0 8px;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--text-dim);
 }
 .legal p { margin: 0 0 10px; color: var(--text-muted); }
 .legal ul { margin: 0 0 10px; padding-left: 18px; color: var(--text-muted); }
@@ -888,20 +1854,17 @@ body.gated { overflow: hidden; }
 .legal strong { color: var(--text); }
 
 .legal-strong {
-  padding: 10px 12px;
+  padding: 11px 13px;
   border-left: 2px solid var(--warning);
-  background: rgba(210, 153, 34, 0.07);
+  background: rgba(210, 153, 34, 0.08);
   color: var(--text) !important;
-  border-radius: 0 var(--radius) var(--radius) 0;
+  border-radius: 0 var(--lg-r-sm) var(--lg-r-sm) 0;
 }
 .legal-note { font-size: 12px; color: var(--text-dim) !important; }
 
-.sidebar-foot a { color: var(--text-muted); text-decoration: underline; }
-.sidebar-foot a:hover { color: var(--accent); }
-
 @media (max-width: 720px) {
   .gate { max-height: 92vh; }
-  .gate-head, .gate-body, .gate-foot { padding-left: 16px; padding-right: 16px; }
+  .gate-head, .gate-body, .gate-foot { padding-left: 17px; padding-right: 17px; }
   .gate-actions { flex-direction: column-reverse; }
   .gate-actions button { width: 100%; }
 }

@@ -299,3 +299,64 @@
 }
 .mm-criteria { font-size: 11.5px; }
 .mm-criteria li { margin-bottom: 3px; }
+
+/* ==========================================================================
+   Liquid Glass integration
+
+   The evidence-status glyph is the thing this stylesheet exists for: it sits
+   beside every number, its colour is semantic, and it is never reused for
+   decoration. None of that changes here. Only the surfaces underneath the
+   numbers become glass.
+   ========================================================================== */
+
+.plot,
+.plate-stage,
+.pipeline,
+.pc-library-item,
+.well-detail,
+.assumption-banner {
+  border: 0;
+  border-radius: var(--lg-r);
+  background-color: transparent;
+  -webkit-backdrop-filter: blur(var(--lg-blur-shallow)) saturate(var(--lg-saturate));
+  backdrop-filter: blur(var(--lg-blur-shallow)) saturate(var(--lg-saturate));
+  background-image:
+    radial-gradient(
+      110% 90% at var(--lg-mx) var(--lg-my),
+      color-mix(in srgb, var(--lg-spec-soft) calc(4% + 46% * var(--lg-hot)), transparent) 0%,
+      transparent 62%
+    ),
+    linear-gradient(160deg, var(--lg-fill-edge) 0%, var(--lg-fill) 40%, var(--lg-fill-deep) 100%);
+  box-shadow:
+    var(--lg-shadow-1),
+    inset 0 0 0 1px var(--lg-edge-base),
+    inset 0 1px 0 -0.4px var(--lg-edge-lit),
+    inset 0 -1px 0 -0.4px var(--lg-edge-shade);
+}
+.lg-t3 .plot,
+.lg-t3 .plate-stage,
+.lg-t3 .pipeline,
+.lg-t3 .pc-library-item,
+.lg-t3 .well-detail,
+.lg-t3 .assumption-banner {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background-color: var(--lg-scrim-strong);
+}
+
+/* An assumption is a caveat attached to a simulated number. It keeps its
+   warning tone on top of the glass, because a reader who misses it will
+   mistake a model output for a measurement. */
+.assumption-banner {
+  box-shadow:
+    var(--lg-shadow-1),
+    inset 0 0 0 1px color-mix(in srgb, var(--ev-preliminary) 45%, transparent),
+    inset 0 1px 0 -0.4px var(--lg-edge-lit);
+}
+
+/* "No data" stays visibly empty. */
+.no-data {
+  background-image: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}

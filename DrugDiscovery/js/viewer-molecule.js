@@ -37,8 +37,13 @@ export class MoleculeViewer {
     }
     const isLight =
       document.documentElement.getAttribute("data-theme") === "light";
+    // Mostly transparent rather than a flat fill, so the workspace behind the
+    // viewer shows through its glass frame the way the atlas viewers already
+    // do. Some opacity is kept: at zero, thin cartoon ribbons lose contrast
+    // against a light region of the environment.
     this.viewer = window.$3Dmol.createViewer(this.container, {
-      backgroundColor: isLight ? "#ffffff" : "#0d141d",
+      backgroundColor: isLight ? "#ffffff" : "#080f18",
+      backgroundAlpha: isLight ? 0.72 : 0.55,
     });
     return true;
   }
@@ -207,8 +212,13 @@ export class StructureViewer {
     }
     const isLight =
       document.documentElement.getAttribute("data-theme") === "light";
+    // Mostly transparent rather than a flat fill, so the workspace behind the
+    // viewer shows through its glass frame the way the atlas viewers already
+    // do. Some opacity is kept: at zero, thin cartoon ribbons lose contrast
+    // against a light region of the environment.
     this.viewer = window.$3Dmol.createViewer(this.container, {
-      backgroundColor: isLight ? "#ffffff" : "#0d141d",
+      backgroundColor: isLight ? "#ffffff" : "#080f18",
+      backgroundAlpha: isLight ? 0.72 : 0.55,
     });
     return true;
   }
