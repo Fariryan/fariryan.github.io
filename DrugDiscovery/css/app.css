@@ -36,29 +36,29 @@
   /* -- ground ------------------------------------------------------------ */
   /* The page itself is now the environment, so --bg is what shows through
      the glass rather than what sits behind the cards. */
-  --bg: #070c14;
-  --bg-raised: rgba(20, 30, 44, 0.5);
+  --bg: #04110b;
+  --bg-raised: rgba(18, 42, 33, 0.5);
   /* Deliberately near-opaque: sticky table headers and matrix row heads use
      this to occlude the rows scrolling beneath them, so it cannot be
      translucent without letting text pile up on text. */
-  --bg-panel: #0e1621;
-  --bg-hover: rgba(125, 160, 195, 0.1);
-  --bg-input: rgba(8, 14, 22, 0.55);
+  --bg-panel: #08180f;
+  --bg-hover: rgba(140, 205, 180, 0.1);
+  --bg-input: rgba(3, 14, 10, 0.55);
 
-  --border: rgba(140, 175, 210, 0.16);
-  --border-strong: rgba(150, 185, 220, 0.3);
+  --border: rgba(145, 200, 180, 0.17);
+  --border-strong: rgba(150, 205, 185, 0.3);
 
   --surface: var(--bg-raised);
 
-  --text: #e8f0f8;
-  --text-muted: #9db0c5;
-  --text-dim: #718499;
+  --text: #e6f4ec;
+  --text-muted: #9dbdae;
+  --text-dim: #6f8f80;
 
-  --accent: #3ed0e0;
-  --accent-dim: #1d8a99;
-  --accent-glow: rgba(62, 208, 224, 0.16);
+  --accent: #3ee08f;
+  --accent-dim: #1a8f5c;
+  --accent-glow: rgba(62, 224, 143, 0.16);
   /* Text on a filled accent lens. */
-  --accent-on: #04191d;
+  --accent-on: #032014;
 
   /* -- evidence tones ----------------------------------------------------
      Semantic. Never decorative, never reused, never adjusted for aesthetics.
@@ -901,103 +901,215 @@ tbody tr:hover { background-color: var(--bg-hover); }
    from the .lg-btn primitive; this block routes the existing markup into it.
    ========================================================================== */
 
+/* ---------------------------------------------------------------------------
+   The button is a direct reproduction of Petr Knoll's "Glass Button"
+   (codepen.io/Petr-Knoll/pen/QwWLZdx), which is the specification for how
+   controls in this interface behave optically. Its construction, in order:
+
+     · a convex face from a -75deg white gradient over a live backdrop blur
+     · a five-part box-shadow: inner top shade, inner bottom highlight, an
+       outer drop shadow, an inset white spread that is the light trapped in
+       the lens, and a hairline
+     · `::after` — the outline. A conic-gradient of dark arcs over a flat white
+       base, masked to the border band. Its start angle is a registered
+       @property, so the dark arcs *rotate around the rim* on hover. This is
+       the detail that makes the control read as a turned piece of glass, and
+       it is the one a static gradient cannot fake.
+     · `::before` — the sheen. A hard-edged white band, screen-blended, whose
+       background-position and angle both animate on hover and on press.
+
+   Two departures from the pen, both structural rather than visual:
+
+     1. The pen wraps each button in `.button-wrap` + `.button-shadow` and puts
+        the label in a `<span>`. The views here emit bare `<button>Text</button>`
+        in 35 modules, so the sheen moves from `span::after` to `::before` and
+        the separate blurred shadow element folds into the button's own drop
+        shadow. The layer order and every value are otherwise the pen's.
+     2. The pen is a single hero control at ~5rem on a light ground. These are
+        12.5px controls, dozens per page, on a dark one. All geometry stays in
+        `em` so it scales from the font size exactly as the pen's does; only
+        the block padding is tightened for density, and the colours are
+        theme-driven.
+   --------------------------------------------------------------------------- */
+
 button,
-.btn {
+.btn,
+.lg-btn {
+  --border-width: clamp(1px, 0.0625em, 4px);
+  --anim--hover-time: 400ms;
+  --anim--hover-ease: cubic-bezier(0.25, 1, 0.5, 1);
+
   position: relative;
-  isolation: isolate;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 7px;
   border: 0;
-  border-radius: var(--lg-r-pill);
-  color: var(--text);
-  padding: 7px 15px;
-  font-size: 12.5px;
-  font-weight: 550;
-  line-height: 1.35;
+  outline: none;
   cursor: pointer;
-  font-family: inherit;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  padding-inline: 1.5em;
+  padding-block: 0.62em;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--text);
   white-space: nowrap;
   -webkit-user-select: none;
   user-select: none;
-  /* The user-agent stylesheet paints buttons and fields with an opaque
-     system colour. Glass has to clear it explicitly, or every control comes
-     out as a solid grey pill with the optics stacked uselessly on top. */
+  text-shadow: 0 0.25em 0.05em var(--btn-text-shadow);
+  border-radius: 999vw;
   background-color: transparent;
-  -webkit-backdrop-filter: blur(var(--lg-blur-shallow)) saturate(var(--lg-saturate));
-  backdrop-filter: blur(var(--lg-blur-shallow)) saturate(var(--lg-saturate));
-  background-image:
-    radial-gradient(
-      120% 150% at var(--lg-mx) calc(var(--lg-my) - 25%),
-      color-mix(in srgb, var(--lg-spec) calc(5% + 22% * var(--lg-hot)), transparent) 0%,
-      transparent 58%
-    ),
-    linear-gradient(180deg, var(--lg-fill-edge) 0%, var(--lg-fill) 46%, var(--lg-fill-deep) 100%);
+  background-image: linear-gradient(
+    -75deg,
+    var(--btn-face-1),
+    var(--btn-face-2),
+    var(--btn-face-1)
+  );
   box-shadow:
-    var(--lg-shadow-1),
-    inset 0 0 0 1px var(--lg-edge-base),
-    inset 0 1px 0 -0.4px var(--lg-edge-lit),
-    inset 0 -1px 0 -0.4px var(--lg-edge-shade),
-    inset 0 -7px 12px -8px var(--lg-caustic);
-  transition:
-    transform 180ms var(--lg-spring),
-    box-shadow 180ms var(--lg-ease),
-    background-image 180ms var(--lg-ease),
-    color 140ms var(--lg-ease),
-    opacity 140ms var(--lg-ease);
-}
-.lg-t3 button, .lg-t3 .btn {
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-  background-color: var(--lg-scrim-strong);
+    inset 0 0.125em 0.125em var(--btn-inner-top),
+    inset 0 -0.125em 0.125em var(--btn-inner-bottom),
+    0 0.25em 0.125em -0.125em var(--btn-drop),
+    0 0 0.1em 0.25em inset var(--btn-inner-spread),
+    0 0 0 0 var(--btn-hairline);
+  -webkit-backdrop-filter: blur(clamp(1px, 0.125em, 4px));
+  backdrop-filter: blur(clamp(1px, 0.125em, 4px));
+  transition: all var(--anim--hover-time) var(--anim--hover-ease);
 }
 
-/* The lit rim of the lens. */
+/* The sheen. `mix-blend-mode: screen` is what makes it read as light on the
+   surface rather than white paint in it. */
+button::before,
+.btn::before,
+.lg-btn::before {
+  content: "";
+  display: block;
+  position: absolute;
+  z-index: 1;
+  width: calc(100% - var(--border-width));
+  height: calc(100% - var(--border-width));
+  top: calc(0% + var(--border-width) / 2);
+  left: calc(0% + var(--border-width) / 2);
+  box-sizing: border-box;
+  border-radius: 999vw;
+  overflow: clip;
+  pointer-events: none;
+  background: linear-gradient(
+    var(--angle-2),
+    rgba(255, 255, 255, 0) 0%,
+    var(--btn-sheen) 40% 50%,
+    rgba(255, 255, 255, 0) 55%
+  );
+  background-size: 200% 200%;
+  background-position: 0% 50%;
+  background-repeat: no-repeat;
+  mix-blend-mode: screen;
+  transition:
+    background-position calc(var(--anim--hover-time) * 1.25) var(--anim--hover-ease),
+    --angle-2 calc(var(--anim--hover-time) * 1.25) var(--anim--hover-ease);
+}
+
+/* The outline. The conic start angle is animatable because --angle-1 is a
+   registered custom property; without @property this transition is simply
+   dropped and the rim stays static, which is a clean degradation. */
 button::after,
-.btn::after {
+.btn::after,
+.lg-btn::after {
   content: "";
   position: absolute;
+  z-index: 1;
   inset: 0;
-  z-index: 2;
-  border-radius: inherit;
+  border-radius: 999vw;
+  width: calc(100% + var(--border-width));
+  height: calc(100% + var(--border-width));
+  top: calc(0% - var(--border-width) / 2);
+  left: calc(0% - var(--border-width) / 2);
+  padding: var(--border-width);
+  box-sizing: border-box;
   pointer-events: none;
-  padding: 1px;
-  background: linear-gradient(
-    calc(180deg + (var(--lg-mx) - 50%) * 1.6),
-    color-mix(in srgb, var(--lg-spec) calc(18% + 46% * var(--lg-hot)), transparent) 0%,
-    transparent 42%,
-    transparent 62%,
-    color-mix(in srgb, var(--lg-caustic) calc(16% + 50% * var(--lg-hot)), transparent) 100%
-  );
+  background:
+    conic-gradient(
+      from var(--angle-1) at 50% 50%,
+      var(--btn-arc),
+      rgba(0, 0, 0, 0) 5% 40%,
+      var(--btn-arc) 50%,
+      rgba(0, 0, 0, 0) 60% 95%,
+      var(--btn-arc)
+    ),
+    linear-gradient(180deg, var(--btn-rim), var(--btn-rim));
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
-  transition: background 180ms var(--lg-ease);
+  box-shadow: inset 0 0 0 calc(var(--border-width) / 2) var(--btn-rim);
+  transition: all var(--anim--hover-time) var(--anim--hover-ease), --angle-1 500ms ease;
 }
 
+/* Hover pulls the lens *down* onto the surface — it does not lift. The
+   backdrop blur drops almost to nothing at the same time, so the button
+   becomes clearer as it is pressed toward the page. */
 button:hover,
-.btn:hover {
-  transform: translate3d(0, -1.5px, 0);
+.btn:hover,
+.lg-btn:hover {
+  transform: scale(0.975);
+  -webkit-backdrop-filter: blur(0.01em);
+  backdrop-filter: blur(0.01em);
+  text-shadow: 0.025em 0.025em 0.025em var(--btn-text-shadow);
   box-shadow:
-    var(--lg-shadow-2),
-    inset 0 0 0 1px color-mix(in srgb, var(--lg-edge-base) 140%, transparent),
-    inset 0 1.4px 0 -0.4px var(--lg-edge-lit),
-    inset 0 -1.4px 0 -0.4px var(--lg-edge-shade),
-    inset 0 -9px 16px -9px var(--lg-caustic);
+    inset 0 0.125em 0.125em var(--btn-inner-top),
+    inset 0 -0.125em 0.125em var(--btn-inner-bottom),
+    0 0.15em 0.05em -0.1em var(--btn-drop-hover),
+    0 0 0.05em 0.1em inset var(--btn-inner-spread-hover),
+    0 0 0 0 var(--btn-hairline);
+}
+button:hover::after,
+.btn:hover::after,
+.lg-btn:hover::after { --angle-1: -125deg; }
+button:hover::before,
+.btn:hover::before,
+.lg-btn:hover::before { background-position: 25% 50%; }
+
+/* The press tilts the control away from the viewer. In the pen this is a
+   rotation of the wrapper; with no wrapper the button carries its own
+   perspective, which is visually identical. */
+button:active:not(:disabled),
+.btn:active:not(:disabled),
+.lg-btn:active:not(:disabled) {
+  transform: perspective(6em) rotate3d(1, 0, 0, 25deg) scale(0.975);
+  text-shadow: 0.025em 0.25em 0.05em var(--btn-text-shadow);
+  box-shadow:
+    inset 0 0.125em 0.125em var(--btn-inner-top),
+    inset 0 -0.125em 0.125em var(--btn-inner-bottom),
+    0 0.125em 0.125em -0.125em var(--btn-drop),
+    0 0 0.1em 0.25em inset var(--btn-inner-spread),
+    0 0.225em 0.05em 0 rgba(0, 0, 0, 0.05),
+    0 0.25em 0 0 var(--btn-underlight),
+    inset 0 0.25em 0.05em 0 var(--btn-press-shade);
+}
+button:active:not(:disabled)::after,
+.btn:active:not(:disabled)::after { --angle-1: -75deg; }
+button:active:not(:disabled)::before,
+.btn:active:not(:disabled)::before {
+  background-position: 50% 15%;
+  --angle-2: -15deg;
 }
 
-/* The press: an asymmetric squash, because the lens is being pushed into the
-   surface rather than scaled down. The return is sprung. */
-button:active:not(:disabled),
-.btn:active:not(:disabled) {
-  transform: translate3d(0, 1px, 0) scale(0.968, 0.945);
-  transition-duration: 55ms;
-  box-shadow:
-    inset 0 0 0 1px var(--lg-edge-base),
-    inset 0 2px 6px -1px var(--lg-edge-shade),
-    inset 0 -1px 0 -0.4px var(--lg-edge-lit);
+/* Touch devices have no hover, so both angles rest where the pen rests them. */
+@media (hover: none) and (pointer: coarse) {
+  button::before, .btn::before,
+  button:active::before, .btn:active::before { --angle-2: -45deg; }
+  button::after, .btn::after,
+  button:hover::after, .btn:hover::after,
+  button:active::after, .btn:active::after { --angle-1: -75deg; }
+  button:hover, .btn:hover { transform: none; }
+}
+
+.lg-t3 button, .lg-t3 .btn {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background-color: var(--lg-scrim-strong);
 }
 
 button:focus-visible,
@@ -1006,85 +1118,85 @@ a:focus-visible,
 [tabindex]:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
-  border-radius: var(--lg-r-sm);
 }
 
+/* Primary keeps every layer of the construction and tints the face. The
+   conic rim and the sheen are unchanged, so it presses and turns identically. */
 button.primary,
 .btn.primary {
   color: var(--accent-on);
-  font-weight: 650;
-  background-image:
-    radial-gradient(
-      120% 150% at var(--lg-mx) calc(var(--lg-my) - 25%),
-      rgba(255, 255, 255, calc(0.14 + 0.22 * var(--lg-hot))) 0%,
-      transparent 58%
-    ),
-    linear-gradient(180deg, color-mix(in srgb, var(--accent) 88%, white) 0%, var(--accent) 48%, color-mix(in srgb, var(--accent) 84%, black) 100%);
+  font-weight: 620;
+  text-shadow: none;
+  background-image: linear-gradient(
+    -75deg,
+    color-mix(in srgb, var(--accent) 88%, black),
+    color-mix(in srgb, var(--accent) 92%, white),
+    color-mix(in srgb, var(--accent) 88%, black)
+  );
   box-shadow:
-    var(--lg-shadow-2),
-    inset 0 0 0 1px color-mix(in srgb, var(--accent) 55%, white 35%),
-    inset 0 1.4px 0 -0.4px rgba(255, 255, 255, 0.6),
-    inset 0 -1.4px 0 -0.4px color-mix(in srgb, var(--accent) 45%, black),
-    0 4px 20px -7px color-mix(in srgb, var(--accent) 60%, transparent);
+    inset 0 0.125em 0.125em rgba(0, 0, 0, 0.12),
+    inset 0 -0.125em 0.125em rgba(255, 255, 255, 0.45),
+    0 0.25em 0.125em -0.125em rgba(0, 0, 0, 0.3),
+    0 0 0.1em 0.25em inset rgba(255, 255, 255, 0.22),
+    0 0.25em 1.2em -0.5em color-mix(in srgb, var(--accent) 75%, transparent);
 }
-button.primary:hover {
-  box-shadow:
-    var(--lg-shadow-3),
-    inset 0 0 0 1px color-mix(in srgb, var(--accent) 55%, white 45%),
-    inset 0 1.6px 0 -0.4px rgba(255, 255, 255, 0.75),
-    inset 0 -1.6px 0 -0.4px color-mix(in srgb, var(--accent) 45%, black),
-    0 8px 30px -7px color-mix(in srgb, var(--accent) 70%, transparent);
+button.primary::after,
+.btn.primary::after {
+  --btn-arc: rgba(0, 0, 0, 0.42);
+  --btn-rim: rgba(255, 255, 255, 0.6);
 }
 
-button.sm, .btn.sm { padding: 4px 11px; font-size: 11.5px; }
+button.sm, .btn.sm { font-size: 11.5px; padding-inline: 1.15em; padding-block: 0.5em; }
 
 button:disabled, .btn:disabled {
   opacity: 0.42;
   cursor: not-allowed;
-  --lg-hot: 0;
+  transform: none;
 }
-button:disabled:hover { transform: none; box-shadow: var(--lg-shadow-1), inset 0 0 0 1px var(--lg-edge-base); }
+button:disabled:hover, .btn:disabled:hover { transform: none; }
 
 /* Busy. The lens keeps its optics and grows a travelling caustic rather than
    being replaced by a spinner box, so a control that is working still looks
    like the control you pressed. Driven by `aria-busy`, which is what a screen
-   reader needs anyway, so the visual and the announced state cannot drift. */
+   reader needs anyway, so the visual and announced states cannot drift. */
 button[aria-busy="true"],
 button.is-loading,
 .btn.is-loading {
   pointer-events: none;
   color: color-mix(in srgb, var(--text) 50%, transparent);
 }
-button[aria-busy="true"]::after,
-button.is-loading::after,
-.btn.is-loading::after {
-  padding: 0;
-  -webkit-mask: none;
-  mask: none;
+button[aria-busy="true"]::before,
+button.is-loading::before,
+.btn.is-loading::before {
   background: linear-gradient(
     100deg,
     transparent 22%,
-    color-mix(in srgb, var(--lg-spec) 34%, transparent) 46%,
+    var(--btn-sheen) 46%,
     transparent 68%
   );
   background-size: 250% 100%;
   animation: lg-sheen 1.15s linear infinite;
 }
-@media (prefers-reduced-motion: reduce) {
-  button[aria-busy="true"]::after,
-  button.is-loading::after { animation: none; background: none; }
-  button[aria-busy="true"], button.is-loading { opacity: 0.6; }
+@keyframes lg-sheen {
+  from { background-position: 170% 0; }
+  to { background-position: -70% 0; }
 }
 
-/* Selected/pressed toggles, used by several viewer toolbars. */
+/* Selected/pressed toggles, used by several viewer toolbars. The face takes
+   the accent and the rim brightens; the construction is untouched. */
 button.active,
 button[aria-pressed="true"] {
   color: var(--accent);
-  background-image: linear-gradient(180deg, color-mix(in srgb, var(--accent) 18%, transparent), color-mix(in srgb, var(--accent) 7%, transparent));
-  box-shadow:
-    inset 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent),
-    inset 0 2px 7px -2px color-mix(in srgb, var(--accent) 35%, transparent),
-    inset 0 -1px 0 -0.4px var(--lg-edge-lit);
+  background-image: linear-gradient(
+    -75deg,
+    color-mix(in srgb, var(--accent) 10%, transparent),
+    color-mix(in srgb, var(--accent) 26%, transparent),
+    color-mix(in srgb, var(--accent) 10%, transparent)
+  );
+}
+button.active::after,
+button[aria-pressed="true"]::after {
+  --btn-rim: color-mix(in srgb, var(--accent) 55%, transparent);
 }
 
 .toolbar {

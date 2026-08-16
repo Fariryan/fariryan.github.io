@@ -18,6 +18,14 @@
 
 import { capability } from "./tiers.js";
 
+/**
+ * Whether to draw the generated blob field.
+ *
+ * Off: the environment is an image (see `.lg-env` in glass.css). Set true to
+ * fall back to the procedural field — the two are not meant to run together.
+ */
+const USE_GENERATED_FIELD = false;
+
 /** Backing-store scale. The field has no detail finer than this. */
 const RESOLUTION = 0.28;
 /** Frames per second. Movement only has to be perceptible, not smooth. */
@@ -145,7 +153,15 @@ export function startEnvironment() {
   host.setAttribute("aria-hidden", "true");
   document.body.prepend(host);
 
-  if (!capability.ambient) return;
+  // The field is now a real image — a molecular scene with bright particles,
+  // hexagonal structure and dot lattices, which is far better material for a
+  // bezel to refract than anything this module was drawing. The generated
+  // blob layer is therefore off: painting soft gradients on top of it would
+  // only wash out the detail the glass is meant to bend.
+  //
+  // The module and its suspend/resume API stay, because the viewers call them
+  // and because the layer is worth having back if the image is ever removed.
+  if (!capability.ambient || !USE_GENERATED_FIELD) return;
 
   canvas = document.createElement("canvas");
   context = canvas.getContext("2d", { alpha: true });

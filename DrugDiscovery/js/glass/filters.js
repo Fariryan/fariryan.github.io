@@ -99,31 +99,42 @@ function buildDisplacementMap({
       // Depth into the pane, measured inward from the rim.
       const depth = -signed;
 
-      let magnitude;
-      if (depth < 0) {
-        // Outside the outline. Nothing here is part of the pane.
-        magnitude = 0;
-      } else if (depth >= bezel) {
-        // The flat middle of the pane: no bend, only whatever uniform
-        // magnification this lens carries.
-        magnitude = magnify;
-      } else {
-        // Inside the bezel. The surface is a quarter-circle in cross-section,
-        // so the slope — and therefore the refraction — is
-        //   t / sqrt(1 - t²)   with t = 1 at the rim, 0 at the inner edge.
-        // That diverges at the rim exactly as a real edge does, so it is
-        // clamped; the clamp is what stops the outermost pixel row from
-        // smearing into a band.
+      // -- the bezel term: refraction at the edge ---------------------------
+      // The surface is a quarter-circle in cross-section, so the slope — and
+      // therefore the refraction — is t / sqrt(1 - t²), with t = 1 at the rim
+      // and 0 at the inner edge of the bezel. That diverges at the rim exactly
+      // as a real edge does, so it is clamped; the clamp is what stops the
+      // outermost pixel row smearing into a band. It acts along the surface
+      // normal, which is what turns the corners correctly.
+      let bezelTerm = 0;
+      if (depth >= 0 && depth < bezel) {
         const t = 1 - depth / bezel;
         const slope = t / Math.sqrt(Math.max(1 - t * t, 1e-3));
-        magnitude = Math.min(slope, 3) / 3 + magnify * (1 - t);
+        bezelTerm = Math.min(slope, 3) / 3;
       }
 
-      magnitude *= strength;
+      // -- the magnification term -------------------------------------------
+      // This has to be *proportional to the distance from the centre*, and
+      // radial rather than normal. To magnify by M, the sample point must come
+      // from r/M, so the inward offset is r·(1 − 1/M): zero in the middle,
+      // greatest at the edge. A constant offset — which is what this used to
+      // apply — is not magnification at all: it pushes every pixel inward by
+      // the same amount, which pinches the image and leaves the centre wrong.
+      // Named for what it is rather than `radius`, which is already the
+      // corner-radius parameter of this function.
+      const centreDistance = Math.hypot(px, py);
+      const reach = Math.min(halfW, halfH) || 1;
+      const u = Math.min(centreDistance / reach, 1);
+      const radialX = centreDistance > 0.0001 ? px / centreDistance : 0;
+      const radialY = centreDistance > 0.0001 ? py / centreDistance : 0;
 
-      // Inward is the negative of the outward normal.
-      const dx = -nx * magnitude;
-      const dy = -ny * magnitude;
+      // Inward is the negative of the outward direction, in both terms.
+      let dx = 0;
+      let dy = 0;
+      if (depth >= 0) {
+        dx = -(nx * bezelTerm + radialX * magnify * u) * strength;
+        dy = -(ny * bezelTerm + radialY * magnify * u) * strength;
+      }
 
       const index = (y * width + x) * 4;
       data[index] = Math.max(0, Math.min(255, Math.round(128 + dx * 127)));
@@ -278,15 +289,18 @@ export function installFilters() {
     bezel: 26,
     strength: 0.8,
   });
-  // The cursor is the one surface that is genuinely a lens rather than a
-  // pane, so it carries uniform magnification as well as an edge.
+  // The cursor is the one surface that is genuinely a lens rather than a pane,
+  // so it carries real magnification as well as an edge. `magnify` here is the
+  // inward pull at the rim as a fraction of the encodable range; with the
+  // filter scale below it works out to roughly 1.3x through the middle, which
+  // is enough to be unmistakably a lens without making text under it unreadable.
   const lensMap = buildDisplacementMap({
-    width: 128,
-    height: 128,
-    radius: 64,
-    bezel: 34,
+    width: 256,
+    height: 256,
+    radius: 128,
+    bezel: 52,
     strength: 1,
-    magnify: 0.22,
+    magnify: 0.62,
   });
 
   const svg = element("svg", {
@@ -305,7 +319,9 @@ export function installFilters() {
   defs.appendChild(simpleFilter("lg-refract", panelMap, 34));
   defs.appendChild(simpleFilter("lg-refract-pill", pillMap, 22));
   defs.appendChild(simpleFilter("lg-refract-round", roundMap, 20));
-  defs.appendChild(simpleFilter("lg-cursor-lens", lensMap, 26));
+  // A much larger scale than the panes use: this one is meant to be looked
+  // through, not past.
+  defs.appendChild(simpleFilter("lg-cursor-lens", lensMap, 62));
 
   if (capability.chromatic) {
     defs.appendChild(chromaticFilter("lg-refract-chroma", panelMap, 38, 0.16));
@@ -315,6 +331,100 @@ export function installFilters() {
     defs.appendChild(simpleFilter("lg-refract-chroma", panelMap, 34));
   }
 
+  svg.appendChild(defs);
+  document.body.appendChild(svg);
+}
+
+/**
+ * The cursor lens filter.
+ *
+ * Installed separately from the panel filters because it is used differently:
+ * it is referenced by `filter`, not `backdrop-filter`.
+ *
+ * That distinction is the whole reason this exists. `backdrop-filter: url(…)`
+ * is Chromium-only — Firefox parses it and paints nothing, Safari ignores it.
+ * But an element that carries `backdrop-filter: blur(…)` has that blurred
+ * backdrop composited into its own rendering, so a plain `filter: url(…)` on
+ * the *same element* distorts the backdrop after the fact. `filter` with an
+ * SVG reference is supported everywhere. The lens therefore works at tier 2 as
+ * well as tier 1, which the previous implementation did not.
+ *
+ * Technique from lucasromerodb's macOS liquid-glass pen; the chromatic split
+ * and the lens profile are ours.
+ */
+export function installLensFilter() {
+  if (document.getElementById("lg-lens")) return;
+
+  // A circular lens: magnification proportional to radius, a sharp bezel at
+  // the rim. Generated at the same resolution as the panel maps.
+  const lensMap = buildDisplacementMap({
+    width: 256,
+    height: 256,
+    radius: 128,
+    bezel: 52,
+    strength: 1,
+    magnify: 0.62,
+  });
+
+  const svg = element("svg", { "aria-hidden": "true", focusable: "false", width: 0, height: 0 });
+  svg.style.cssText = "position:absolute;width:0;height:0;pointer-events:none;overflow:hidden";
+  const defs = element("defs", {});
+
+  // Longer wavelengths bend less, so red takes the smallest scale and blue the
+  // largest — the ordering of a real lens's fringe. Recombined additively with
+  // arithmetic composites rather than screen blends, which keeps the midtones
+  // from lifting.
+  const filter = element("filter", {
+    id: "lg-lens",
+    x: "0%",
+    y: "0%",
+    width: "100%",
+    height: "100%",
+    filterUnits: "objectBoundingBox",
+    primitiveUnits: "userSpaceOnUse",
+    "color-interpolation-filters": "sRGB",
+  });
+  filter.appendChild(mapImage(lensMap, "map"));
+
+  const CHANNELS = [
+    ["R", 58, "1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0"],
+    ["G", 64, "0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0"],
+    ["B", 70, "0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0"],
+  ];
+  CHANNELS.forEach(([name, scale, matrix]) => {
+    filter.appendChild(
+      element("feDisplacementMap", {
+        in: "SourceGraphic",
+        in2: "map",
+        scale,
+        xChannelSelector: "R",
+        yChannelSelector: "G",
+        result: `d${name}`,
+      })
+    );
+    filter.appendChild(
+      element("feColorMatrix", { in: `d${name}`, type: "matrix", values: matrix, result: `c${name}` })
+    );
+  });
+  filter.appendChild(
+    element("feComposite", {
+      in: "cR",
+      in2: "cG",
+      operator: "arithmetic",
+      k1: 0, k2: 1, k3: 1, k4: 0,
+      result: "rg",
+    })
+  );
+  filter.appendChild(
+    element("feComposite", {
+      in: "rg",
+      in2: "cB",
+      operator: "arithmetic",
+      k1: 0, k2: 1, k3: 1, k4: 0,
+    })
+  );
+
+  defs.appendChild(filter);
   svg.appendChild(defs);
   document.body.appendChild(svg);
 }

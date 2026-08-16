@@ -41,6 +41,33 @@
    ========================================================================== */
 
 /* ==========================================================================
+   0. REGISTERED PROPERTIES
+
+   A custom property is a string unless it is registered, and a string cannot
+   be interpolated — so an unregistered `--angle` in a conic-gradient jumps
+   between values instead of sweeping. Registering these two is what lets the
+   highlight on a button's rim actually rotate on hover, which is the single
+   detail that most separates a turned piece of glass from a printed one.
+
+   Both are per-element (`inherits: false`) so a nested control never inherits
+   a parent's animation mid-sweep. Engines without @property ignore this block
+   and simply hold the initial angle: the rim still looks right, it just does
+   not turn.
+   ========================================================================== */
+
+@property --angle-1 {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: -75deg;
+}
+
+@property --angle-2 {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: -45deg;
+}
+
+/* ==========================================================================
    1. TOKENS
    ========================================================================== */
 
@@ -66,34 +93,37 @@
   --lg-brightness: 1.04;
 
   /* -- material: dark (default) ------------------------------------------ */
-  /* Glass is not grey. It carries a faint cool cast, and it is denser at the
-     rim than in the middle — which the two fill stops encode. */
-  --lg-fill: rgba(148, 178, 205, 0.05);
-  --lg-fill-edge: rgba(178, 206, 230, 0.125);
-  --lg-fill-deep: rgba(122, 152, 180, 0.085);
+  /* Glass is not grey, and it is not neutral either — it picks up the room it
+     is in. The field is a deep green molecular scene, so the tint carries a
+     faint green-cyan cast rather than the blue it would have over a blue one.
+     It is also denser at the rim than in the middle, which the two fill stops
+     encode; that alone is what reads as thickness. */
+  --lg-fill: rgba(150, 205, 185, 0.05);
+  --lg-fill-edge: rgba(186, 232, 214, 0.12);
+  --lg-fill-deep: rgba(110, 160, 145, 0.09);
 
   /* The lit edge: bright where light enters at the top-left, dark where the
      pane's own thickness shadows the bottom-right. */
-  --lg-edge-lit: rgba(224, 242, 255, 0.5);
-  --lg-edge-shade: rgba(8, 16, 26, 0.5);
-  --lg-edge-base: rgba(160, 194, 220, 0.15);
+  --lg-edge-lit: rgba(228, 255, 244, 0.5);
+  --lg-edge-shade: rgba(2, 12, 9, 0.55);
+  --lg-edge-base: rgba(150, 205, 185, 0.16);
 
   /* Specular: the moving highlight, and the caustic under the rim. */
-  --lg-spec: rgba(255, 255, 255, 0.7);
-  --lg-spec-soft: rgba(190, 230, 255, 0.26);
-  --lg-caustic: rgba(120, 220, 240, 0.2);
+  --lg-spec: rgba(255, 255, 255, 0.72);
+  --lg-spec-soft: rgba(190, 250, 225, 0.26);
+  --lg-caustic: rgba(90, 235, 175, 0.22);
 
   /* Internal reflection — the faint image the far wall of the pane throws
      back into the glass. */
-  --lg-internal: rgba(140, 200, 230, 0.07);
+  --lg-internal: rgba(130, 225, 185, 0.075);
 
   /* Readability scrim. Raised automatically on panes floating over bright
      visualization. */
-  --lg-scrim: rgba(9, 14, 21, 0.34);
+  --lg-scrim: rgba(4, 14, 11, 0.4);
   /* The floor a surface falls back to when it cannot rely on a backdrop
      filter — tier 3, reduced transparency, or a popover that has escaped a
      filtered ancestor. Opaque enough to read against anything. */
-  --lg-scrim-strong: rgba(13, 20, 30, 0.94);
+  --lg-scrim-strong: rgba(6, 18, 14, 0.94);
 
   /* -- depth ------------------------------------------------------------- */
   /* Four z-levels. Each is a real optical step: more separation blur, a
@@ -123,14 +153,39 @@
   --lg-py: 50%;
   --lg-hot: 0;
 
+  /* -- button optics -------------------------------------------------------
+     The reference construction is designed for a light ground, where the lit
+     rim sits at the *bottom* of the control: light arrives from below, off
+     the page. Over a dark field that reads as a lamp under the button, so the
+     values are re-derived here for a dark room while every relationship —
+     which edge is lit, which is shaded, how far the arcs travel — is kept.
+     app.css consumes these and never hard-codes a button colour. */
+  --btn-face-1: rgba(255, 255, 255, 0.04);
+  --btn-face-2: rgba(255, 255, 255, 0.16);
+  --btn-inner-top: rgba(0, 0, 0, 0.18);
+  --btn-inner-bottom: rgba(255, 255, 255, 0.32);
+  --btn-inner-spread: rgba(255, 255, 255, 0.12);
+  --btn-inner-spread-hover: rgba(255, 255, 255, 0.3);
+  --btn-drop: rgba(0, 0, 0, 0.45);
+  --btn-drop-hover: rgba(0, 0, 0, 0.5);
+  --btn-hairline: rgba(255, 255, 255, 0.55);
+  --btn-sheen: rgba(255, 255, 255, 0.4);
+  /* The conic arcs. Dark on a light ground; on a dark one they have to be
+     darker still to stay visible as shadow rather than vanishing into it. */
+  --btn-arc: rgba(0, 0, 0, 0.62);
+  --btn-rim: rgba(255, 255, 255, 0.28);
+  --btn-underlight: rgba(255, 255, 255, 0.3);
+  --btn-press-shade: rgba(0, 0, 0, 0.3);
+  --btn-text-shadow: rgba(0, 0, 0, 0.35);
+
   /* -- environment -------------------------------------------------------- */
   /* The room. Bright enough that refraction and specular have something to
      act on — glass over a black field is indistinguishable from a dark
      rectangle, so this is a functional value, not a mood. */
-  --lg-env-1: #0b1524;
-  --lg-env-2: #14293f;
-  --lg-env-3: #081119;
-  --lg-env-accent: 53, 198, 216;
+  --lg-env-1: #04120c;
+  --lg-env-2: #0a2418;
+  --lg-env-3: #020b07;
+  --lg-env-accent: 45, 220, 150;
 }
 
 /* Light theme: the same physics in a different room. Glass over a bright
@@ -156,6 +211,24 @@
   --lg-saturate: 145%;
   --lg-brightness: 1.02;
 
+  /* Button optics on a light ground — these are the reference values from the
+     pen, unmodified, because this is the room it was designed for. */
+  --btn-face-1: rgba(255, 255, 255, 0.05);
+  --btn-face-2: rgba(255, 255, 255, 0.2);
+  --btn-inner-top: rgba(0, 0, 0, 0.05);
+  --btn-inner-bottom: rgba(255, 255, 255, 0.5);
+  --btn-inner-spread: rgba(255, 255, 255, 0.2);
+  --btn-inner-spread-hover: rgba(255, 255, 255, 0.5);
+  --btn-drop: rgba(0, 0, 0, 0.2);
+  --btn-drop-hover: rgba(0, 0, 0, 0.25);
+  --btn-hairline: rgba(255, 255, 255, 1);
+  --btn-sheen: rgba(255, 255, 255, 0.5);
+  --btn-arc: rgba(0, 0, 0, 0.5);
+  --btn-rim: rgba(255, 255, 255, 0.5);
+  --btn-underlight: rgba(255, 255, 255, 0.75);
+  --btn-press-shade: rgba(0, 0, 0, 0.15);
+  --btn-text-shadow: rgba(0, 0, 0, 0.1);
+
   --lg-shadow-1: 0 1px 2px rgba(31, 56, 82, 0.07), 0 4px 14px rgba(31, 56, 82, 0.07);
   --lg-shadow-2: 0 2px 5px rgba(31, 56, 82, 0.08), 0 10px 30px rgba(31, 56, 82, 0.1);
   --lg-shadow-3: 0 4px 10px rgba(31, 56, 82, 0.09), 0 20px 54px rgba(31, 56, 82, 0.13);
@@ -164,10 +237,10 @@
   /* Separated more than a light palette naturally wants to be, for the same
      reason the dark room is lifted: frosted glass over a flat field has
      nothing to refract and collapses into plain white. */
-  --lg-env-1: #dde8f3;
-  --lg-env-2: #cadcee;
-  --lg-env-3: #f4f8fc;
-  --lg-env-accent: 13, 124, 140;
+  --lg-env-1: #e6f2ec;
+  --lg-env-2: #d6ecdf;
+  --lg-env-3: #f4faf7;
+  --lg-env-accent: 13, 130, 100;
 }
 
 /* ==========================================================================
@@ -185,37 +258,59 @@
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background:
-    radial-gradient(110vmax 85vmax at 10% -12%, var(--lg-env-2), transparent 60%),
-    radial-gradient(95vmax 75vmax at 106% 6%, var(--lg-env-1), transparent 56%),
-    radial-gradient(130vmax 110vmax at 50% 118%, var(--lg-env-3), transparent 68%),
-    var(--lg-env-1);
+  background-color: var(--lg-env-1);
+  background-image: url("../assets/back.png");
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+
+  /* Very slight parallax against the pointer. The field is fixed to the
+     viewport, so without this the glass slides over a dead image; a couple of
+     percent of drift is enough for the refraction at a bezel to visibly
+     change as you move, which is the whole point of having it there. The
+     scale keeps the drift from exposing an edge. */
+  transform: scale(1.045)
+    translate3d(
+      calc((var(--lg-px) - 50%) * -0.022),
+      calc((var(--lg-py) - 50%) * -0.022),
+      0
+    );
+  transition: transform 900ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: transform;
 }
 
-.lg-env canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
-/* A faint instrument grid. Refraction is only legible when there are straight
-   lines behind the pane for it to bend, so this is load-bearing rather than
-   ornamental. */
+/* The readability scrim.
+   The field is a photograph, so it has bright regions the interface has no
+   control over — text over the lit particle ridge would fail contrast without
+   this. Weighted to the top and bottom, where the command bar and the dock
+   sit, and lightest through the middle where the workspace shows most of it. */
 .lg-env::after {
   content: "";
   position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(to right, currentColor 1px, transparent 1px),
-    linear-gradient(to bottom, currentColor 1px, transparent 1px);
-  background-size: 68px 68px;
-  color: rgba(140, 195, 235, 0.09);
-  -webkit-mask-image: radial-gradient(110vmax 95vmax at 55% 25%, #000 15%, transparent 72%);
-  mask-image: radial-gradient(110vmax 95vmax at 55% 25%, #000 15%, transparent 72%);
+  inset: -5%;
+  background:
+    radial-gradient(120vmax 90vmax at 28% 18%, rgba(2, 10, 7, 0.34), transparent 62%),
+    linear-gradient(
+      180deg,
+      rgba(2, 9, 6, 0.62) 0%,
+      rgba(2, 9, 6, 0.34) 38%,
+      rgba(2, 9, 6, 0.42) 70%,
+      rgba(2, 9, 6, 0.68) 100%
+    );
 }
-:root[data-theme="light"] .lg-env::after { color: rgba(60, 110, 150, 0.07); }
+
+/* Light theme keeps the same field but lifts it to a pale wash, so the
+   photograph still gives the glass something to bend without turning a light
+   interface into a dark one. */
+:root[data-theme="light"] .lg-env::after {
+  background:
+    radial-gradient(120vmax 90vmax at 28% 18%, rgba(255, 255, 255, 0.55), transparent 62%),
+    linear-gradient(180deg, rgba(244, 249, 246, 0.9) 0%, rgba(240, 247, 243, 0.82) 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lg-env { transform: scale(1.045); transition: none; }
+}
 
 /* ==========================================================================
    3. THE SURFACE
@@ -422,241 +517,44 @@
 /* ==========================================================================
    6. BUTTONS
 
-   Optical glass lenses, not tinted rectangles. The face is genuinely convex —
-   bright where light enters, dense where the lens is thickest — the highlight
-   tracks the pointer, and pressing pushes the lens into the surface beneath
-   it. Built from gradients and inset shadows rather than an SVG filter:
-   at this size the bezel dominates, the result is indistinguishable, and a
-   toolbar of twelve controls costs nothing.
+   The button construction lives in app.css, under the selector list
+   `button, .btn, .lg-btn`. That is deliberate and it is the one place the
+   material reaches for an element selector rather than a class: the views in
+   this application emit bare `<button>`, in thirty-five modules, and a design
+   system that only dressed a `.lg-btn` class would have converted none of
+   them. `.lg-btn` is in the same list so new markup can opt in by name.
+
+   What is defined there is a direct reproduction of Petr Knoll's "Glass
+   Button" (codepen.io/Petr-Knoll/pen/QwWLZdx): the -75deg face gradient, the
+   five-part shadow, the conic `::after` outline whose start angle rotates on
+   hover via the registered `--angle-1`, and the screen-blended `::before`
+   sheen driven by `--angle-2`. The tokens it consumes (`--btn-*`) are
+   declared in section 1 above, per theme.
+
+   Only the modifiers that are purely optical stay here.
    ========================================================================== */
 
-.lg-btn {
-  position: relative;
-  isolation: isolate;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  padding: 7px 15px;
-  border: 0;
-  border-radius: var(--lg-r-pill);
-  font: inherit;
-  font-size: 12.5px;
-  font-weight: 550;
-  line-height: 1.35;
-  color: var(--text);
-  cursor: pointer;
-  white-space: nowrap;
-  -webkit-user-select: none;
-  user-select: none;
-  /* Clears the user agent's opaque ButtonFace, which would otherwise sit
-     under every optical layer and defeat the whole material. */
-  background-color: transparent;
-  -webkit-backdrop-filter: blur(var(--lg-blur-shallow)) saturate(var(--lg-saturate));
-  backdrop-filter: blur(var(--lg-blur-shallow)) saturate(var(--lg-saturate));
-  background-image:
-    /* the moving specular, leading the pointer slightly — a curved surface
-       does exactly this, and it is what stops the lens reading as printed */
-    radial-gradient(
-      120% 150% at var(--lg-mx) calc(var(--lg-my) - 25%),
-      color-mix(in srgb, var(--lg-spec) calc(6% + 22% * var(--lg-hot)), transparent) 0%,
-      transparent 58%
-    ),
-    linear-gradient(
-      180deg,
-      var(--lg-fill-edge) 0%,
-      var(--lg-fill) 46%,
-      var(--lg-fill-deep) 100%
-    );
-  box-shadow:
-    var(--lg-shadow-1),
-    inset 0 0 0 1px var(--lg-edge-base),
-    /* top rim catches the light; bottom rim is the lens's own shadow */
-    inset 0 1px 0 -0.4px var(--lg-edge-lit),
-    inset 0 -1px 0 -0.4px var(--lg-edge-shade),
-    /* internal caustic: light through the rim, bouncing inside the lens */
-    inset 0 -7px 12px -8px var(--lg-caustic);
-  transition:
-    transform 180ms var(--lg-spring),
-    box-shadow 180ms var(--lg-ease),
-    background-image 180ms var(--lg-ease),
-    color 140ms var(--lg-ease),
-    opacity 140ms var(--lg-ease);
-}
-.lg-t3 .lg-btn {
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-  background-color: var(--lg-scrim-strong);
-}
-
-/* The rim, masked as on a panel but tuned tighter for a small radius. */
-.lg-btn::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  border-radius: inherit;
-  pointer-events: none;
-  padding: 1px;
-  background: linear-gradient(
-    calc(180deg + (var(--lg-mx) - 50%) * 1.6),
-    color-mix(in srgb, var(--lg-spec) calc(22% + 50% * var(--lg-hot)), transparent) 0%,
-    transparent 40%,
-    transparent 60%,
-    color-mix(in srgb, var(--lg-caustic) calc(20% + 55% * var(--lg-hot)), transparent) 100%
-  );
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  transition: background 180ms var(--lg-ease);
-}
-
-.lg-btn:hover {
-  transform: translate3d(0, -1.5px, 0);
-  box-shadow:
-    var(--lg-shadow-2),
-    inset 0 0 0 1px color-mix(in srgb, var(--lg-edge-base) 140%, transparent),
-    inset 0 1.4px 0 -0.4px var(--lg-edge-lit),
-    inset 0 -1.4px 0 -0.4px var(--lg-edge-shade),
-    inset 0 -9px 16px -9px var(--lg-caustic);
-}
-
-/* Physical depression. The squash is asymmetric — more vertical than
-   horizontal — because the lens is being pressed into a surface, not shrunk.
-   The elastic return comes from the spring easing on the way back out. */
-.lg-btn:active:not(:disabled):not([aria-disabled="true"]) {
-  transform: translate3d(0, 1px, 0) scale(0.968, 0.945);
-  transition-duration: 55ms;
-  box-shadow:
-    inset 0 0 0 1px var(--lg-edge-base),
-    inset 0 2px 6px -1px var(--lg-edge-shade),
-    inset 0 -1px 0 -0.4px var(--lg-edge-lit);
-}
-
-.lg-btn:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-}
-
-/* -- variants -------------------------------------------------------------- */
-
-/* Primary: the lens is tinted and lit from within. Still glass — what is
-   behind it is still visible through the rim. */
-.lg-btn-primary {
-  color: var(--accent-on);
-  font-weight: 640;
-  background-image:
-    radial-gradient(
-      120% 150% at var(--lg-mx) calc(var(--lg-my) - 25%),
-      rgba(255, 255, 255, calc(0.14 + 0.22 * var(--lg-hot))) 0%,
-      transparent 58%
-    ),
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--accent) 88%, white) 0%,
-      var(--accent) 48%,
-      color-mix(in srgb, var(--accent) 84%, black) 100%
-    );
-  box-shadow:
-    var(--lg-shadow-2),
-    inset 0 0 0 1px color-mix(in srgb, var(--accent) 55%, white 35%),
-    inset 0 1.4px 0 -0.4px rgba(255, 255, 255, 0.6),
-    inset 0 -1.4px 0 -0.4px color-mix(in srgb, var(--accent) 45%, black),
-    0 4px 20px -7px color-mix(in srgb, var(--accent) 60%, transparent);
-}
-.lg-btn-primary:hover {
-  box-shadow:
-    var(--lg-shadow-3),
-    inset 0 0 0 1px color-mix(in srgb, var(--accent) 55%, white 45%),
-    inset 0 1.6px 0 -0.4px rgba(255, 255, 255, 0.75),
-    inset 0 -1.6px 0 -0.4px color-mix(in srgb, var(--accent) 45%, black),
-    0 8px 30px -7px color-mix(in srgb, var(--accent) 70%, transparent);
-}
-
-.lg-btn-danger {
-  color: #fff;
-  background-image:
-    radial-gradient(
-      120% 150% at var(--lg-mx) calc(var(--lg-my) - 25%),
-      rgba(255, 255, 255, calc(0.12 + 0.2 * var(--lg-hot))) 0%,
-      transparent 58%
-    ),
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--danger) 88%, white) 0%,
-      var(--danger) 48%,
-      color-mix(in srgb, var(--danger) 82%, black) 100%
-    );
-}
-
-/* Quiet: a bezel with almost no body, for dense toolbars where a row of full
-   lenses would be noise. */
+/* Quiet: a rim with almost no body, for dense toolbars where a row of full
+   lenses would be noise. Keeps the conic outline and the sheen. */
 .lg-btn-quiet {
   color: var(--text-muted);
-  background-image: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--lg-fill-edge) 40%, transparent) 0%,
-    transparent 100%
-  );
+  background-image: none;
   box-shadow:
-    inset 0 0 0 1px color-mix(in srgb, var(--lg-edge-base) 65%, transparent),
-    inset 0 1px 0 -0.5px color-mix(in srgb, var(--lg-edge-lit) 55%, transparent);
+    inset 0 -0.125em 0.125em color-mix(in srgb, var(--btn-inner-bottom) 45%, transparent),
+    0 0.125em 0.125em -0.125em color-mix(in srgb, var(--btn-drop) 50%, transparent);
 }
 .lg-btn-quiet:hover { color: var(--text); }
 
-/* Selected: pressed in and lit, so a toggled control is unambiguous without
-   introducing a second colour. */
-.lg-btn.is-selected,
-.lg-btn.active,
-.lg-btn[aria-pressed="true"],
-.lg-btn[aria-selected="true"] {
-  color: var(--accent);
+/* Danger keeps every layer and tints the face. Used only where the action is
+   genuinely destructive. */
+.lg-btn-danger {
+  color: #fff;
   background-image: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--accent) 18%, transparent) 0%,
-    color-mix(in srgb, var(--accent) 8%, transparent) 100%
+    -75deg,
+    color-mix(in srgb, var(--danger) 86%, black),
+    color-mix(in srgb, var(--danger) 92%, white),
+    color-mix(in srgb, var(--danger) 86%, black)
   );
-  box-shadow:
-    inset 0 0 0 1px color-mix(in srgb, var(--accent) 42%, transparent),
-    inset 0 2px 7px -2px color-mix(in srgb, var(--accent) 38%, transparent),
-    inset 0 -1px 0 -0.4px var(--lg-edge-lit);
-}
-
-.lg-btn:disabled,
-.lg-btn[aria-disabled="true"] {
-  opacity: 0.42;
-  cursor: not-allowed;
-  --lg-hot: 0;
-}
-.lg-btn:disabled:hover,
-.lg-btn[aria-disabled="true"]:hover {
-  transform: none;
-  box-shadow: var(--lg-shadow-1), inset 0 0 0 1px var(--lg-edge-base);
-}
-
-/* Loading: the lens keeps its optics and grows a travelling caustic, rather
-   than turning into a box with a spinner in it. */
-.lg-btn.is-loading {
-  pointer-events: none;
-  color: color-mix(in srgb, var(--text) 45%, transparent);
-}
-.lg-btn.is-loading::after {
-  padding: 0;
-  -webkit-mask: none;
-  mask: none;
-  background: linear-gradient(
-    100deg,
-    transparent 22%,
-    color-mix(in srgb, var(--lg-spec) 34%, transparent) 46%,
-    transparent 68%
-  );
-  background-size: 250% 100%;
-  animation: lg-sheen 1.15s linear infinite;
-}
-@keyframes lg-sheen {
-  from { background-position: 170% 0; }
-  to { background-position: -70% 0; }
 }
 
 /* A circular lens. Same optics, square aspect. */
@@ -664,21 +562,21 @@
   width: 32px;
   height: 32px;
   padding: 0;
-  border-radius: var(--lg-r-pill);
+  border-radius: 999vw;
   font-size: 14px;
   flex: 0 0 auto;
 }
 
 /* Magnetic attraction. The offset is written by js/glass/pointer.js from the
-   pointer's position relative to the control's centre; the transform lives
-   here so hover and active states compose with it rather than fight it. */
+   pointer's position relative to the control's centre. It composes with the
+   button's own hover scale and press tilt rather than replacing them. */
 .lg-magnetic { transform: translate3d(var(--lg-magx, 0px), var(--lg-magy, 0px), 0); }
 .lg-magnetic:hover {
-  transform: translate3d(var(--lg-magx, 0px), calc(var(--lg-magy, 0px) - 1.5px), 0);
+  transform: translate3d(var(--lg-magx, 0px), var(--lg-magy, 0px), 0) scale(0.975);
 }
 .lg-magnetic:active:not(:disabled) {
-  transform: translate3d(var(--lg-magx, 0px), calc(var(--lg-magy, 0px) + 1px), 0)
-    scale(0.968, 0.945);
+  transform: translate3d(var(--lg-magx, 0px), var(--lg-magy, 0px), 0)
+    perspective(6em) rotate3d(1, 0, 0, 25deg) scale(0.975);
 }
 
 /* ==========================================================================
@@ -890,53 +788,93 @@
   top: 0;
   left: 0;
   z-index: 9998;
-  width: var(--lg-cursor-size, 36px);
-  height: var(--lg-cursor-size, 36px);
-  margin: calc(var(--lg-cursor-size, 36px) / -2) 0 0 calc(var(--lg-cursor-size, 36px) / -2);
-  border-radius: var(--lg-r-pill);
+  width: var(--lg-cursor-size, 62px);
+  height: var(--lg-cursor-size, 62px);
+  margin: calc(var(--lg-cursor-size, 62px) / -2) 0 0 calc(var(--lg-cursor-size, 62px) / -2);
+  border-radius: 999vw;
   pointer-events: none;
   opacity: 0;
+  overflow: hidden;
+  isolation: isolate;
   will-change: transform;
-  /* Almost no tint: what you see through it should be the page, magnified
-     and bent, not a coloured disc. */
-  -webkit-backdrop-filter: blur(0.3px) saturate(135%) brightness(1.05);
-  backdrop-filter: blur(0.3px) saturate(135%) brightness(1.05);
-  background-image: radial-gradient(
-    circle at 34% 26%,
-    color-mix(in srgb, var(--lg-spec) 24%, transparent) 0%,
-    transparent 44%
-  );
-  box-shadow:
-    inset 0 0 0 1px color-mix(in srgb, var(--lg-edge-base) 170%, transparent),
-    inset 0 1px 0 -0.3px var(--lg-edge-lit),
-    inset 0 -1px 0 -0.3px var(--lg-edge-shade),
-    inset 0 -6px 12px -8px var(--lg-caustic),
-    0 2px 12px rgba(0, 0, 0, 0.2);
+  /* Only the outer shadow lives on the container. Everything optical is in
+     the layers below, so the distortion filter can be confined to the one
+     that actually needs it. */
+  box-shadow: 0 4px 16px -3px rgba(0, 0, 0, 0.45);
   transition:
     opacity 180ms var(--lg-ease),
-    width 260ms var(--lg-spring),
-    height 260ms var(--lg-spring),
-    margin 260ms var(--lg-spring),
-    box-shadow 200ms var(--lg-ease);
+    width 320ms var(--lg-spring),
+    height 320ms var(--lg-spring),
+    margin 320ms var(--lg-spring);
 }
-/* Tier 1 gives the lens its actual job: magnifying and displacing what is
-   underneath, with a touch of chromatic split at the rim. */
-.lg-t1 .lg-cursor {
-  -webkit-backdrop-filter: url(#lg-cursor-lens) saturate(135%) brightness(1.05);
-  backdrop-filter: url(#lg-cursor-lens) saturate(135%) brightness(1.05);
+
+/* Layer 1 — the backdrop, distorted.
+   `filter` rather than `backdrop-filter` for the distortion: an element
+   carrying `backdrop-filter: blur()` has that blurred backdrop composited
+   into its own rendering, so a plain `filter: url()` on the same element
+   bends it afterwards. Unlike `backdrop-filter: url()`, which is Chromium
+   only, this works in every engine that supports SVG filters — which is why
+   the lens is real at tier 2 as well as tier 1. */
+.lg-cursor-effect {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  -webkit-backdrop-filter: blur(1.5px) saturate(140%) brightness(1.06);
+  backdrop-filter: blur(1.5px) saturate(140%) brightness(1.06);
 }
+.lg-t1 .lg-cursor-effect,
+.lg-t2 .lg-cursor-effect {
+  filter: url(#lg-lens);
+}
+
+/* Layer 2 — the body of the glass. Barely there: the lens has to be looked
+   through, and a tinted disc reads as a sticker rather than as glass. */
+.lg-cursor-tint {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Layer 3 — the rim and the catchlight. Never filtered, so the edge stays
+   crisp while the image inside it bends. */
+.lg-cursor-shine {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  background: radial-gradient(
+    ellipse 45% 30% at 32% 24%,
+    rgba(255, 255, 255, 0.35),
+    transparent 70%
+  );
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.25),
+    inset 2px 2px 1px 0 rgba(255, 255, 255, 0.45),
+    inset -1px -1px 1px 1px rgba(255, 255, 255, 0.4),
+    inset 0 -10px 18px -14px var(--lg-caustic);
+  transition: box-shadow 220ms var(--lg-ease);
+}
+
 .lg-cursor.is-visible { opacity: 1; }
 
-.lg-cursor.is-hot {
-  --lg-cursor-size: 52px;
+/* Over something actionable the lens opens up and its rim takes the accent. */
+.lg-cursor.is-hot { --lg-cursor-size: 88px; }
+.lg-cursor.is-hot .lg-cursor-shine {
   box-shadow:
-    inset 0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent),
-    inset 0 1px 0 -0.3px var(--lg-edge-lit),
-    inset 0 -6px 14px -8px color-mix(in srgb, var(--accent) 45%, transparent),
-    0 2px 18px -5px color-mix(in srgb, var(--accent) 45%, transparent);
+    inset 0 0 0 1px color-mix(in srgb, var(--accent) 60%, transparent),
+    inset 2px 2px 1px 0 rgba(255, 255, 255, 0.5),
+    inset -1px -1px 1px 1px rgba(255, 255, 255, 0.4),
+    inset 0 -12px 22px -14px color-mix(in srgb, var(--accent) 65%, transparent);
 }
-.lg-cursor.is-down { --lg-cursor-size: 28px; transition-duration: 90ms; }
-.lg-cursor.is-text { --lg-cursor-size: 20px; opacity: 0.45; }
+
+/* The press squashes the lens against the surface; the spring returns it. */
+.lg-cursor.is-down { --lg-cursor-size: 46px; transition-duration: 110ms; }
+
+/* Over text it shrinks to a thin ring so it never sits on top of a glyph. */
+.lg-cursor.is-text { --lg-cursor-size: 28px; opacity: 0.4; }
 
 /* The dot sits exactly on the pointer while the lens lags behind it. */
 .lg-cursor-dot {

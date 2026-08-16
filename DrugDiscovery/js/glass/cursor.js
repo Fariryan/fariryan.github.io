@@ -22,6 +22,7 @@
  * the application is exactly as it was.
  */
 
+import { installLensFilter } from "./filters.js";
 import { capability } from "./tiers.js";
 
 /** Where the lens must stand aside and give back the real cursor. */
@@ -73,28 +74,37 @@ let visible = false;
 let dragging = false;
 let frameHandle = 0;
 let idleFrames = 0;
+let lastFrame = 0;
 
-/* Critically-damped-ish spring. Stiff enough to feel attached, loose enough
-   that the lag is visible on a fast flick. */
-const STIFFNESS = 0.22;
-const DAMPING = 0.72;
+/* The spring, in the same terms the reference component states it:
+   stiffness 300, damping 26, unit mass. That works out to a natural frequency
+   of about 17 rad/s and a damping ratio near 0.75 — snappy, and just
+   underdamped enough that the lens overshoots slightly and settles rather
+   than gliding to a stop. Integrated semi-implicitly against real elapsed
+   time, so the feel does not change with frame rate. */
+const STIFFNESS = 300;
+const DAMPING = 26;
 
-function tick() {
+function tick(now) {
   frameHandle = 0;
+
+  // Clamped so a backgrounded tab returning does not fling the lens.
+  const dt = Math.min((now - lastFrame) / 1000 || 0.016, 0.05);
+  lastFrame = now;
 
   const dx = targetX - lensX;
   const dy = targetY - lensY;
 
-  velocityX = (velocityX + dx * STIFFNESS) * DAMPING;
-  velocityY = (velocityY + dy * STIFFNESS) * DAMPING;
-  lensX += velocityX;
-  lensY += velocityY;
+  velocityX += (STIFFNESS * dx - DAMPING * velocityX) * dt;
+  velocityY += (STIFFNESS * dy - DAMPING * velocityY) * dt;
+  lensX += velocityX * dt;
+  lensY += velocityY * dt;
 
   lens.style.transform = `translate3d(${lensX.toFixed(2)}px, ${lensY.toFixed(2)}px, 0)`;
 
   // Settle and stop. A cursor that keeps a rAF loop alive while the pointer
   // is still is a permanent tax on every visualization on the page.
-  const moving = Math.abs(dx) + Math.abs(dy) + Math.abs(velocityX) + Math.abs(velocityY);
+  const moving = Math.abs(dx) + Math.abs(dy) + (Math.abs(velocityX) + Math.abs(velocityY)) * 0.02;
   if (moving < 0.05) {
     idleFrames += 1;
     lensX = targetX;
@@ -109,6 +119,7 @@ function tick() {
 function wake() {
   if (!frameHandle) {
     idleFrames = 0;
+    lastFrame = performance.now();
     frameHandle = requestAnimationFrame(tick);
   }
 }
@@ -178,9 +189,21 @@ export function startCursor() {
   if (running || !capability.cursor) return;
   running = true;
 
+  // Four layers, following lucasromerodb's macOS liquid-glass structure:
+  //   effect  the backdrop blur, distorted by the lens filter
+  //   tint    the faint body of the glass
+  //   shine   the rim highlight and the catchlight
+  // Separating them matters: the filter must apply to the backdrop layer
+  // alone, or it would smear the rim and the catchlight along with it.
+  installLensFilter();
+
   lens = document.createElement("div");
   lens.className = "lg-cursor";
   lens.setAttribute("aria-hidden", "true");
+  lens.innerHTML =
+    '<div class="lg-cursor-effect"></div>' +
+    '<div class="lg-cursor-tint"></div>' +
+    '<div class="lg-cursor-shine"></div>';
 
   dot = document.createElement("div");
   dot.className = "lg-cursor-dot";
