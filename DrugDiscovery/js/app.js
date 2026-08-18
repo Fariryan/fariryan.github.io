@@ -151,6 +151,21 @@ const NAV = [
       { route: "enterprise/governance", icon: "⚖", label: "Governance" },
     ],
   },
+  // Autonomous Discovery: one objective in, a planned and executed workflow
+  // out. Placed last in the nav but first in intent — it is the simplest way
+  // in, and every manual group above it still works exactly as before.
+  {
+    group: "Autonomous Discovery",
+    items: [
+      { route: "autopilot/start", icon: "▶", label: "Start Discovery" },
+      { route: "autopilot/map", icon: "◎", label: "Live Discovery Map" },
+      { route: "autopilot/story", icon: "▤", label: "Discovery Story" },
+      { route: "autopilot/evolution", icon: "⑃", label: "Chemical Evolution" },
+      { route: "autopilot/generations", icon: "⧉", label: "Generation Viewer" },
+      { route: "autopilot/decision", icon: "◫", label: "Decision Room" },
+      { route: "autopilot/runs", icon: "⟲", label: "Discovery Runs" },
+    ],
+  },
 ];
 
 const view = document.getElementById("view");
@@ -239,6 +254,12 @@ const ROUTES = {
       m.enterpriseView(view, section, params)
     ),
 
+  // Autonomous Discovery, same pattern again.
+  autopilot: (section, params) =>
+    import("./autopilot/router.js").then((m) =>
+      m.autopilotView(view, section, params)
+    ),
+
   // Not a dynamic import: terms.js is already loaded by the gate, and the one
   // page a visitor may need to re-read should never depend on a further fetch.
   terms: () => termsView(view),
@@ -312,6 +333,12 @@ const WORKSPACE_ROUTES = new Set([
   "chemint/neighborhood",
   // The trajectory is a three-panel workspace.
   "molgrad/trajectory",
+  // The live discovery map is the page, not an illustration on it.
+  "autopilot/map",
+  // The generation viewer is a synchronised multi-panel workspace.
+  "autopilot/generations",
+  // The decision room lays candidates out side by side.
+  "autopilot/decision",
 ]);
 
 function markActive(path) {

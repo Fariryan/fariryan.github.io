@@ -1,0 +1,389 @@
+/*
+ * Autonomous Discovery.
+ *
+ * Injected by js/autopilot/router.js. Inherits the atlas's tokens; adds two
+ * semantic scales of its own — task state, and evidence class.
+ *
+ * The evidence scale is the one that matters. A measurement, a computed
+ * descriptor and a language model's inference must never look equally certain
+ * anywhere they appear, so each has its own tone and they are ordered from
+ * strongest to weakest in the key.
+ */
+
+:root {
+  --ap-waiting: #6b7d92;
+  --ap-queued: #4a9eff;
+  --ap-running: #d29922;
+  --ap-done: #3fb950;
+  --ap-warn: #d29922;
+  --ap-failed: #f85149;
+  --ap-skipped: #6b7d92;
+  --ap-review: #a371f7;
+
+  /* Evidence, strongest to weakest. */
+  --ap-measured: #3ee08f;
+  --ap-curated: #3fb950;
+  --ap-literature: #4a9eff;
+  --ap-computed: #58a6ff;
+  --ap-predicted: #d29922;
+  --ap-inferred: #a371f7;
+  --ap-hypothesis: #8b949e;
+}
+
+:root[data-theme="light"] {
+  --ap-done: #1a7f37;
+  --ap-curated: #1a7f37;
+  --ap-measured: #1a7f37;
+  --ap-literature: #0969da;
+  --ap-computed: #0969da;
+  --ap-predicted: #9a6700;
+  --ap-inferred: #8250df;
+  --ap-review: #8250df;
+  --ap-warn: #9a6700;
+}
+
+/* ------------------------------------------------------------------ shell */
+
+.ap-head { display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; margin-bottom: 12px; }
+.ap-head h2 { margin: 4px 0 6px; }
+.ap-head .lede { max-width: 76ch; color: var(--text-muted); margin: 0; }
+
+.ap-tabs { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 1px solid var(--border); margin-bottom: 12px; overflow-x: auto; }
+.ap-tabs a {
+  display: inline-flex; align-items: center; gap: 7px; padding: 9px 14px;
+  border-radius: var(--radius) var(--radius) 0 0; color: var(--text-muted);
+  text-decoration: none; white-space: nowrap; border-bottom: 2px solid transparent;
+}
+.ap-tabs a:hover { background: var(--bg-hover); color: var(--text); }
+.ap-tabs a.active { color: var(--accent); border-bottom-color: var(--accent); background: var(--accent-glow); }
+.ap-tabs .ico { opacity: .75; }
+
+/*
+ * The expert-mode note. Given real presence because a scientist arriving at
+ * an "autopilot" tab needs to know immediately that their manual workflow is
+ * untouched, not buried in documentation.
+ */
+.ap-expert-note {
+  border: 1px solid var(--border); border-left: 3px solid var(--ap-done);
+  border-radius: var(--radius); background: var(--bg-raised);
+  padding: 10px 14px; margin-bottom: 16px; font-size: .92em; max-width: 92ch;
+}
+
+.ap-run-chip {
+  display: flex; gap: 10px; align-items: center; padding: 8px 12px;
+  border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-raised);
+}
+.ap-run-chip .name { font-weight: 600; }
+.ap-run-chip .name.dim { color: var(--text-dim); font-weight: 400; }
+.ap-run-chip .sub { font-size: .8em; color: var(--text-muted); }
+
+/* ------------------------------------------------------------------ common */
+
+.ap-table { width: 100%; border-collapse: collapse; font-size: .92em; }
+.ap-table th, .ap-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.ap-table.compact th, .ap-table.compact td { padding: 4px 8px; }
+.ap-table th { color: var(--text-muted); font-weight: 600; }
+.ap-table tr.withdrawn { background: color-mix(in srgb, var(--ap-failed) 8%, transparent); }
+.ap-table tr.unassessed td { color: var(--text-muted); font-style: italic; }
+
+.ap-pill {
+  display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: .76em;
+  border: 1px solid var(--border-strong); color: var(--text-muted);
+}
+.ap-pill.done { border-color: var(--ap-done); color: var(--ap-done); }
+.ap-pill.running { border-color: var(--ap-running); color: var(--ap-running); }
+.ap-pill.failed { border-color: var(--ap-failed); color: var(--ap-failed); }
+.ap-pill.warn { border-color: var(--ap-warn); color: var(--ap-warn); }
+.ap-pill.review { border-color: var(--ap-review); color: var(--ap-review); }
+.ap-pill.skipped { border-color: var(--ap-skipped); color: var(--ap-skipped); }
+.ap-pill.queued { border-color: var(--ap-queued); color: var(--ap-queued); }
+
+.ap-badge {
+  display: inline-block; font-size: .68em; text-transform: uppercase;
+  letter-spacing: .05em; padding: 2px 6px; border-radius: 3px; font-weight: 700;
+}
+.ap-badge.measured { background: color-mix(in srgb, var(--ap-measured) 22%, transparent); color: var(--ap-measured); }
+.ap-badge.curated_database, .ap-badge.curated { background: color-mix(in srgb, var(--ap-curated) 22%, transparent); color: var(--ap-curated); }
+.ap-badge.literature_extracted, .ap-badge.literature { background: color-mix(in srgb, var(--ap-literature) 22%, transparent); color: var(--ap-literature); }
+.ap-badge.computed { background: color-mix(in srgb, var(--ap-computed) 22%, transparent); color: var(--ap-computed); }
+.ap-badge.model_predicted, .ap-badge.predicted { background: color-mix(in srgb, var(--ap-predicted) 22%, transparent); color: var(--ap-predicted); }
+.ap-badge.llm_inferred, .ap-badge.inferred { background: color-mix(in srgb, var(--ap-inferred) 22%, transparent); color: var(--ap-inferred); }
+.ap-badge.hypothesis { background: color-mix(in srgb, var(--ap-hypothesis) 22%, transparent); color: var(--ap-hypothesis); }
+.ap-badge.review { background: color-mix(in srgb, var(--ap-review) 22%, transparent); color: var(--ap-review); }
+
+.ap-field { margin: 12px 0; }
+.ap-field-label {
+  font-size: .72em; text-transform: uppercase; letter-spacing: .05em;
+  color: var(--text-muted); font-weight: 700; margin-bottom: 4px;
+}
+.ap-field p, .ap-field ul { max-width: 84ch; margin: 4px 0; }
+
+.ap-stats { display: flex; flex-wrap: wrap; gap: 20px; margin: 10px 0 14px; }
+.ap-stats > div { display: flex; flex-direction: column; }
+.ap-stats .v { font-size: 1.2em; font-weight: 600; }
+.ap-stats .l { font-size: .76em; color: var(--text-muted); }
+
+.ap-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 12px 0; }
+.ap-pre {
+  background: var(--bg-input); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 10px; overflow-x: auto;
+  font-size: .8em; max-height: 380px;
+}
+.ap-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 900px) { .ap-two-col { grid-template-columns: 1fr; } }
+
+/* ------------------------------------------------------------------- form */
+
+.ap-form { display: flex; flex-direction: column; gap: 12px; max-width: 780px; }
+.ap-form label { display: flex; flex-direction: column; gap: 4px; font-size: .88em; font-weight: 600; }
+.ap-form input, .ap-form select, .ap-form textarea {
+  font: inherit; font-weight: 400; padding: 8px 10px; border-radius: var(--radius);
+  border: 1px solid var(--border); background: var(--bg-input); color: var(--text);
+}
+.ap-form textarea { resize: vertical; }
+.ap-form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+.ap-form p { font-weight: 400; margin: 0; max-width: 76ch; }
+
+.ap-examples { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.ap-example {
+  font-size: .8em; padding: 3px 9px; border-radius: 999px;
+  border: 1px solid var(--border); background: var(--bg-raised);
+  color: var(--text-muted); cursor: pointer;
+}
+.ap-example:hover { border-color: var(--accent); color: var(--text); }
+
+.ap-optional summary { cursor: pointer; font-size: .88em; color: var(--text-muted); }
+.ap-depth-note, .ap-depth-inline {
+  font-size: .88em; color: var(--text-muted); max-width: 84ch;
+  border-left: 2px solid var(--ap-warn); padding-left: 10px;
+}
+.ap-autonomy-limits {
+  border: 1px solid var(--ap-review); border-radius: var(--radius);
+  background: color-mix(in srgb, var(--ap-review) 6%, transparent);
+  padding: 10px 12px; margin-top: 14px; font-size: .9em; max-width: 88ch;
+}
+
+/* -------------------------------------------------------------- the graph */
+
+.ap-graph { display: flex; flex-direction: column; align-items: center; gap: 2px; margin: 16px 0; }
+.ap-layer { display: flex; gap: 10px; align-items: center; width: 100%; }
+.ap-layer-label {
+  min-width: 62px; font-size: .72em; color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: .05em;
+}
+.ap-layer-nodes { display: flex; flex-wrap: wrap; gap: 8px; flex: 1; }
+.ap-layer-arrow { color: var(--text-dim); font-size: .9em; }
+
+.ap-node {
+  border: 1px solid var(--border); border-left: 3px solid var(--ap-waiting);
+  border-radius: var(--radius); background: var(--bg-raised);
+  padding: 8px 11px; min-width: 150px; text-align: left; cursor: pointer;
+  color: inherit; font: inherit;
+}
+.ap-node.planned { cursor: default; border-left-color: var(--border-strong); }
+.ap-node:hover:not(.planned) { border-color: var(--accent); }
+.ap-node.queued { border-left-color: var(--ap-queued); }
+.ap-node.running { border-left-color: var(--ap-running); animation: ap-pulse 1.4s ease-in-out infinite; }
+.ap-node.done { border-left-color: var(--ap-done); }
+.ap-node.warn { border-left-color: var(--ap-warn); }
+.ap-node.failed { border-left-color: var(--ap-failed); }
+.ap-node.skipped { border-left-color: var(--ap-skipped); opacity: .6; }
+.ap-node.review { border-left-color: var(--ap-review); box-shadow: 0 0 0 1px var(--ap-review); }
+.ap-node.cancelled { border-left-color: var(--ap-skipped); opacity: .5; }
+
+@keyframes ap-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .62; } }
+
+.ap-node-state { font-size: .68em; text-transform: uppercase; letter-spacing: .05em; color: var(--text-dim); }
+.ap-node-label { font-weight: 600; font-size: .9em; margin: 2px 0; }
+.ap-node-tool, .ap-node-headline { font-size: .76em; color: var(--text-muted); }
+
+.ap-map-head { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
+.ap-progress-block { flex: 1; min-width: 240px; }
+.ap-progress { height: 8px; background: var(--bg-input); border-radius: 4px; overflow: hidden; margin-bottom: 4px; }
+.ap-progress span { display: block; height: 100%; background: var(--ap-done); transition: width .4s ease; }
+
+.ap-legend summary { cursor: pointer; font-size: .86em; color: var(--text-muted); }
+.ap-legend ul { margin: 8px 0; }
+.ap-legend li { margin-bottom: 4px; font-size: .88em; }
+
+/* -------------------------------------------------------- the checkpoints */
+
+.ap-checkpoint {
+  border: 1px solid var(--ap-review); border-radius: var(--radius);
+  background: color-mix(in srgb, var(--ap-review) 6%, transparent);
+  padding: 14px 16px; margin-bottom: 14px;
+}
+.ap-checkpoint-head { display: flex; gap: 10px; align-items: center; margin-bottom: 6px; }
+.ap-question { font-size: 1.04em; font-weight: 600; margin: 4px 0; }
+.ap-recommendation { max-width: 86ch; white-space: pre-wrap; }
+.ap-evidence ul, .ap-consequences ul { margin: 4px 0; }
+.ap-evidence li, .ap-consequences li { margin-bottom: 4px; max-width: 86ch; }
+.ap-decide { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; margin-top: 12px; }
+.ap-decide label { display: flex; flex-direction: column; gap: 4px; font-size: .84em; }
+.ap-decide input {
+  font: inherit; padding: 6px 9px; border-radius: var(--radius);
+  border: 1px solid var(--border); background: var(--bg-input); color: var(--text);
+}
+
+.ap-why { border-left: 2px solid var(--ap-inferred); padding-left: 12px; margin: 10px 0; }
+.ap-uncertainty, .ap-provenance { font-size: .88em; color: var(--text-muted); max-width: 86ch; }
+
+/* ------------------------------------------------------------- the story */
+
+.ap-chapters { list-style: none; padding: 0; margin: 0; counter-reset: chapter; }
+.ap-chapter { display: grid; grid-template-columns: 48px 1fr; gap: 14px; margin-bottom: 22px; }
+.ap-chapter-num {
+  font-size: 1.6em; font-weight: 700; color: var(--text-dim);
+  text-align: right; line-height: 1.1;
+}
+.ap-chapter-body h3 { margin: 0 0 6px; }
+.ap-narrative { max-width: 86ch; white-space: pre-wrap; }
+.ap-chapter.empty .ap-chapter-body h3 { color: var(--text-muted); }
+.ap-empty-reason {
+  color: var(--text-muted); font-style: italic; max-width: 86ch;
+  border-left: 2px dashed var(--border-strong); padding-left: 10px;
+}
+.ap-visuals { margin: 10px 0; }
+.ap-sources { font-size: .8em; margin-top: 6px; }
+.ap-evidence-key summary { cursor: pointer; font-size: .88em; color: var(--text-muted); }
+.ap-evidence-key ul { margin: 8px 0; }
+.ap-evidence-key li { margin-bottom: 5px; font-size: .9em; }
+.ap-story-actions { margin-bottom: 14px; }
+.ap-actions-list { margin: 6px 0; padding-left: 20px; }
+.ap-omitted, .ap-questions {
+  border: 1px solid var(--ap-warn); border-radius: var(--radius);
+  padding: 10px 12px; margin: 12px 0;
+  background: color-mix(in srgb, var(--ap-warn) 6%, transparent);
+}
+.ap-omitted ul, .ap-questions ul { margin: 6px 0 0; }
+.ap-interpretation { margin-bottom: 12px; }
+
+/* ---------------------------------------------------------- the evolution */
+
+.ap-tree { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+.ap-generation { display: flex; gap: 10px; align-items: flex-start; }
+.ap-generation-label {
+  min-width: 54px; font-size: .74em; color: var(--text-dim);
+  text-transform: uppercase; padding-top: 6px;
+}
+.ap-generation-nodes { display: flex; flex-wrap: wrap; gap: 7px; flex: 1; }
+
+.ap-candidate {
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--bg-raised); padding: 6px 10px; cursor: pointer;
+  color: inherit; font: inherit; text-align: left; min-width: 120px;
+}
+.ap-candidate:hover { border-color: var(--accent); }
+.ap-candidate.frontier { border-color: var(--ap-done); box-shadow: 0 0 0 1px var(--ap-done); }
+/* Abandoned branches stay visible. They are the record of what was tried. */
+.ap-candidate.abandoned { opacity: .55; border-style: dashed; }
+.ap-candidate-key { font-size: .78em; font-weight: 600; }
+.ap-star { color: var(--ap-done); }
+.ap-change { font-size: .74em; color: var(--text-muted); }
+.ap-rejected { font-size: .72em; color: var(--ap-failed); }
+.ap-rejected-text { color: var(--ap-failed); }
+.ap-smiles { font-size: .82em; word-break: break-all; margin-bottom: 10px; }
+
+.ap-trajectory { margin-bottom: 14px; }
+.ap-trajectory-head { display: flex; gap: 8px; align-items: baseline; }
+.ap-sparkline { display: flex; align-items: flex-end; gap: 2px; height: 52px; margin: 4px 0; }
+.ap-spark { width: 9px; background: var(--ap-computed); border-radius: 2px 2px 0 0; }
+
+.ap-objective { max-width: 86ch; }
+.ap-clone-form { margin-top: 14px; }
+li.weakens { color: var(--ap-warn); }
+
+/* ------------------------------------------------- the generation viewer */
+
+.ap-stepper { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; flex-wrap: wrap; }
+.ap-stepper input[type="range"] { flex: 1; min-width: 180px; accent-color: var(--ap-computed); }
+
+.ap-gen-head { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+
+.ap-gen-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 18px; align-items: start; }
+@media (max-width: 980px) { .ap-gen-grid { grid-template-columns: 1fr; } }
+
+.ap-gen-structures { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.ap-struct {
+  margin: 0; border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--bg-raised); padding: 8px;
+}
+/* The edited structure is marked, so before and after are distinguishable at
+   a glance rather than by reading the caption. */
+.ap-struct.changed { border-color: var(--ap-done); }
+.ap-struct figcaption {
+  font-size: .74em; color: var(--text-muted); margin-bottom: 4px;
+  display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap;
+}
+.ap-struct svg { max-width: 100%; height: auto; display: block; }
+.ap-arrow { font-size: 1.5em; color: var(--text-dim); }
+
+.ap-3d-canvas {
+  position: relative; width: 100%; height: 300px;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--bg-raised);
+}
+
+.ap-gen-panels {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px; margin-top: 18px;
+}
+.ap-gen-panels p { max-width: 60ch; margin: 4px 0; }
+
+.ap-effect { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-bottom: 6px; }
+.ap-effect-item { font-size: .8em; color: var(--text-muted); }
+
+/* ---------------------------------------------------- the decision room */
+
+.ap-room { display: flex; flex-direction: column; gap: 18px; }
+/* Side by side when there is more than one to compare; the whole point of
+   the screen is the comparison. */
+.ap-room.comparing {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+}
+
+.ap-room-card {
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--bg-raised); overflow: hidden;
+}
+.ap-room-top, .ap-room-bottom {
+  padding: 10px 14px; background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+.ap-room-bottom { border-bottom: 0; border-top: 1px solid var(--border); }
+
+.ap-room-body {
+  display: grid; grid-template-columns: 1fr 1.3fr 1fr; gap: 12px; padding: 12px 14px;
+}
+@media (max-width: 1100px) { .ap-room-body { grid-template-columns: 1fr; } }
+
+.ap-room-centre { text-align: center; }
+.ap-room-key { font-size: .82em; font-weight: 600; margin-bottom: 6px; }
+.ap-room-struct svg { max-width: 100%; height: auto; }
+.ap-room-left p, .ap-room-right p { max-width: 40ch; }
+
+.ap-ancestry { list-style: none; padding: 0; margin: 6px 0; font-size: .84em; }
+.ap-ancestry li {
+  border-left: 2px solid var(--border-strong); padding-left: 8px; margin-bottom: 6px;
+}
+.ap-liabilities { list-style: none; padding: 0; margin: 4px 0; font-size: .86em; }
+.ap-liabilities li { margin-bottom: 4px; }
+.ap-withdrawn { margin-top: 6px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+
+.ap-room-extra {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px; margin-top: 10px;
+}
+
+/* --------------------------------------------------- method comparison */
+
+.ap-methods { margin: 12px 0; }
+.ap-method-diff {
+  border: 1px solid var(--ap-predicted); border-radius: var(--radius);
+  background: color-mix(in srgb, var(--ap-predicted) 6%, transparent);
+  padding: 10px 12px; margin-bottom: 10px;
+}
+.ap-method-axis { font-weight: 600; text-transform: capitalize; }
+.ap-method-groups { display: flex; gap: 14px; flex-wrap: wrap; margin: 6px 0; font-size: .88em; }
+.ap-method-uncomparable { font-size: .86em; color: var(--text-muted); }
+.ap-method-uncomparable li { margin-bottom: 3px; }
