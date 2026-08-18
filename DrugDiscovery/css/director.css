@@ -1,0 +1,258 @@
+/*
+ * Discovery Director.
+ *
+ * Injected by js/director/router.js, following the pattern every added
+ * section uses. Inherits the atlas's tokens; adds one semantic scale of its
+ * own — the provenance of a statement.
+ *
+ * That scale is the point of this stylesheet. A number an engine computed, a
+ * sentence a language model wrote, and a decision a person made must not look
+ * the same on a page a scientist reads quickly. Model prose gets a marked
+ * left edge and a standing label; human decisions get the accent; anything
+ * the audit could not trace gets the danger colour whether or not it is
+ * convenient.
+ */
+
+:root {
+  --dd-agent: #4a9eff;
+  --dd-human: #3ee08f;
+  --dd-gate: #d29922;
+  --dd-model-prose: #a371f7;
+  --dd-unsourced: #f85149;
+  --dd-ok: #3fb950;
+}
+
+:root[data-theme="light"] {
+  --dd-agent: #0969da;
+  --dd-human: #1a7f37;
+  --dd-gate: #9a6700;
+  --dd-model-prose: #8250df;
+  --dd-ok: #1a7f37;
+}
+
+/* ------------------------------------------------------------------ shell */
+
+.dd-head { display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; margin-bottom: 12px; }
+.dd-head h2 { margin: 4px 0 6px; }
+.dd-head .lede { max-width: 72ch; color: var(--text-muted); margin: 0; }
+
+.dd-tabs { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 1px solid var(--border); margin-bottom: 16px; overflow-x: auto; }
+.dd-tabs a {
+  display: inline-flex; align-items: center; gap: 7px; padding: 9px 14px;
+  border-radius: var(--radius) var(--radius) 0 0; color: var(--text-muted);
+  text-decoration: none; white-space: nowrap; border-bottom: 2px solid transparent;
+}
+.dd-tabs a:hover { background: var(--bg-hover); color: var(--text); }
+.dd-tabs a.active { color: var(--accent); border-bottom-color: var(--accent); background: var(--accent-glow); }
+.dd-tabs .ico { opacity: .75; }
+
+.dd-campaign-chip {
+  display: flex; gap: 10px; align-items: center; padding: 8px 12px;
+  border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-raised);
+}
+.dd-campaign-chip .name { font-weight: 600; }
+.dd-campaign-chip .name.dim { color: var(--text-dim); font-weight: 400; }
+.dd-campaign-chip .sub { font-size: .82em; color: var(--text-muted); }
+
+.dd-grid { display: grid; grid-template-columns: minmax(320px, 1fr) minmax(320px, 1.2fr); gap: 16px; }
+@media (max-width: 900px) { .dd-grid { grid-template-columns: 1fr; } }
+
+/* --------------------------------------------------------------- provider */
+
+.dd-provider {
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--bg-raised); padding: 12px 14px; margin-bottom: 16px;
+}
+.dd-provider.warn { border-color: var(--dd-gate); }
+.dd-provider .hd { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.dd-provider-list { list-style: none; padding: 0; margin: 8px 0; display: flex; flex-wrap: wrap; gap: 16px; }
+.dd-provider-list li { display: flex; gap: 7px; align-items: center; font-size: .92em; }
+.dd-provider p { margin: 4px 0 0; font-size: .88em; max-width: 80ch; }
+
+.dd-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-dim); flex: none; }
+.dd-dot.ok { background: var(--dd-ok); }
+.dd-dot.off { background: var(--text-dim); }
+
+/* ------------------------------------------------------------------ forms */
+
+.dd-form { display: flex; flex-direction: column; gap: 12px; }
+.dd-form label { display: flex; flex-direction: column; gap: 4px; font-size: .9em; font-weight: 600; }
+.dd-form input, .dd-form textarea, .dd-form select {
+  font: inherit; padding: 8px 10px; border-radius: var(--radius);
+  border: 1px solid var(--border); background: var(--bg-input); color: var(--text);
+  font-weight: 400;
+}
+.dd-form textarea { resize: vertical; }
+.dd-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 640px) { .dd-form-row { grid-template-columns: 1fr; } }
+.dd-form p { font-weight: 400; margin: 0; max-width: 70ch; }
+
+/* ------------------------------------------------------------------ table */
+
+.dd-table { width: 100%; border-collapse: collapse; font-size: .92em; }
+.dd-table th, .dd-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.dd-table th { color: var(--text-muted); font-weight: 600; }
+.dd-table tr.gated { background: color-mix(in srgb, var(--dd-gate) 8%, transparent); }
+.dd-table tr.unassessed td { color: var(--text-muted); }
+.dd-table tr.superseded { opacity: .55; }
+.dd-table tr.failed { background: color-mix(in srgb, var(--dd-unsourced) 8%, transparent); }
+
+.dd-pill {
+  display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: .78em;
+  border: 1px solid var(--border-strong); color: var(--text-muted);
+}
+.dd-pill.ok { border-color: var(--dd-ok); color: var(--dd-ok); }
+.dd-pill.warn { border-color: var(--dd-gate); color: var(--dd-gate); }
+.dd-pill.danger { border-color: var(--dd-unsourced); color: var(--dd-unsourced); }
+.dd-pill.info { border-color: var(--dd-agent); color: var(--dd-agent); }
+
+.dd-stats { display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 12px; }
+.dd-stats > div { display: flex; flex-direction: column; }
+.dd-stats .v { font-size: 1.3em; font-weight: 600; }
+.dd-stats .l { font-size: .8em; color: var(--text-muted); }
+
+.dd-brief { max-width: 80ch; }
+.dd-objectives ul { margin: 4px 0 0; }
+.dd-actions { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0 6px; align-items: center; }
+
+.dd-outcome { margin-top: 10px; }
+.dd-stage-lines { margin: 8px 0; }
+.dd-agent-lines { margin: 4px 0 8px; }
+.dd-agent-lines li { margin-bottom: 4px; }
+
+/* --------------------------------------------------------------- timeline */
+
+.dd-timeline { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px; }
+
+.dd-event {
+  border: 1px solid var(--border); border-left: 3px solid var(--border-strong);
+  border-radius: var(--radius); background: var(--bg-raised); padding: 12px 14px;
+}
+.dd-event.agent { border-left-color: var(--dd-agent); }
+.dd-event.decision { border-left-color: var(--text-dim); }
+.dd-event.decision.human { border-left-color: var(--dd-human); }
+.dd-event.approval { border-left-color: var(--dd-gate); }
+
+.dd-event-head { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
+.dd-event-head .spacer { flex: 1; }
+
+.dd-badge {
+  font-size: .72em; text-transform: uppercase; letter-spacing: .06em;
+  padding: 2px 7px; border-radius: 3px; font-weight: 700;
+}
+.dd-badge.agent { background: color-mix(in srgb, var(--dd-agent) 20%, transparent); color: var(--dd-agent); }
+.dd-badge.decision { background: color-mix(in srgb, var(--dd-human) 20%, transparent); color: var(--dd-human); }
+.dd-badge.approval { background: color-mix(in srgb, var(--dd-gate) 20%, transparent); color: var(--dd-gate); }
+
+/*
+ * Model prose. Marked so it can never be mistaken for a retrieved fact at a
+ * glance — the label is part of the block, not a caption that can be scrolled
+ * away from it.
+ */
+.dd-reasoning {
+  border-left: 2px dashed var(--dd-model-prose);
+  padding: 6px 0 6px 12px; margin: 8px 0;
+}
+.dd-reasoning-label {
+  font-size: .74em; text-transform: uppercase; letter-spacing: .05em;
+  color: var(--dd-model-prose); font-weight: 700; margin-bottom: 4px;
+}
+.dd-reasoning p { margin: 0; max-width: 80ch; white-space: pre-wrap; }
+
+.dd-uncertainty { font-size: .9em; color: var(--text-muted); max-width: 80ch; }
+.dd-rationale { max-width: 80ch; }
+.dd-rejected { margin: 8px 0; }
+.dd-rejected ul { margin: 4px 0 0; }
+.dd-provenance { font-size: .84em; margin-top: 8px; }
+
+.dd-tool-toggle { font-size: .88em; }
+.dd-tool-calls { margin-top: 8px; }
+.dd-tool-calls p { max-width: 80ch; font-size: .86em; }
+
+/* ------------------------------------------------------------ hypotheses */
+
+.dd-hypotheses { display: flex; flex-direction: column; gap: 16px; }
+.dd-statement { font-size: 1.05em; max-width: 80ch; }
+
+.dd-falsifiable {
+  border-left: 2px solid var(--dd-ok); padding: 6px 0 6px 12px;
+  margin: 10px 0; max-width: 80ch;
+}
+
+/*
+ * Nine axes, nine bars, no total. The layout refuses to offer a place where a
+ * combined score could sit.
+ */
+.dd-axes { display: flex; flex-direction: column; gap: 5px; margin: 12px 0; max-width: 620px; }
+.dd-axis { display: grid; grid-template-columns: 190px 1fr 84px; gap: 10px; align-items: center; font-size: .88em; }
+.dd-axis-label { color: var(--text-muted); }
+.dd-axis-bar { height: 8px; background: var(--bg-input); border-radius: 4px; overflow: hidden; }
+.dd-axis-bar span { display: block; height: 100%; background: var(--dd-agent); }
+.dd-axis.inverted .dd-axis-bar span { background: var(--dd-gate); }
+.dd-axis-bar span.unknown {
+  width: 100%;
+  background: repeating-linear-gradient(45deg, var(--bg-input), var(--bg-input) 4px, var(--border) 4px, var(--border) 8px);
+}
+.dd-axis-score { text-align: right; color: var(--text-muted); font-size: .92em; }
+.dd-weakest { max-width: 80ch; }
+
+.dd-critique {
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 10px 12px; margin: 12px 0; background: var(--bg);
+}
+.dd-critique p { max-width: 80ch; margin: 6px 0 0; }
+
+.dd-falsify { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; margin-top: 12px; }
+.dd-falsify label { display: flex; flex-direction: column; gap: 4px; font-size: .85em; }
+.dd-falsify input {
+  font: inherit; padding: 6px 9px; border-radius: var(--radius);
+  border: 1px solid var(--border); background: var(--bg-input); color: var(--text);
+}
+
+/* ------------------------------------------------------------ review queue */
+
+.dd-recommendation { white-space: pre-wrap; max-width: 80ch; font-size: 1.02em; }
+.dd-considerations {
+  border: 1px solid var(--dd-gate); border-radius: var(--radius);
+  padding: 10px 12px; margin: 12px 0;
+  background: color-mix(in srgb, var(--dd-gate) 6%, transparent);
+}
+.dd-considerations ul { margin: 6px 0 0; }
+.dd-considerations li { max-width: 80ch; }
+
+.dd-decide { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; max-width: 640px; }
+.dd-decide label { display: flex; flex-direction: column; gap: 4px; font-size: .88em; font-weight: 600; }
+.dd-decide input, .dd-decide textarea {
+  font: inherit; font-weight: 400; padding: 7px 10px; border-radius: var(--radius);
+  border: 1px solid var(--border); background: var(--bg-input); color: var(--text);
+}
+.dd-decide-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+.dd-decide p { font-weight: 400; margin: 0; }
+
+.dd-gain { height: 8px; width: 90px; background: var(--bg-input); border-radius: 4px; overflow: hidden; display: inline-block; vertical-align: middle; }
+.dd-gain span { display: block; height: 100%; background: var(--dd-agent); }
+
+/* ---------------------------------------------------------- agents & audit */
+
+.dd-agent {
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 12px 14px; margin-bottom: 12px; background: var(--bg);
+}
+.dd-agent-head { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; margin-bottom: 8px; }
+.dd-agent-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; font-size: .9em; }
+@media (max-width: 860px) { .dd-agent-cols { grid-template-columns: 1fr; } }
+.dd-agent-label {
+  font-size: .74em; text-transform: uppercase; letter-spacing: .05em;
+  color: var(--text-muted); font-weight: 700; margin-bottom: 4px;
+}
+.dd-agent-cols ul { margin: 0; padding-left: 18px; }
+.dd-agent-cols li { margin-bottom: 3px; }
+
+.dd-findings { list-style: none; padding: 0; margin: 10px 0; display: flex; flex-direction: column; gap: 10px; }
+.dd-findings li {
+  border: 1px solid var(--border); border-left: 3px solid var(--dd-gate);
+  border-radius: var(--radius); padding: 10px 12px;
+}
+.dd-findings li.high { border-left-color: var(--dd-unsourced); }
+.dd-findings p { margin: 4px 0 0; max-width: 80ch; }
+.dd-audit-checked { margin-top: 8px; font-size: .86em; }

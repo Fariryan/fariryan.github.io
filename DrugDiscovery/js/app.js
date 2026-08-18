@@ -90,6 +90,54 @@ const NAV = [
       { route: "discovery/memory", icon: "⏱", label: "Research Memory" },
     ],
   },
+  // Chemical Intelligence: the cross-therapeutic-area evidence fabric. Every
+  // group above is unchanged; this one is appended, and its routes live in
+  // their own `chemint/` namespace so no existing bookmark is affected.
+  {
+    group: "Chemical Intelligence",
+    items: [
+      { route: "chemint/search", icon: "⌕", label: "Molecule Search" },
+      { route: "chemint/molecule", icon: "⌬", label: "Molecule Dossier" },
+      { route: "chemint/neighborhood", icon: "◎", label: "Chemical Neighborhood" },
+      { route: "chemint/scaffolds", icon: "⬡", label: "Scaffold Families" },
+      { route: "chemint/evidence", icon: "⚖", label: "Claims & Evidence" },
+      { route: "chemint/sources", icon: "🗄", label: "Sources & Coverage" },
+    ],
+  },
+  // Molecular Property Intelligence Engine. Appended, like every group above
+  // it, in its own `propintel/` route namespace.
+  {
+    group: "Property Intelligence",
+    items: [
+      { route: "propintel/profile", icon: "◈", label: "Property Profile" },
+      { route: "propintel/liabilities", icon: "⚠", label: "Liability Map" },
+      { route: "propintel/compare", icon: "⇄", label: "Reference Comparison" },
+      { route: "propintel/models", icon: "▤", label: "Model Registry" },
+    ],
+  },
+  // Molecular Gradient: directed chemical evolution. Appended, in its own
+  // `molgrad/` route namespace.
+  {
+    group: "Molecular Gradient",
+    items: [
+      { route: "molgrad/runs", icon: "▤", label: "Optimisation Runs" },
+      { route: "molgrad/trajectory", icon: "⇢", label: "Gradient Trajectory" },
+      { route: "molgrad/pareto", icon: "◈", label: "Pareto Frontier" },
+      { route: "molgrad/graph", icon: "⁘", label: "Search Graph" },
+    ],
+  },
+  // Discovery Director: orchestration over the three engines above.
+  // Appended, in its own `director/` route namespace.
+  {
+    group: "Discovery Director",
+    items: [
+      { route: "director/campaigns", icon: "▤", label: "Campaigns" },
+      { route: "director/timeline", icon: "⇢", label: "Decision Timeline" },
+      { route: "director/hypotheses", icon: "◈", label: "Hypotheses" },
+      { route: "director/review", icon: "⚖", label: "Review Queue" },
+      { route: "director/agents", icon: "⁘", label: "Agents & Audit" },
+    ],
+  },
 ];
 
 const view = document.getElementById("view");
@@ -146,6 +194,30 @@ const ROUTES = {
   discovery: (section, params) =>
     import("./discovery/router.js").then((m) =>
       m.discoveryView(view, section, params)
+    ),
+
+  // Chemical Intelligence, same pattern again.
+  chemint: (section, params) =>
+    import("./chemint/router.js").then((m) =>
+      m.chemintView(view, section, params)
+    ),
+
+  // Property Intelligence, same pattern again.
+  propintel: (section, params) =>
+    import("./propintel/router.js").then((m) =>
+      m.propintelView(view, section, params)
+    ),
+
+  // Molecular Gradient, same pattern again.
+  molgrad: (section, params) =>
+    import("./molgrad/router.js").then((m) =>
+      m.molgradView(view, section, params)
+    ),
+
+  // Discovery Director, same pattern again.
+  director: (section, params) =>
+    import("./director/router.js").then((m) =>
+      m.directorView(view, section, params)
     ),
 
   // Not a dynamic import: terms.js is already loaded by the gate, and the one
@@ -217,6 +289,10 @@ const WORKSPACE_ROUTES = new Set([
   "preclinical/molecule",
   "preclinical/insilico",
   "preclinical/invitro",
+  // The neighbourhood map is the page, not an illustration on it.
+  "chemint/neighborhood",
+  // The trajectory is a three-panel workspace.
+  "molgrad/trajectory",
 ]);
 
 function markActive(path) {

@@ -1,0 +1,223 @@
+/*
+ * Molecular Gradient.
+ *
+ * Injected by js/molgrad/router.js, following the pattern every added section
+ * uses. Inherits the atlas's tokens; adds two semantic scales of its own —
+ * candidate state, and the direction a property moved in a transition.
+ */
+
+:root {
+  --mg-active: #3ee08f;
+  --mg-expanded: #4a9eff;
+  --mg-abandoned: #6b7d92;
+  --mg-rejected: #f85149;
+  --mg-improved: #3fb950;
+  --mg-worsened: #d29922;
+  --mg-frontier: #a371f7;
+}
+
+:root[data-theme="light"] {
+  --mg-active: #1a7f37;
+  --mg-expanded: #0969da;
+  --mg-improved: #1a7f37;
+  --mg-worsened: #9a6700;
+  --mg-frontier: #8250df;
+}
+
+/* ------------------------------------------------------------------ shell */
+
+.mg-head { display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; margin-bottom: 12px; }
+.mg-head h2 { margin: 4px 0 6px; }
+.mg-head .lede { max-width: 72ch; color: var(--text-muted); margin: 0; }
+
+.mg-tabs { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 1px solid var(--border); margin-bottom: 16px; overflow-x: auto; }
+.mg-tabs a {
+  display: inline-flex; align-items: center; gap: 7px; padding: 9px 14px;
+  border-radius: var(--radius) var(--radius) 0 0; color: var(--text-muted);
+  text-decoration: none; white-space: nowrap; border-bottom: 2px solid transparent;
+}
+.mg-tabs a:hover { background: var(--bg-hover); color: var(--text); }
+.mg-tabs a.active { color: var(--accent); border-bottom-color: var(--accent); background: var(--accent-glow); }
+
+.mg-run-chip {
+  display: flex; align-items: center; gap: 10px; padding: 8px 12px;
+  border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-raised);
+}
+.mg-run-chip .name { font-weight: 600; font-size: 12px; }
+.mg-run-chip .sub { font-size: 11px; color: var(--text-dim); }
+
+.mg-caveat {
+  border-left: 3px solid var(--border-strong); padding: 8px 12px; margin: 10px 0 14px;
+  color: var(--text-muted); font-size: 13px; line-height: 1.6;
+  background: var(--bg-raised); border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.mg-sub {
+  margin: 18px 0 8px; font-size: 12px; text-transform: uppercase;
+  letter-spacing: 0.05em; color: var(--text-muted); display: flex; align-items: center; gap: 8px;
+}
+.mg-sub .n { font-size: 11px; background: var(--bg-hover); border-radius: 999px; padding: 1px 7px; text-transform: none; }
+
+.mg-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.mg-table th {
+  text-align: left; padding: 6px 9px; border-bottom: 1px solid var(--border-strong);
+  color: var(--text-dim); font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em;
+}
+.mg-table td { padding: 6px 9px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.mg-table tr:hover td { background: var(--bg-hover); }
+.mg-run-row { cursor: pointer; }
+
+.mg-empty { text-align: center; padding: 36px 20px; color: var(--text-muted); }
+.mg-empty .big { font-size: 32px; opacity: 0.4; margin-bottom: 10px; }
+
+/* ------------------------------------------------------------------- runs */
+
+.mg-field { display: grid; gap: 4px; margin-bottom: 12px; flex: 1 1 200px; }
+.mg-field label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); }
+.mg-field label em { font-style: normal; text-transform: none; letter-spacing: 0; opacity: 0.75; }
+.mg-field-row { display: flex; gap: 12px; flex-wrap: wrap; }
+.mg-examples { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+
+.mg-objectives { display: grid; gap: 3px; margin-bottom: 8px; }
+.mg-objective {
+  display: flex; align-items: center; gap: 10px; padding: 6px 9px;
+  border-radius: 8px; cursor: pointer; font-size: 13px;
+}
+.mg-objective:hover { background: var(--bg-hover); }
+.mg-obj-label { flex: 1; }
+.mg-obj-direction { font-size: 11px; padding: 1px 8px; border-radius: 999px; border: 1px solid currentColor; }
+.mg-maximise { color: var(--mg-improved); }
+.mg-minimise { color: var(--mg-worsened); }
+
+.mg-created { margin-top: 12px; padding: 12px; border-radius: var(--radius); background: var(--bg-raised); }
+.mg-progress { margin-top: 10px; font-size: 13px; }
+.mg-gen-line { font-size: 12px; color: var(--text-muted); padding: 2px 0; }
+.mg-stop { margin-top: 8px; padding: 8px 10px; border-left: 3px solid var(--accent); background: var(--bg-input); border-radius: 0 8px 8px 0; }
+
+.mg-state { font-size: 11px; padding: 2px 9px; border-radius: 999px; border: 1px solid currentColor; }
+.mg-state-running { color: var(--mg-expanded); }
+.mg-state-converged { color: var(--mg-improved); }
+.mg-state-exhausted { color: var(--mg-worsened); }
+.mg-state-budget_reached { color: var(--mg-abandoned); }
+.mg-state-stopped, .mg-state-draft { color: var(--text-dim); }
+.mg-state-failed { color: var(--mg-rejected); }
+
+.mg-engine { border-bottom: 1px solid var(--border); }
+.mg-engine summary { cursor: pointer; padding: 9px 0; display: flex; gap: 10px; align-items: baseline; font-size: 13px; }
+.mg-engine-name { font-weight: 600; }
+.mg-engine.gated { opacity: 0.75; }
+.mg-gated { font-size: 10px; color: var(--text-dim); border: 1px dashed var(--border); border-radius: 4px; padding: 1px 6px; }
+.mg-engine-body { padding: 8px 14px 14px; background: var(--bg-input); border-radius: var(--radius); margin-bottom: 8px; font-size: 12px; line-height: 1.6; }
+.mg-engine-body h5 { margin: 10px 0 4px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-dim); }
+.mg-engine-body ul { margin: 0; padding-left: 18px; color: var(--text-muted); }
+
+/* ------------------------------------------------------------- trajectory */
+
+.mg-traj-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+.mg-traj-controls input[type="range"] { flex: 1 1 160px; min-width: 120px; }
+
+.mg-traj-grid {
+  display: grid; grid-template-columns: minmax(230px, 0.8fr) minmax(300px, 1.2fr) minmax(240px, 1fr);
+  gap: 12px; margin-bottom: 14px;
+}
+@media (max-width: 1100px) { .mg-traj-grid { grid-template-columns: 1fr; } }
+
+.mg-traj-2d { max-height: 640px; overflow-y: auto; }
+.mg-2d-step {
+  text-align: center; padding: 8px; border-radius: var(--radius);
+  border: 1px solid transparent; transition: border-color 0.15s ease;
+}
+.mg-2d-step.active { border-color: var(--accent); background: var(--accent-glow); }
+.mg-2d-step.future { opacity: 0.35; }
+.mg-2d-step img { max-width: 100%; background: var(--bg-input); border-radius: 8px; }
+.mg-2d-gen { font-size: 10px; letter-spacing: 0.08em; color: var(--text-dim); }
+.mg-2d-key { font-size: 11px; }
+.mg-2d-change { font-size: 12px; color: var(--accent); margin-top: 2px; }
+.mg-2d-arrow { text-align: center; color: var(--text-dim); font-size: 16px; }
+
+.mg-viewer { height: 300px; position: relative; border-radius: var(--radius); overflow: hidden; }
+
+.mg-spark { margin-bottom: 12px; }
+.mg-spark-head { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 2px; }
+.mg-spark-svg { width: 100%; height: auto; }
+.mg-spark-line { fill: none; stroke: var(--accent); stroke-width: 2; }
+.mg-spark-dot { fill: var(--accent); opacity: 0.55; }
+.mg-spark-dot.current { opacity: 1; stroke: var(--bg); stroke-width: 2; }
+.mg-spark-range { margin-top: 2px; }
+
+.mg-step-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.mg-step-block.wide { grid-column: 1 / -1; }
+.mg-step-block h5 {
+  margin: 0 0 5px; font-size: 10px; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--text-dim);
+}
+.mg-step-block p { margin: 0 0 6px; font-size: 13px; line-height: 1.6; }
+.mg-step-change { font-weight: 600; color: var(--accent); font-size: 14px; }
+.mg-step-seed { padding: 10px; background: var(--bg-input); border-radius: var(--radius); font-size: 13px; line-height: 1.6; }
+
+.mg-delta-list { list-style: none; margin: 0; padding: 0; font-size: 12px; }
+.mg-delta-list li { display: flex; justify-content: space-between; gap: 10px; padding: 3px 0; border-bottom: 1px solid var(--border); }
+.mg-delta-list.improved li { color: var(--mg-improved); }
+.mg-delta-list.worsened li { color: var(--mg-worsened); }
+
+.mg-conf { font-size: 11px; padding: 2px 9px; border-radius: 999px; border: 1px solid currentColor; text-transform: capitalize; }
+.mg-conf-high-confidence { color: var(--mg-improved); }
+.mg-conf-moderate-confidence { color: var(--mg-expanded); }
+.mg-conf-low-confidence { color: var(--mg-worsened); }
+.mg-conf-outside-model-domain { color: var(--mg-abandoned); border-style: dashed; }
+
+.mg-precedent { padding: 8px 10px; border-radius: 8px; font-size: 13px; }
+.mg-precedent.yes { border-left: 3px solid var(--mg-improved); background: var(--bg-input); }
+.mg-precedent.no { border-left: 3px solid var(--mg-abandoned); background: var(--bg-input); color: var(--text-muted); }
+
+/* ----------------------------------------------------------------- pareto */
+
+.mg-run-summary { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-raised); margin-bottom: 12px; }
+.mg-stop-banner { display: flex; gap: 12px; padding: 12px 14px; margin-bottom: 12px; border-radius: var(--radius); border-left: 3px solid var(--accent); background: var(--bg-raised); line-height: 1.55; }
+
+.mg-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); gap: 10px; }
+.mg-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 10px; text-decoration: none; color: inherit; background: var(--bg-raised); }
+.mg-card:hover { border-color: var(--accent); }
+.mg-card-figure { background: var(--bg-input); border-radius: 8px; display: flex; align-items: center; justify-content: center; min-height: 130px; overflow: hidden; }
+.mg-card-figure img { max-width: 100%; max-height: 160px; }
+.mg-card-key { font-size: 12px; margin: 6px 0 4px; display: flex; justify-content: space-between; }
+.mg-card-value { display: flex; justify-content: space-between; font-size: 11px; padding: 1px 0; color: var(--text-muted); }
+.mg-card-foot { margin-top: 6px; display: flex; justify-content: space-between; align-items: center; }
+.mg-novelty { font-size: 10px; color: var(--mg-frontier); text-transform: capitalize; }
+
+.mg-tradeoff { width: 100%; max-width: 420px; height: auto; display: block; margin: 0 auto; }
+.mg-axis { stroke: var(--border-strong); stroke-width: 1; }
+.mg-axis-label { fill: var(--text-dim); font-size: 10px; }
+.mg-tradeoff-dot { fill: var(--mg-frontier); stroke: var(--bg); stroke-width: 1.5; cursor: pointer; }
+.mg-tradeoff-dot:hover { r: 9; }
+
+/* ------------------------------------------------------------------ graph */
+
+.mg-graph-summary { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.mg-graph-count { flex: 1 1 120px; padding: 12px 14px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--bg-raised); }
+.mg-graph-count .value { font-size: 22px; font-weight: 700; }
+.mg-graph-count .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); }
+.mg-graph-count.abandoned { border-left: 3px solid var(--mg-abandoned); }
+
+.mg-graph-gen { margin-bottom: 14px; }
+.mg-graph-gen-label { font-size: 10px; letter-spacing: 0.08em; color: var(--text-dim); margin-bottom: 4px; }
+.mg-graph-nodes { display: flex; flex-wrap: wrap; gap: 5px; }
+.mg-node {
+  display: inline-flex; flex-direction: column; gap: 1px; padding: 5px 9px;
+  border-radius: 8px; border: 1px solid currentColor; font-size: 11px;
+  text-decoration: none; background: var(--bg-raised);
+}
+.mg-node-active { color: var(--mg-active); }
+.mg-node-expanded { color: var(--mg-expanded); }
+/* Abandoned nodes are dimmed and dashed but never hidden: the failures are
+   most of what a run establishes. */
+.mg-node-abandoned { color: var(--mg-abandoned); border-style: dashed; opacity: 0.8; }
+.mg-node-rejected { color: var(--mg-rejected); border-style: dotted; }
+.mg-node-duplicate { color: var(--text-dim); border-style: dotted; }
+.mg-node.frontier { box-shadow: 0 0 0 2px var(--mg-frontier); }
+.mg-node-front { font-size: 9px; color: var(--mg-frontier); }
+.mg-node-reason { font-size: 9px; opacity: 0.85; }
+.mg-node.sample { padding: 4px 10px; }
+
+.mg-legend { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; font-size: 11px; color: var(--text-muted); align-items: center; }
+.mg-legend-item { display: inline-flex; align-items: center; gap: 5px; }

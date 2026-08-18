@@ -1,0 +1,518 @@
+/*
+ * Molecular Property Intelligence Engine.
+ *
+ * Injected by js/propintel/router.js, not linked from index.html — the
+ * pattern every added section in this platform follows.
+ *
+ * One semantic scale is introduced: confidence. It is deliberately distinct
+ * from both the atlas's evidence levels and Chemical Intelligence's evidence
+ * classes, because it answers a third question — not "how strong is this
+ * finding" and not "what produced it", but "how much weight can this number
+ * bear". Making the three look alike would invite exactly the conflation the
+ * engine exists to prevent.
+ */
+
+:root {
+  --pi-high: #3fb950;
+  --pi-moderate: #4a9eff;
+  --pi-low: #d29922;
+  --pi-outside: #8b949e;
+  --pi-computed: #a371f7;
+  --pi-measured: #3fb950;
+  --pi-nomodel: #6b7d92;
+}
+
+:root[data-theme="light"] {
+  --pi-high: #1a7f37;
+  --pi-moderate: #0969da;
+  --pi-low: #9a6700;
+  --pi-computed: #8250df;
+  --pi-measured: #1a7f37;
+}
+
+/* ------------------------------------------------------------------ shell */
+
+.pi-head { margin-bottom: 12px; }
+.pi-head h2 { margin: 4px 0 6px; }
+.pi-head .lede { max-width: 72ch; color: var(--text-muted); margin: 0; }
+
+.pi-tabs {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+  overflow-x: auto;
+}
+.pi-tabs a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 14px;
+  border-radius: var(--radius) var(--radius) 0 0;
+  color: var(--text-muted);
+  text-decoration: none;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+}
+.pi-tabs a:hover { background: var(--bg-hover); color: var(--text); }
+.pi-tabs a.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  background: var(--accent-glow);
+}
+
+.pi-input-row { display: flex; gap: 10px; margin-bottom: 8px; }
+.pi-input-row .search-input { flex: 1; min-width: 0; font-family: var(--mono); font-size: 13px; }
+.pi-examples { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; }
+.pi-example { font-size: 12px; }
+
+/* ----------------------------------------------------------- confidence */
+
+.pi-conf {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid currentColor;
+  white-space: nowrap;
+}
+.pi-conf-high-confidence { color: var(--pi-high); }
+.pi-conf-moderate-confidence { color: var(--pi-moderate); }
+.pi-conf-low-confidence { color: var(--pi-low); }
+/* Out of domain is styled as an absence, not as a weak score. */
+.pi-conf-outside-model-domain {
+  color: var(--pi-outside);
+  border-style: dashed;
+  opacity: 0.9;
+}
+
+.pi-val {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 5px;
+  font-size: 10px;
+  background: var(--bg-hover);
+  color: var(--text-muted);
+}
+.pi-val-validated { color: var(--pi-high); font-weight: 600; }
+.pi-val-published { color: var(--pi-moderate); }
+.pi-val-heuristic { color: var(--pi-low); }
+
+.pi-computed, .pi-measured {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 1px 7px;
+  border-radius: 4px;
+  border: 1px solid currentColor;
+  margin-left: 8px;
+}
+.pi-computed { color: var(--pi-computed); }
+.pi-measured { color: var(--pi-measured); }
+
+.pi-band {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid currentColor;
+}
+.pi-band-high { color: var(--danger); }
+.pi-band-moderate { color: var(--warning); }
+.pi-band-low, .pi-band-no-alert { color: var(--pi-high); }
+.pi-band-approved_drug { color: var(--pi-high); }
+.pi-band-clinical_candidate { color: var(--pi-moderate); }
+.pi-band-withdrawn { color: var(--danger); }
+.pi-band-experimental { color: var(--pi-low); }
+
+/* "not scored" and "no model" must never read as a value. */
+.pi-outside, .pi-nomodel {
+  font-size: 11px;
+  font-style: italic;
+  color: var(--pi-outside);
+  border: 1px dashed var(--border);
+  border-radius: 4px;
+  padding: 1px 7px;
+}
+
+/* ---------------------------------------------------------------- summary */
+
+.pi-summary {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-raised);
+  margin-bottom: 12px;
+}
+.pi-formula { font-size: 17px; font-weight: 600; }
+.pi-smiles { font-size: 11px; color: var(--text-muted); overflow-wrap: anywhere; max-width: 60ch; }
+
+.pi-uncertainty-banner,
+.pi-consensus {
+  display: flex;
+  gap: 12px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-strong);
+  background: var(--bg-raised);
+  line-height: 1.55;
+}
+.pi-uncertainty-banner .ico { color: var(--accent); font-size: 18px; }
+.pi-consensus.agree { border-left: 3px solid var(--pi-high); }
+.pi-consensus.disagree { border-left: 3px solid var(--warning); }
+.pi-consensus .ico { font-size: 18px; }
+
+.pi-caveat {
+  border-left: 3px solid var(--border-strong);
+  padding: 8px 12px;
+  margin: 10px 0 14px;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.6;
+  background: var(--bg-raised);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.pi-grid {
+  display: grid;
+  grid-template-columns: minmax(340px, 1fr) minmax(340px, 1fr);
+  gap: 14px;
+  margin-bottom: 14px;
+}
+@media (max-width: 1000px) { .pi-grid { grid-template-columns: 1fr; } }
+
+/* ------------------------------------------------------------------ radar */
+
+.pi-radar { width: 100%; height: auto; display: block; }
+.pi-radar-ring { fill: none; stroke: var(--border); stroke-dasharray: 3 5; }
+.pi-radar-spoke { stroke: var(--border); stroke-width: 0.6; }
+.pi-radar-shape {
+  fill: var(--accent-glow);
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+.pi-radar-dot { fill: var(--accent); stroke: var(--bg); stroke-width: 1.5; }
+/* The dot and its label are tinted by the confidence behind the axis, so a
+   shape held up by heuristics does not look as solid as a measured one. */
+.pi-radar-high-confidence { fill: var(--pi-high); }
+.pi-radar-moderate-confidence { fill: var(--pi-moderate); }
+.pi-radar-low-confidence { fill: var(--pi-low); }
+.pi-radar-computed { fill: var(--pi-computed); }
+
+text.pi-radar-label {
+  font-size: 10px;
+  fill: var(--text-muted);
+}
+text.pi-radar-high-confidence { fill: var(--pi-high); }
+text.pi-radar-moderate-confidence { fill: var(--pi-moderate); }
+text.pi-radar-low-confidence { fill: var(--pi-low); }
+text.pi-radar-computed { fill: var(--pi-computed); }
+text.pi-radar-label.missing { fill: var(--text-dim); font-style: italic; }
+
+.pi-radar-note, .pi-radar-missing {
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 1.6;
+  margin-top: 8px;
+}
+
+/* ------------------------------------------------------------- properties */
+
+.pi-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.pi-table th {
+  text-align: left;
+  padding: 6px 9px;
+  border-bottom: 1px solid var(--border-strong);
+  color: var(--text-dim);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.pi-table td { padding: 5px 9px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.pi-table tr:last-child td { border-bottom: none; }
+
+.pi-sub {
+  margin: 16px 0 8px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pi-sub .n {
+  font-size: 11px;
+  background: var(--bg-hover);
+  border-radius: 999px;
+  padding: 1px 7px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.pi-rules { display: grid; gap: 6px; }
+.pi-rule {
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font-size: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: baseline;
+}
+.pi-rule.pass { border-left: 3px solid var(--pi-high); }
+.pi-rule.fail { border-left: 3px solid var(--warning); }
+.pi-rule-name { font-weight: 600; }
+.pi-rule-result { color: var(--text-muted); }
+
+.pi-alerts { display: flex; flex-wrap: wrap; gap: 5px; }
+.pi-alert {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 5px;
+  background: var(--bg-hover);
+  color: var(--text-muted);
+}
+.pi-alert em { font-style: normal; color: var(--warning); margin-right: 4px; }
+
+.pi-domain { margin-bottom: 20px; }
+.pi-prediction {
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+}
+.pi-prediction:last-child { border-bottom: none; }
+.pi-prediction-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.pi-prop { font-weight: 600; font-size: 13px; flex: 1 1 200px; }
+.pi-value { font-size: 14px; }
+.pi-value em { font-style: normal; font-size: 11px; color: var(--text-dim); }
+
+.pi-absent { margin-top: 10px; }
+.pi-nomodel-row summary {
+  cursor: pointer;
+  padding: 5px 0;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 13px;
+}
+.pi-nomodel-body {
+  padding: 8px 12px;
+  background: var(--bg-input);
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.6;
+  margin-bottom: 6px;
+}
+
+/* --------------------------------------------------------------- why panel */
+
+.pi-why { margin-top: 6px; }
+.pi-why summary {
+  cursor: pointer;
+  font-size: 11px;
+  color: var(--accent);
+  padding: 3px 0;
+  list-style: none;
+}
+.pi-why summary::-webkit-details-marker { display: none; }
+.pi-why summary::before { content: "▸ "; }
+.pi-why[open] summary::before { content: "▾ "; }
+.pi-why-body {
+  padding: 12px 14px;
+  margin-top: 6px;
+  background: var(--bg-input);
+  border-radius: var(--radius);
+  font-size: 12px;
+  line-height: 1.65;
+}
+.pi-why-body h5 {
+  margin: 12px 0 5px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+}
+.pi-why-body h5:first-child { margin-top: 0; }
+.pi-reasoning { margin: 0; padding-left: 18px; }
+.pi-reasoning li { margin-bottom: 5px; }
+.pi-limitations { margin: 0; padding-left: 18px; color: var(--text-muted); }
+.pi-limitations li { margin-bottom: 4px; }
+
+.pi-drivers, .pi-modeltable { width: 100%; border-collapse: collapse; font-size: 12px; }
+.pi-drivers td, .pi-modeltable td {
+  padding: 3px 8px 3px 0;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.pi-drivers td:first-child, .pi-modeltable td:first-child {
+  color: var(--text-dim);
+  width: 40%;
+}
+
+.pi-in-domain { color: var(--pi-high); font-weight: 600; }
+.pi-out-domain { color: var(--warning); font-weight: 600; }
+.pi-unmeasured {
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 6px 10px;
+  border-left: 2px solid var(--border-strong);
+}
+.pi-integrity {
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: 11px;
+}
+
+.pi-metrics { display: flex; flex-wrap: wrap; gap: 6px; }
+.pi-metric {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 5px;
+  background: var(--bg-hover);
+  font-family: var(--mono);
+}
+.pi-metric em { font-style: normal; color: var(--text-dim); margin-right: 4px; }
+
+/* ------------------------------------------------------------ liabilities */
+
+.pi-liability-summary { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.pi-liability-count {
+  flex: 1 1 130px;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
+}
+.pi-liability-count .value { font-size: 24px; font-weight: 700; }
+.pi-liability-count .label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-dim);
+}
+.pi-liability-count.flagged { border-left: 3px solid var(--danger); }
+.pi-liability-count.clear { border-left: 3px solid var(--pi-high); }
+.pi-liability-count.unassessed { border-left: 3px solid var(--pi-outside); }
+
+.pi-liability { padding: 9px 0; border-bottom: 1px solid var(--border); }
+.pi-liability:last-child { border-bottom: none; }
+.pi-liability-head { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.pi-liability-detail { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+.pi-liability-section.unassessed { opacity: 0.95; }
+
+/* ------------------------------------------------------------- comparison */
+
+.pi-refs { display: grid; gap: 4px; margin-bottom: 12px; }
+.pi-ref {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 6px 9px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.pi-ref:hover { background: var(--bg-hover); }
+.pi-ref-name { flex: 1; font-weight: 600; }
+.pi-ref-class { font-size: 11px; }
+
+.pi-deltas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 6px;
+}
+.pi-delta {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 10px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font-size: 12px;
+  cursor: help;
+}
+.pi-delta-better { border-left: 3px solid var(--pi-high); }
+.pi-delta-worse { border-left: 3px solid var(--warning); }
+.pi-delta-similar { border-left: 3px solid var(--border-strong); }
+.pi-delta-different { border-left: 3px solid var(--pi-moderate); }
+.pi-delta-label { font-weight: 600; }
+.pi-delta-value { font-family: var(--mono); }
+.pi-delta-scale {
+  grid-column: 1 / -1;
+  font-size: 10px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* --------------------------------------------------------------- registry */
+
+.pi-registry-summary { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.pi-registry-count {
+  flex: 1 1 120px;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
+}
+.pi-registry-count .value { font-size: 22px; font-weight: 700; }
+.pi-registry-count .label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-dim);
+}
+
+.pi-model { border-bottom: 1px solid var(--border); }
+.pi-model:last-child { border-bottom: none; }
+.pi-model summary {
+  cursor: pointer;
+  padding: 9px 0;
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  flex-wrap: wrap;
+  font-size: 13px;
+}
+.pi-model-name { font-weight: 600; }
+.pi-model-prop { color: var(--text-muted); flex: 1; }
+.pi-model-body {
+  padding: 10px 14px 14px;
+  background: var(--bg-input);
+  border-radius: var(--radius);
+  margin-bottom: 8px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.pi-model-body h5 {
+  margin: 12px 0 5px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+}
+
+.pi-unavailable-section { border-left: 3px solid var(--pi-outside); }
+
+.pi-empty { text-align: center; padding: 40px 20px; color: var(--text-muted); }
+.pi-empty .big { font-size: 34px; opacity: 0.4; margin-bottom: 10px; }
+.pi-empty p { max-width: 56ch; margin: 6px auto; line-height: 1.6; }
