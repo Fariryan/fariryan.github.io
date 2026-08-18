@@ -1,0 +1,215 @@
+/*
+ * Enterprise layer.
+ *
+ * Injected by js/enterprise/router.js, following the pattern every added
+ * section uses. Inherits the atlas's tokens; adds one semantic scale of its
+ * own — whether a statement is grounded in evidence or derived from it.
+ *
+ * That scale exists because this layer's whole job is provenance. On the
+ * evidence-chain page a node that rests on a measurement and a node that
+ * rests on a model's output must not look the same, or the chain becomes
+ * decoration.
+ */
+
+:root {
+  --ent-grounded: #3ee08f;
+  --ent-derived: #4a9eff;
+  --ent-human: #3ee08f;
+  --ent-ai: #a371f7;
+  --ent-warn: #d29922;
+  --ent-danger: #f85149;
+  --ent-ok: #3fb950;
+}
+
+:root[data-theme="light"] {
+  --ent-grounded: #1a7f37;
+  --ent-derived: #0969da;
+  --ent-human: #1a7f37;
+  --ent-ai: #8250df;
+  --ent-warn: #9a6700;
+  --ent-ok: #1a7f37;
+}
+
+/* ------------------------------------------------------------------ shell */
+
+.ent-head { display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; margin-bottom: 12px; }
+.ent-head h2 { margin: 4px 0 6px; }
+.ent-head .lede { max-width: 74ch; color: var(--text-muted); margin: 0; }
+
+.ent-tabs { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 1px solid var(--border); margin-bottom: 16px; overflow-x: auto; }
+.ent-tabs a {
+  display: inline-flex; align-items: center; gap: 7px; padding: 9px 14px;
+  border-radius: var(--radius) var(--radius) 0 0; color: var(--text-muted);
+  text-decoration: none; white-space: nowrap; border-bottom: 2px solid transparent;
+}
+.ent-tabs a:hover { background: var(--bg-hover); color: var(--text); }
+.ent-tabs a.active { color: var(--accent); border-bottom-color: var(--accent); background: var(--accent-glow); }
+.ent-tabs .ico { opacity: .75; }
+
+.ent-identity {
+  display: flex; gap: 10px; align-items: center; padding: 8px 12px;
+  border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-raised);
+}
+.ent-identity.warn { border-color: var(--ent-warn); }
+.ent-identity .name { font-weight: 600; }
+.ent-identity .name.dim { color: var(--text-dim); font-weight: 400; }
+.ent-identity .sub { font-size: .8em; color: var(--text-muted); }
+
+/* ------------------------------------------------------------------ common */
+
+.ent-stats { display: flex; flex-wrap: wrap; gap: 24px; margin: 12px 0 16px; }
+.ent-stats.small { gap: 18px; margin: 8px 0 12px; }
+.ent-stats > div { display: flex; flex-direction: column; }
+.ent-stats .v { font-size: 1.35em; font-weight: 600; }
+.ent-stats.small .v { font-size: 1.1em; }
+.ent-stats .l { font-size: .78em; color: var(--text-muted); }
+
+.ent-caveat { color: var(--text-muted); max-width: 82ch; font-size: .92em; }
+
+.ent-table { width: 100%; border-collapse: collapse; font-size: .92em; }
+.ent-table th, .ent-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.ent-table.compact th, .ent-table.compact td { padding: 4px 8px; }
+.ent-table th { color: var(--text-muted); font-weight: 600; }
+.ent-table tr.ent-denied { background: color-mix(in srgb, var(--ent-danger) 8%, transparent); }
+.ent-table tr.ent-ood { background: color-mix(in srgb, var(--ent-warn) 8%, transparent); }
+.ent-table tr.ent-error-row td { padding-top: 0; }
+
+.ent-pill {
+  display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: .78em;
+  border: 1px solid var(--border-strong); color: var(--text-muted);
+}
+.ent-pill.ok { border-color: var(--ent-ok); color: var(--ent-ok); }
+.ent-pill.warn { border-color: var(--ent-warn); color: var(--ent-warn); }
+.ent-pill.danger { border-color: var(--ent-danger); color: var(--ent-danger); }
+.ent-pill.info { border-color: var(--ent-derived); color: var(--ent-derived); }
+
+.ent-badge {
+  font-size: .7em; text-transform: uppercase; letter-spacing: .06em;
+  padding: 2px 7px; border-radius: 3px; font-weight: 700;
+}
+.ent-badge.grounded { background: color-mix(in srgb, var(--ent-grounded) 20%, transparent); color: var(--ent-grounded); }
+.ent-badge.derived { background: color-mix(in srgb, var(--ent-derived) 20%, transparent); color: var(--ent-derived); }
+.ent-badge.human { background: color-mix(in srgb, var(--ent-human) 20%, transparent); color: var(--ent-human); }
+.ent-badge.ai { background: color-mix(in srgb, var(--ent-ai) 20%, transparent); color: var(--ent-ai); }
+
+.ent-field { margin: 12px 0; }
+.ent-field-label {
+  font-size: .74em; text-transform: uppercase; letter-spacing: .05em;
+  color: var(--text-muted); font-weight: 700; margin-bottom: 4px;
+}
+.ent-field p, .ent-field ul { max-width: 82ch; margin: 4px 0; }
+
+.ent-warn-inline { color: var(--ent-warn); font-size: .9em; max-width: 82ch; }
+
+.ent-pre {
+  background: var(--bg-input); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 10px; overflow-x: auto;
+  font-size: .82em; max-height: 320px;
+}
+
+.ent-form { display: flex; flex-direction: column; gap: 12px; max-width: 720px; }
+.ent-form label { display: flex; flex-direction: column; gap: 4px; font-size: .88em; font-weight: 600; }
+.ent-form input, .ent-form select, .ent-form textarea {
+  font: inherit; font-weight: 400; padding: 8px 10px; border-radius: var(--radius);
+  border: 1px solid var(--border); background: var(--bg-input); color: var(--text);
+}
+.ent-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 640px) { .ent-form-row { grid-template-columns: 1fr; } }
+.ent-form p { font-weight: 400; margin: 0; max-width: 74ch; }
+
+.ent-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 900px) { .ent-two-col { grid-template-columns: 1fr; } }
+
+/* --------------------------------------------------------------- portfolio */
+
+.ent-funnel-row { display: grid; grid-template-columns: 130px 1fr 48px; gap: 10px; align-items: center; margin-bottom: 5px; font-size: .9em; }
+.ent-funnel-label { color: var(--text-muted); text-transform: capitalize; }
+.ent-funnel-bar { height: 10px; background: var(--bg-input); border-radius: 5px; overflow: hidden; }
+.ent-funnel-bar span { display: block; height: 100%; background: var(--ent-derived); }
+.ent-funnel-count { text-align: right; }
+
+.ent-exits ul { margin: 6px 0 0; }
+.ent-hyp-group { margin-bottom: 12px; }
+.ent-hyp-group ul { margin: 4px 0 0; }
+
+.ent-risks { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.ent-risks li {
+  border: 1px solid var(--border); border-left: 3px solid var(--ent-warn);
+  border-radius: var(--radius); padding: 10px 12px;
+}
+.ent-risks li.high { border-left-color: var(--ent-danger); }
+.ent-risks p { margin: 4px 0 0; max-width: 82ch; }
+
+.ent-decisions { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.ent-decisions li {
+  border: 1px solid var(--border); border-left: 3px solid var(--text-dim);
+  border-radius: var(--radius); padding: 10px 12px;
+}
+.ent-decisions li.human { border-left-color: var(--ent-human); }
+.ent-decisions li.ai { border-left-color: var(--ent-ai); }
+.ent-decision-head { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 4px; }
+.ent-decisions p { margin: 4px 0; max-width: 82ch; }
+
+/*
+ * The refusal block. Given real visual weight because the absence of a
+ * probability-of-success number needs to read as a decision, not an omission.
+ */
+.ent-refusal {
+  border: 1px solid var(--ent-warn); border-radius: var(--radius);
+  background: color-mix(in srgb, var(--ent-warn) 6%, transparent);
+  padding: 14px 16px; margin-top: 20px;
+}
+.ent-refusal p { margin: 6px 0 0; max-width: 84ch; }
+
+/* ----------------------------------------------------------- evidence chain */
+
+.ent-chain { list-style: none; padding: 0; margin: 0; }
+.ent-chain-node { display: grid; grid-template-columns: 56px 1fr; gap: 10px; margin-bottom: 10px; }
+.ent-chain-step { color: var(--text-dim); font-size: .8em; text-align: right; padding-top: 10px; }
+.ent-chain-body {
+  border: 1px solid var(--border); border-left: 3px solid var(--ent-derived);
+  border-radius: var(--radius); padding: 10px 12px; background: var(--bg-raised);
+}
+.ent-chain-node.grounded .ent-chain-body { border-left-color: var(--ent-grounded); }
+.ent-chain-head { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 5px; }
+.ent-chain-head .spacer { flex: 1; }
+.ent-chain-body p { margin: 4px 0; max-width: 82ch; }
+.ent-hash { font-size: .76em; margin-top: 4px; }
+
+/* -------------------------------------------------------------- registry */
+
+.ent-models { display: flex; flex-direction: column; gap: 14px; }
+.ent-model-key { font-size: .85em; color: var(--text-muted); margin-bottom: 8px; }
+.ent-prod-model { margin-bottom: 10px; }
+.ent-prod-model p { margin: 2px 0 0; max-width: 82ch; }
+
+/* --------------------------------------------------------------- compute */
+
+.ent-progress { height: 8px; width: 130px; background: var(--bg-input); border-radius: 4px; overflow: hidden; }
+.ent-progress span { display: block; height: 100%; background: var(--ent-derived); }
+
+/* ------------------------------------------------------------ governance */
+
+.ent-statement {
+  border: 1px solid var(--ent-warn); border-radius: var(--radius);
+  background: color-mix(in srgb, var(--ent-warn) 6%, transparent);
+  padding: 14px 16px; margin-bottom: 16px;
+}
+.ent-statement p { margin: 6px 0 0; max-width: 88ch; }
+
+.ent-provided li { margin-bottom: 6px; }
+.ent-not-provided li { margin-bottom: 6px; color: var(--text-muted); }
+
+.ent-proposal {
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 10px 12px; margin-bottom: 10px;
+}
+.ent-proposal-head { display: flex; gap: 10px; align-items: baseline; margin-bottom: 4px; }
+.ent-proposal p { margin: 4px 0; max-width: 82ch; }
+
+.ent-gaps {
+  border: 1px solid var(--ent-warn); border-radius: var(--radius);
+  padding: 10px 12px; margin: 10px 0;
+}
+.ent-gaps ul { margin: 6px 0 0; }
+.ent-gaps li { margin-bottom: 4px; max-width: 84ch; }

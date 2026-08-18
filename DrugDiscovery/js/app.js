@@ -138,6 +138,19 @@ const NAV = [
       { route: "director/agents", icon: "⁘", label: "Agents & Audit" },
     ],
   },
+  // Enterprise: tenancy, provenance, governance and compute around the
+  // scientific phases. Appended, in its own `enterprise/` route namespace.
+  {
+    group: "Enterprise",
+    items: [
+      { route: "enterprise/portfolio", icon: "▤", label: "Portfolio" },
+      { route: "enterprise/evidence", icon: "⛓", label: "Evidence Chain" },
+      { route: "enterprise/models", icon: "◈", label: "Model Registry" },
+      { route: "enterprise/validation", icon: "⊹", label: "Validation" },
+      { route: "enterprise/compute", icon: "⚙", label: "Compute & Runs" },
+      { route: "enterprise/governance", icon: "⚖", label: "Governance" },
+    ],
+  },
 ];
 
 const view = document.getElementById("view");
@@ -218,6 +231,12 @@ const ROUTES = {
   director: (section, params) =>
     import("./director/router.js").then((m) =>
       m.directorView(view, section, params)
+    ),
+
+  // Enterprise, same pattern again.
+  enterprise: (section, params) =>
+    import("./enterprise/router.js").then((m) =>
+      m.enterpriseView(view, section, params)
     ),
 
   // Not a dynamic import: terms.js is already loaded by the gate, and the one
