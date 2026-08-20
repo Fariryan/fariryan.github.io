@@ -20,6 +20,8 @@ const NAV = [
     items: [
       { route: "areas/select", icon: "◈", label: "Therapeutic Areas" },
       { route: "areas/workspace", icon: "▤", label: "Disease Workspace" },
+      { route: "knowledge/graph", icon: "⁘", label: "Knowledge Graph" },
+      { route: "knowledge/literature", icon: "📄", label: "Literature" },
     ],
   },
   { group: "Overview", items: [{ route: "", icon: "◈", label: "Dashboard" }] },
@@ -238,6 +240,10 @@ const ROUTES = {
   // the second path segment selects the section.
   areas: (section, params) =>
     import("./areas/router.js").then((m) => m.areasView(view, section, params)),
+
+  // The knowledge layer, same pattern again.
+  knowledge: (section, params) =>
+    import("./knowledge/router.js").then((m) => m.knowledgeView(view, section, params)),
 
   // Chemical Intelligence, same pattern again.
   chemint: (section, params) =>
