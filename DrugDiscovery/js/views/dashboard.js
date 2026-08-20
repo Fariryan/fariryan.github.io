@@ -87,6 +87,8 @@ export async function dashboardView(root) {
     .join("");
 
   root.innerHTML = `
+    <div id="ta-entry-host"></div>
+
     <div class="page-head">
       <h2>Neurological therapeutics atlas</h2>
       <p class="lede">
@@ -192,4 +194,17 @@ export async function dashboardView(root) {
     }
 
     ${disclaimer}`;
+
+  // Therapeutic-area entry panel. Imported lazily and failing silently: with
+  // AREAS_ENABLED=0 this renders nothing and the dashboard is unchanged.
+  import("../areas/router.js")
+    .then((router) => {
+      router.ensureStylesheet();
+      return import("../areas/entry.js");
+    })
+    .then((m) => m.renderAreaEntry(root.querySelector("#ta-entry-host")))
+    .catch(() => {
+      /* the atlas dashboard stands on its own */
+    });
+
 }

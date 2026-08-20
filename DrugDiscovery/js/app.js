@@ -12,6 +12,16 @@ import { requireAcceptance, termsView } from "./terms.js";
 import { esc, kindBadge, notice } from "./ui.js";
 
 const NAV = [
+  // Universal platform Phase 1. Placed first because choosing the therapeutic
+  // area is the first decision a scientist makes; every group below it works
+  // exactly as before whether or not an area has been chosen.
+  {
+    group: "Discovery",
+    items: [
+      { route: "areas/select", icon: "◈", label: "Therapeutic Areas" },
+      { route: "areas/workspace", icon: "▤", label: "Disease Workspace" },
+    ],
+  },
   { group: "Overview", items: [{ route: "", icon: "◈", label: "Dashboard" }] },
   {
     group: "Entities",
@@ -223,6 +233,11 @@ const ROUTES = {
     import("./discovery/router.js").then((m) =>
       m.discoveryView(view, section, params)
     ),
+
+  // Therapeutic areas, same pattern again. One route for the whole module;
+  // the second path segment selects the section.
+  areas: (section, params) =>
+    import("./areas/router.js").then((m) => m.areasView(view, section, params)),
 
   // Chemical Intelligence, same pattern again.
   chemint: (section, params) =>
