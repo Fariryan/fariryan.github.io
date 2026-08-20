@@ -22,6 +22,8 @@ const NAV = [
       { route: "areas/workspace", icon: "▤", label: "Disease Workspace" },
       { route: "knowledge/graph", icon: "⁘", label: "Knowledge Graph" },
       { route: "knowledge/literature", icon: "📄", label: "Literature" },
+      { route: "workbench/editor", icon: "✎", label: "Molecule Editor" },
+      { route: "workbench/structures", icon: "⬢", label: "Structure Workbench" },
     ],
   },
   { group: "Overview", items: [{ route: "", icon: "◈", label: "Dashboard" }] },
@@ -244,6 +246,10 @@ const ROUTES = {
   // The knowledge layer, same pattern again.
   knowledge: (section, params) =>
     import("./knowledge/router.js").then((m) => m.knowledgeView(view, section, params)),
+
+  // The cheminformatics workbench, same pattern again.
+  workbench: (section, params) =>
+    import("./workbench/router.js").then((m) => m.workbenchView(view, section, params)),
 
   // Chemical Intelligence, same pattern again.
   chemint: (section, params) =>

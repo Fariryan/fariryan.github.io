@@ -117,3 +117,47 @@ Bioinformatics 31(8):1322-4, 2015. https://doi.org/10.1093/bioinformatics/btu829
 
 The bundled 3Dmol build also embeds smaller MIT-licensed components; their
 notices are carried inside the bundle itself and are not reproduced here.
+
+---
+
+## Kekule.js — MIT
+
+Vendored at `kekule/kekule.min.js` with its default theme at
+`kekule/themes/default/kekule.css`. Version 1.0.4.
+
+Used for the 2D structure editor in the workbench. It is a drawing surface
+only: every chemical value the platform reports is computed by RDKit on the
+server, and the editor's output is sent there to be parsed.
+
+Ketcher was evaluated first, as the phase brief asks. It is also Apache-2.0 and
+its licence was not the obstacle: `ketcher-react` declares **React 18/19 as a
+hard peer dependency** and the project ships no build-free distribution, so
+embedding it would mean adding React and a bundler to a deliberately buildless
+frontend — which this platform's constraints forbid without an unavoidable
+technical requirement — or vendoring a package that unpacks to 110 MB beside a
+45 MB WASM core, into a tree published wholesale to GitHub Pages. Kekule.js
+ships one 2.6 MB UMD file, needs no framework, and contains no `eval` or
+`Function` constructor, so it runs under the existing Content-Security-Policy
+unchanged.
+
+Copyright (c) 2017 Chen Jiang
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+Source: https://github.com/partridgejiang/Kekule.js

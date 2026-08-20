@@ -1,0 +1,269 @@
+/*
+ * The cheminformatics and structural-biology workbench.
+ *
+ * Injected by js/workbench/router.js, like every module since Discovery Lab.
+ * Built on the existing tokens; no new colour is invented.
+ */
+
+.wb-head { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 14px; }
+
+.wb-tabs {
+  display: flex; gap: 4px; margin-bottom: 18px;
+  border-bottom: 1px solid var(--border); padding-bottom: 8px; flex-wrap: wrap;
+}
+.wb-tabs a {
+  display: inline-flex; align-items: center; gap: 7px; padding: 7px 13px;
+  border-radius: var(--radius); color: var(--text-muted);
+  text-decoration: none; font-size: 13px; font-weight: 500;
+  transition: background .16s ease, color .16s ease;
+}
+.wb-tabs a:hover { background: var(--bg-hover); color: var(--text); }
+.wb-tabs a.active {
+  background: var(--accent-glow); color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--border-strong);
+}
+.wb-tabs .ico { font-size: 14px; opacity: .85; }
+
+/* -------------------------------------------------------------- controls */
+
+.wb-controls { border-radius: var(--radius-lg); padding: 16px 19px; margin-bottom: 14px; }
+
+.wb-control-grid {
+  display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 16px;
+}
+.wb-control-side { display: flex; flex-direction: column; gap: 6px; }
+
+.wb-controls label {
+  display: block; font-size: 10px; letter-spacing: .09em;
+  text-transform: uppercase; color: var(--text-dim); margin-bottom: 5px;
+}
+
+.wb-controls textarea,
+.wb-controls input[type="text"],
+.wb-controls input[type="search"],
+.wb-controls select {
+  width: 100%; padding: 9px 12px; border-radius: var(--radius);
+  border: 1px solid var(--border); background: var(--bg-input);
+  color: var(--text); font: inherit; font-size: 12.5px;
+}
+.wb-controls textarea { font-family: var(--mono); font-size: 11.5px; line-height: 1.6; resize: vertical; }
+.wb-controls textarea:focus, .wb-controls input:focus, .wb-controls select:focus {
+  outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.wb-control-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.wb-control-row label { margin: 0; white-space: nowrap; }
+.wb-control-row input { flex: 1; min-width: 240px; }
+
+.wb-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+
+.wb-btn {
+  padding: 9px 17px; border-radius: var(--radius);
+  border: 1px solid var(--accent-dim); background: var(--accent);
+  color: var(--accent-on); font: inherit; font-size: 12.5px; font-weight: 600;
+  cursor: pointer; white-space: nowrap;
+}
+.wb-btn:hover { filter: brightness(1.08); }
+
+.wb-btn-quiet {
+  padding: 8px 14px; border-radius: var(--radius);
+  border: 1px solid var(--border-strong); background: transparent;
+  color: var(--text-muted); font: inherit; font-size: 12px; cursor: pointer;
+  white-space: nowrap;
+}
+.wb-btn-quiet:hover:not(:disabled) { color: var(--text); background: var(--bg-hover); }
+
+.wb-chip-btn {
+  padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border);
+  background: var(--bg-input); color: var(--text-muted); font: inherit;
+  font-size: 11.5px; cursor: pointer;
+}
+.wb-chip-btn:hover { color: var(--text); border-color: var(--border-strong); }
+
+/* ---------------------------------------------------------------- editor */
+
+.wb-editor-layout {
+  display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 13px;
+}
+
+.wb-editor-pane, .wb-result-pane { border-radius: var(--radius-lg); padding: 16px 18px; }
+
+.wb-pane-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; margin-bottom: 12px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--border); flex-wrap: wrap;
+}
+.wb-pane-head h3 { margin: 0; font-size: 15px; }
+.wb-pane-head h4 { margin: 0; font-size: 13px; }
+
+.wb-presets { display: flex; gap: 5px; flex-wrap: wrap; }
+
+/* The editor draws on a white canvas of its own; a dark frame around it keeps
+   the page coherent without fighting the widget's internal theme. */
+.wb-canvas {
+  min-height: 440px; border-radius: var(--radius);
+  border: 1px solid var(--border); background: #f7faf8; overflow: hidden;
+}
+
+.wb-editor-io { margin-top: 12px; }
+.wb-editor-io label {
+  display: block; font-size: 10px; letter-spacing: .09em;
+  text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px;
+}
+.wb-io-row { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+.wb-io-row input {
+  flex: 1; min-width: 220px; padding: 9px 12px; border-radius: var(--radius);
+  border: 1px solid var(--border); background: var(--bg-input);
+  color: var(--text); font: inherit; font-family: var(--mono); font-size: 11.5px;
+}
+.wb-io-row input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+
+.wb-idle {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; padding: 60px 20px; color: var(--text-dim); text-align: center;
+}
+.wb-idle-glyph { font-size: 30px; opacity: .45; }
+
+.wb-identity { display: flex; flex-direction: column; gap: 7px; margin-bottom: 14px; }
+.wb-id-row {
+  display: flex; align-items: baseline; gap: 10px; font-size: 12px;
+  padding-bottom: 7px; border-bottom: 1px solid var(--border);
+}
+.wb-id-row span {
+  min-width: 128px; font-size: 10px; letter-spacing: .05em;
+  text-transform: uppercase; color: var(--text-dim);
+}
+.wb-id-row code {
+  font-family: var(--mono); font-size: 11.5px; color: var(--text-muted);
+  word-break: break-all;
+}
+
+.wb-props { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.wb-props th {
+  text-align: left; padding: 7px 12px 7px 0; width: 46%;
+  font-size: 11px; color: var(--text-dim); font-weight: 500;
+  border-bottom: 1px solid var(--border); vertical-align: top;
+}
+.wb-props td {
+  padding: 7px 0; color: var(--text-muted);
+  border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 12px;
+}
+.wb-props tr:last-child th, .wb-props tr:last-child td { border-bottom: none; }
+
+.wb-provenance {
+  margin-top: 14px; padding: 11px 13px; border-radius: var(--radius);
+  background: var(--bg-input); border: 1px solid var(--border);
+  font-size: 11.5px; color: var(--text-dim);
+}
+.wb-provenance p { margin: 6px 0 0; line-height: 1.6; }
+
+.wb-badge-calc {
+  display: inline-block; font-size: 9.5px; letter-spacing: .05em;
+  text-transform: uppercase; padding: 2px 8px; border-radius: 999px;
+  color: var(--ev-strong);
+  border: 1px solid color-mix(in srgb, var(--ev-strong) 40%, transparent);
+}
+
+.wb-notes {
+  margin: 10px 0; padding: 9px 12px; border-radius: var(--radius);
+  background: var(--bg-input); border-left: 2px solid var(--warning);
+  font-size: 11.5px; line-height: 1.6; color: var(--text-muted);
+}
+
+.wb-pre {
+  margin: 8px 0 0; padding: 11px 13px; border-radius: var(--radius);
+  background: var(--bg-input); border: 1px solid var(--border);
+  font-family: var(--mono); font-size: 10.5px; line-height: 1.5;
+  color: var(--text-muted); max-height: 340px; overflow: auto; white-space: pre;
+}
+
+/* ----------------------------------------------------------------- output */
+
+.wb-out { border-radius: var(--radius-lg); padding: 16px 19px; margin-bottom: 13px; }
+.wb-out h4 { margin: 14px 0 8px; font-size: 12px; letter-spacing: .05em;
+  text-transform: uppercase; color: var(--text-dim); }
+
+.wb-scroll { overflow-x: auto; }
+
+.wb-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.wb-table th {
+  text-align: left; font-size: 10px; letter-spacing: .07em;
+  text-transform: uppercase; color: var(--text-dim); font-weight: 600;
+  padding: 0 10px 8px 0; border-bottom: 1px solid var(--border); white-space: nowrap;
+}
+.wb-table th.num, .wb-table td.num { text-align: right; }
+.wb-table td {
+  padding: 8px 10px 8px 0; border-bottom: 1px solid var(--border);
+  vertical-align: top; color: var(--text-muted);
+}
+.wb-table tbody tr:last-child td { border-bottom: none; }
+.wb-table tbody tr:hover td { background: var(--bg-hover); }
+
+.wb-note {
+  margin: 12px 0 0; font-size: 11.5px; line-height: 1.65;
+  color: var(--text-dim); max-width: 94ch;
+}
+.wb-warn-note {
+  margin: 10px 0 0; padding: 9px 12px; border-radius: var(--radius);
+  background: var(--bg-input); border-left: 2px solid var(--warning);
+  font-size: 11.5px; line-height: 1.6; color: var(--text-muted);
+}
+
+.wb-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.wb-chip {
+  display: inline-flex; align-items: baseline; gap: 5px;
+  padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border);
+  background: var(--bg-input); color: var(--text-muted); font-size: 11.5px;
+}
+
+/* ------------------------------------------------------------- structures */
+
+.wb-struct-layout {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 13px; margin-bottom: 13px;
+}
+.wb-struct-view { border-radius: var(--radius-lg); padding: 14px; }
+.wb-struct-title { margin: 0 0 10px; font-size: 12.5px; line-height: 1.6; color: var(--text-muted); }
+
+.wb-view-controls { display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap; }
+.wb-3d { height: 460px; border-radius: var(--radius); overflow: hidden; position: relative; }
+
+.wb-class {
+  font-size: 9.5px; letter-spacing: .05em; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 999px; border: 1px solid currentColor;
+}
+.wb-class-ligand { color: var(--accent); }
+.wb-class-cofactor { color: var(--ev-preliminary); }
+.wb-class-additive { color: var(--ev-hypothesis); }
+
+/* ---------------------------------------------------------- chemical space */
+
+.wb-plot { width: 100%; height: auto; min-width: 560px; }
+.wb-axis { stroke: var(--border-strong); stroke-width: 1; }
+.wb-dot { fill: var(--accent); opacity: .85; }
+.wb-dot-label { fill: var(--text-dim); font-size: 9px; font-family: var(--sans); }
+.wb-axis-label { fill: var(--text-dim); font-size: 10px; text-anchor: middle; font-family: var(--sans); }
+
+.wb-clusters { display: flex; flex-direction: column; gap: 9px; }
+.wb-cluster {
+  padding: 11px 13px; border-radius: var(--radius);
+  background: var(--bg-input); border: 1px solid var(--border);
+}
+.wb-cluster-head {
+  display: flex; align-items: baseline; gap: 10px; margin-bottom: 7px; flex-wrap: wrap;
+}
+
+.wb-matrix { border-collapse: collapse; font-size: 10.5px; }
+.wb-matrix th {
+  padding: 4px 6px; color: var(--text-dim); font-weight: 500;
+  font-size: 9.5px; text-align: left; white-space: nowrap;
+}
+.wb-matrix thead th span { display: inline-block; }
+.wb-matrix td {
+  padding: 5px 7px; text-align: center; font-family: var(--mono);
+  color: var(--text); border: 1px solid rgba(0,0,0,.18); min-width: 42px;
+}
+
+@media (max-width: 1100px) {
+  .wb-editor-layout, .wb-struct-layout, .wb-control-grid { grid-template-columns: 1fr; }
+}
