@@ -24,6 +24,8 @@ const NAV = [
       { route: "knowledge/literature", icon: "📄", label: "Literature" },
       { route: "workbench/editor", icon: "✎", label: "Molecule Editor" },
       { route: "workbench/structures", icon: "⬢", label: "Structure Workbench" },
+      { route: "docking/run", icon: "⊕", label: "Docking" },
+      { route: "docking/campaigns", icon: "▤", label: "Screening Campaigns" },
     ],
   },
   { group: "Overview", items: [{ route: "", icon: "◈", label: "Dashboard" }] },
@@ -250,6 +252,10 @@ const ROUTES = {
   // The cheminformatics workbench, same pattern again.
   workbench: (section, params) =>
     import("./workbench/router.js").then((m) => m.workbenchView(view, section, params)),
+
+  // Docking and virtual screening, same pattern again.
+  docking: (section, params) =>
+    import("./docking/router.js").then((m) => m.dockingView(view, section, params)),
 
   // Chemical Intelligence, same pattern again.
   chemint: (section, params) =>
