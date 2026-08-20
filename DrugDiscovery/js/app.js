@@ -26,6 +26,10 @@ const NAV = [
       { route: "workbench/structures", icon: "⬢", label: "Structure Workbench" },
       { route: "docking/run", icon: "⊕", label: "Docking" },
       { route: "docking/campaigns", icon: "▤", label: "Screening Campaigns" },
+      { route: "qsar/models", icon: "▦", label: "QSAR Models" },
+      { route: "qsar/predict", icon: "◈", label: "ADMET Prediction" },
+      { route: "md/runs", icon: "◉", label: "Dynamics" },
+      { route: "md/free-energy", icon: "⇌", label: "Free Energy" },
     ],
   },
   { group: "Overview", items: [{ route: "", icon: "◈", label: "Dashboard" }] },
@@ -256,6 +260,14 @@ const ROUTES = {
   // Docking and virtual screening, same pattern again.
   docking: (section, params) =>
     import("./docking/router.js").then((m) => m.dockingView(view, section, params)),
+
+  // QSAR, molecular ML and ADMET, same pattern again.
+  qsar: (section, params) =>
+    import("./qsar/router.js").then((m) => m.qsarView(view, section, params)),
+
+  // Molecular dynamics and free energy, same pattern again.
+  md: (section, params) =>
+    import("./md/router.js").then((m) => m.mdView(view, section, params)),
 
   // Chemical Intelligence, same pattern again.
   chemint: (section, params) =>
