@@ -1,0 +1,153 @@
+/* Modalities beyond the small molecule. Injected by js/modalities/router.js. */
+.md9-head { display:flex; align-items:flex-start; gap:16px; margin-bottom:14px; }
+.md9-tabs { display:flex; gap:4px; margin-bottom:18px; border-bottom:1px solid var(--border); padding-bottom:8px; flex-wrap:wrap; }
+.md9-tabs a { display:inline-flex; align-items:center; gap:7px; padding:7px 13px; border-radius:var(--radius);
+  color:var(--text-muted); text-decoration:none; font-size:13px; font-weight:500; }
+.md9-tabs a:hover { background:var(--bg-hover); color:var(--text); }
+.md9-tabs a.active { background:var(--accent-glow); color:var(--accent); box-shadow:inset 0 0 0 1px var(--border-strong); }
+.md9-tabs .ico { font-size:14px; opacity:.85; }
+
+.md9-panel { border-radius:var(--radius-lg); padding:16px 19px; margin-bottom:13px; }
+.md9-panel-head { display:flex; align-items:flex-start; justify-content:space-between; gap:14px;
+  margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid var(--border); flex-wrap:wrap; }
+.md9-panel-head h3 { margin:0 0 3px; font-size:15px; }
+.md9-panel h4 { margin:18px 0 7px; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--text-dim); }
+.md9-panel h5 { margin:0 0 6px; font-size:10.5px; letter-spacing:.05em; text-transform:uppercase; color:var(--text-dim); }
+
+.md9-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:20px; }
+.md9-inline { display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end; }
+.md9-inline > div { min-width:110px; }
+.md9-panel label { display:block; font-size:10px; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--text-dim); margin:12px 0 5px; }
+.md9-panel input[type=text], .md9-panel input[type=number], .md9-panel textarea, .md9-panel select {
+  width:100%; padding:9px 12px; border-radius:var(--radius); border:1px solid var(--border);
+  background:var(--bg-input); color:var(--text); font:inherit; font-size:12.5px; }
+.md9-panel textarea { font-family:var(--mono); font-size:11.5px; line-height:1.6; resize:vertical; word-break:break-all; }
+.md9-panel input:focus, .md9-panel textarea:focus, .md9-panel select:focus {
+  outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-glow); }
+.md9-actions { margin-top:16px; display:flex; gap:10px; flex-wrap:wrap; }
+.md9-examples { display:flex; gap:6px; flex-wrap:wrap; margin-top:9px; }
+
+.md9-btn { display:inline-block; padding:10px 18px; border-radius:var(--radius);
+  border:1px solid var(--accent-dim); background:var(--accent); color:var(--accent-on);
+  font:inherit; font-size:13px; font-weight:600; cursor:pointer; }
+.md9-btn:hover:not(:disabled) { filter:brightness(1.08); }
+.md9-btn.ghost { background:transparent; color:var(--text-muted); border-color:var(--border-strong); }
+.md9-btn.ghost:hover { color:var(--accent); border-color:var(--accent); }
+.md9-pill { padding:4px 11px; border-radius:999px; border:1px solid var(--border);
+  background:var(--bg-input); color:var(--text-muted); font:inherit; font-size:11px; cursor:pointer; }
+.md9-pill:hover { border-color:var(--accent); color:var(--accent); }
+.md9-pill.active { border-color:var(--accent); color:var(--accent); background:var(--accent-glow); }
+
+/* Modality cards */
+.md9-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:12px; }
+.md9-card { padding:13px 15px; border-radius:var(--radius); background:var(--bg-input);
+  border-left:3px solid var(--kind); }
+.md9-card-head { display:flex; align-items:baseline; justify-content:space-between; gap:9px; margin-bottom:6px; }
+.md9-card-head strong { font-size:13.5px; color:var(--text); }
+.md9-rep { font-size:9.5px; letter-spacing:.05em; text-transform:uppercase; padding:2px 8px;
+  border-radius:999px; border:1px solid var(--border); color:var(--text-dim); white-space:nowrap; }
+.md9-card-body { margin:0 0 9px; font-size:11.5px; line-height:1.65; color:var(--text-muted); }
+.md9-card-meta { font-size:10.5px; line-height:1.7; color:var(--text-dim); }
+.md9-card-meta span { text-transform:uppercase; letter-spacing:.05em; font-size:9px; margin-right:5px; }
+
+/* Refusals */
+.md9-refusals { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:10px; }
+.md9-refusal { padding:11px 13px; border-radius:var(--radius); background:var(--bg-input);
+  border-left:2px solid var(--danger); }
+.md9-refusal-unavailable { border-left-color:var(--ev-hypothesis); }
+.md9-refusal-head { display:flex; justify-content:space-between; align-items:baseline; gap:9px; margin-bottom:5px; }
+.md9-refusal p { margin:0; font-size:11.5px; line-height:1.65; color:var(--text-muted); }
+.md9-status { font-size:9.5px; letter-spacing:.05em; text-transform:uppercase; padding:2px 8px;
+  border-radius:999px; border:1px solid currentColor; color:var(--danger); }
+.md9-status-unavailable { color:var(--ev-hypothesis); }
+.md9-status-refused { color:var(--danger); }
+
+/* Provenance badges */
+.md9-prov { display:inline-block; font-size:9.5px; letter-spacing:.05em; text-transform:uppercase;
+  padding:2px 8px; border-radius:999px; border:1px solid currentColor; margin-left:6px; }
+.md9-prov-experimental { color:var(--ev-established); }
+.md9-prov-database { color:var(--ev-strong); }
+.md9-prov-calculated { color:var(--accent); }
+.md9-prov-predicted { color:var(--ev-preliminary); }
+.md9-prov-inferred { color:var(--ev-clinical); }
+.md9-prov-derived { color:var(--ev-clinical); }
+
+/* Tables */
+.md9-scroll { overflow-x:auto; }
+.md9-table { width:100%; border-collapse:collapse; font-size:12.5px; }
+.md9-table th { text-align:left; font-size:10px; letter-spacing:.07em; text-transform:uppercase;
+  color:var(--text-dim); font-weight:600; padding:0 10px 8px 0; border-bottom:1px solid var(--border); white-space:nowrap; }
+.md9-table th.num, .md9-table td.num { text-align:right; }
+.md9-table td { padding:7px 10px 7px 0; border-bottom:1px solid var(--border); vertical-align:top; color:var(--text-muted); }
+.md9-table tr.clickable:hover { background:var(--bg-hover); cursor:pointer; }
+.md9-props { width:100%; border-collapse:collapse; font-size:12.5px; }
+.md9-props th { text-align:left; padding:6px 14px 6px 0; width:52%; font-size:10px; letter-spacing:.05em;
+  text-transform:uppercase; color:var(--text-dim); font-weight:600; border-bottom:1px solid var(--border); }
+.md9-props td { padding:6px 0; color:var(--text-muted); border-bottom:1px solid var(--border); }
+.md9-props tr:last-child th, .md9-props tr:last-child td { border-bottom:none; }
+
+.md9-stats { display:flex; flex-wrap:wrap; gap:22px; margin:12px 0; }
+.md9-stats div { display:flex; flex-direction:column; }
+.md9-stats b { font-size:19px; color:var(--text); font-variant-numeric:tabular-nums; }
+.md9-stats span { font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:var(--text-dim); }
+
+/* Bars */
+.md9-bars { display:flex; flex-direction:column; gap:5px; margin:10px 0; }
+.md9-bar-row { display:grid; grid-template-columns:150px minmax(0,1fr) 60px; gap:10px; align-items:center; }
+.md9-bar-label { font-size:11.5px; color:var(--text-muted); text-transform:capitalize; }
+.md9-bar-track { height:9px; border-radius:5px; background:var(--bg-hover); overflow:hidden; }
+.md9-bar-fill { display:block; height:100%; background:var(--accent); }
+.md9-bar-value { font-size:11px; text-align:right; color:var(--text-dim); }
+
+/* Peptide / degrader */
+.md9-steps { margin:6px 0; padding-left:20px; font-size:12px; line-height:1.75; }
+.md9-steps li.ok { color:var(--ev-established); }
+.md9-steps li.no { color:var(--ev-hypothesis); }
+.md9-steps li span, .md9-steps li { color:var(--text-muted); }
+.md9-steps li.ok::marker { content:"✓ "; }
+.md9-steps li.no::marker { content:"✗ "; }
+.md9-smiles { margin:8px 0; padding:9px 12px; border-radius:var(--radius); background:var(--bg-input);
+  border:1px solid var(--border); font-size:11px; line-height:1.6; color:var(--text-muted); word-break:break-all; }
+.md9-mods { margin:9px 0; font-size:11.5px; line-height:1.7; color:var(--text-muted); }
+.md9-checks { display:flex; flex-direction:column; gap:5px; }
+.md9-check { display:flex; align-items:center; gap:8px; margin:0; text-transform:none;
+  letter-spacing:0; font-size:12px; color:var(--text-muted); }
+.md9-check input { width:auto; }
+
+.md9-ternary { display:grid; grid-template-columns:1fr auto 1fr auto 1fr; gap:10px; align-items:start; }
+.md9-part { padding:12px 14px; border-radius:var(--radius); background:var(--bg-input);
+  border-top:3px solid var(--kind); }
+.md9-part-role { font-size:9.5px; letter-spacing:.07em; text-transform:uppercase; color:var(--kind); }
+.md9-join { align-self:center; font-size:20px; color:var(--text-dim); }
+
+/* Antibody CDRs */
+.md9-cdrblock { margin:10px 0; padding:11px 13px; border-radius:var(--radius); background:var(--bg-input); }
+.md9-cdrblock-head { font-size:11px; letter-spacing:.05em; text-transform:uppercase;
+  color:var(--text-dim); margin-bottom:8px; }
+.md9-cdrs { display:flex; flex-direction:column; gap:5px; }
+.md9-cdr { display:grid; grid-template-columns:80px minmax(0,1fr) 140px; gap:10px; align-items:baseline; font-size:12px; }
+.md9-cdr-name { font-size:10.5px; letter-spacing:.05em; color:var(--accent); }
+.md9-liab { margin:8px 0; }
+.md9-chips { display:flex; gap:6px; flex-wrap:wrap; }
+.md9-chip { font-size:10.5px; padding:2px 9px; border-radius:999px; border:1px solid var(--border);
+  color:var(--text-muted); background:var(--bg-input); }
+.md9-chip b { color:var(--text); }
+
+.md9-dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:7px; }
+.md9-sig { font-size:10.5px; padding:2px 9px; border-radius:999px; border:1px solid currentColor; white-space:nowrap; }
+.md9-sig-likely_crystal_contact { color:var(--ev-hypothesis); }
+.md9-sig-small_interface { color:var(--ev-preliminary); }
+.md9-sig-typical_biological_interface { color:var(--ev-established); }
+.md9-sig-large_interface { color:var(--ev-strong); }
+.md9-sig-unknown { color:var(--text-dim); }
+.md9-score { display:inline-block; padding:1px 7px; border-radius:4px;
+  background:color-mix(in srgb, var(--accent) calc(var(--v) * 55%), transparent); }
+
+.md9-note { margin:9px 0 0; font-size:11.5px; line-height:1.65; color:var(--text-dim); max-width:96ch; }
+.md9-caveat { margin:9px 0 0; padding:10px 13px; border-radius:var(--radius); background:var(--bg-input);
+  border-left:2px solid var(--ev-preliminary); font-size:11.5px; line-height:1.65; color:var(--text-muted); max-width:96ch; }
+.md9-details summary { cursor:pointer; font-size:11.5px; color:var(--text-dim); margin-top:10px; }
+.md9-details summary:hover { color:var(--text); }
+@media (max-width:1100px){ .md9-grid{grid-template-columns:1fr;}
+  .md9-ternary{grid-template-columns:1fr;} .md9-join{transform:rotate(90deg);} }

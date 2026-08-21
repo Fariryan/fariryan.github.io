@@ -30,6 +30,15 @@ const NAV = [
       { route: "qsar/predict", icon: "◈", label: "ADMET Prediction" },
       { route: "md/runs", icon: "◉", label: "Dynamics" },
       { route: "md/free-energy", icon: "⇌", label: "Free Energy" },
+      { route: "workflow/design", icon: "▶", label: "Automated Discovery" },
+      { route: "workflow/graph", icon: "⚯", label: "Workflow Graph" },
+      { route: "scientist/ask", icon: "◎", label: "AI Scientist" },
+      { route: "modalities/overview", icon: "◫", label: "Modalities" },
+      { route: "modalities/interface", icon: "◑", label: "PPI Interfaces" },
+      { route: "modalities/degrader", icon: "⚯", label: "Degraders" },
+      { route: "optimizer/design", icon: "◇", label: "Gradient Optimizer" },
+      { route: "optimizer/pareto", icon: "◈", label: "Pareto Front" },
+      { route: "optimizer/lineage", icon: "⑂", label: "Chemical Lineage" },
     ],
   },
   { group: "Overview", items: [{ route: "", icon: "◈", label: "Dashboard" }] },
@@ -264,6 +273,20 @@ const ROUTES = {
   // QSAR, molecular ML and ADMET, same pattern again.
   qsar: (section, params) =>
     import("./qsar/router.js").then((m) => m.qsarView(view, section, params)),
+
+  // Modalities beyond the small molecule, same pattern again.
+  modalities: (section, params) =>
+    import("./modalities/router.js").then((m) => m.modalitiesView(view, section, params)),
+
+  // Automated discovery workflow and the AI Scientist, same pattern again.
+  workflow: (section, params) =>
+    import("./workflow/router.js").then((m) => m.workflowView(view, section, params)),
+  scientist: (section, params) =>
+    import("./scientist/router.js").then((m) => m.scientistView(view, section, params)),
+
+  // Chemical Gradient Optimizer, same pattern again.
+  optimizer: (section, params) =>
+    import("./optimizer/router.js").then((m) => m.optimizerView(view, section, params)),
 
   // Molecular dynamics and free energy, same pattern again.
   md: (section, params) =>
