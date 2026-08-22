@@ -932,9 +932,38 @@ tbody tr:hover { background-color: var(--bg-hover); }
         theme-driven.
    --------------------------------------------------------------------------- */
 
+/* The phase stylesheets' own button classes are in these lists rather than
+   restyling `button` themselves. Each of them previously set
+   `border-radius`, `border` and an opaque `background`, which fought the
+   material three ways at once: the glass system's conic rim is a pill drawn
+   *outside* the box, so a 12px rounded rectangle inside it read as two
+   nested shapes with different corners; the `border` doubled an edge the
+   system already draws with inset shadows precisely so it never doubles;
+   and the opaque fill hid the refraction entirely.
+
+   A new module adds its class to these lists and to `.lg-t3` below. It does
+   not write its own button. */
 button,
 .btn,
-.lg-btn {
+.lg-btn,
+.dk-btn,
+.kb-btn,
+.wb-btn,
+.md-btn,
+.opt-btn,
+.wf-btn,
+.sci-btn,
+.md9-btn,
+.dk-btn-quiet,
+.kb-btn-quiet,
+.wb-btn-quiet,
+.wb-chip-btn,
+.opt-pill,
+.opt-filter,
+.md9-pill,
+.sci-pill,
+.opt-branch-toggle,
+.sci-evidence-toggle {
   --border-width: clamp(1px, 0.0625em, 4px);
   --anim--hover-time: 400ms;
   --anim--hover-ease: cubic-bezier(0.25, 1, 0.5, 1);
@@ -983,7 +1012,25 @@ button,
    surface rather than white paint in it. */
 button::before,
 .btn::before,
-.lg-btn::before {
+.lg-btn::before,
+.dk-btn::before,
+.kb-btn::before,
+.wb-btn::before,
+.md-btn::before,
+.opt-btn::before,
+.wf-btn::before,
+.sci-btn::before,
+.md9-btn::before,
+.dk-btn-quiet::before,
+.kb-btn-quiet::before,
+.wb-btn-quiet::before,
+.wb-chip-btn::before,
+.opt-pill::before,
+.opt-filter::before,
+.md9-pill::before,
+.sci-pill::before,
+.opt-branch-toggle::before,
+.sci-evidence-toggle::before {
   content: "";
   display: block;
   position: absolute;
@@ -1016,7 +1063,25 @@ button::before,
    dropped and the rim stays static, which is a clean degradation. */
 button::after,
 .btn::after,
-.lg-btn::after {
+.lg-btn::after,
+.dk-btn::after,
+.kb-btn::after,
+.wb-btn::after,
+.md-btn::after,
+.opt-btn::after,
+.wf-btn::after,
+.sci-btn::after,
+.md9-btn::after,
+.dk-btn-quiet::after,
+.kb-btn-quiet::after,
+.wb-btn-quiet::after,
+.wb-chip-btn::after,
+.opt-pill::after,
+.opt-filter::after,
+.md9-pill::after,
+.sci-pill::after,
+.opt-branch-toggle::after,
+.sci-evidence-toggle::after {
   content: "";
   position: absolute;
   z-index: 1;
@@ -1052,7 +1117,25 @@ button::after,
    becomes clearer as it is pressed toward the page. */
 button:hover,
 .btn:hover,
-.lg-btn:hover {
+.lg-btn:hover,
+.dk-btn:hover,
+.kb-btn:hover,
+.wb-btn:hover,
+.md-btn:hover,
+.opt-btn:hover,
+.wf-btn:hover,
+.sci-btn:hover,
+.md9-btn:hover,
+.dk-btn-quiet:hover,
+.kb-btn-quiet:hover,
+.wb-btn-quiet:hover,
+.wb-chip-btn:hover,
+.opt-pill:hover,
+.opt-filter:hover,
+.md9-pill:hover,
+.sci-pill:hover,
+.opt-branch-toggle:hover,
+.sci-evidence-toggle:hover {
   transform: scale(0.975);
   -webkit-backdrop-filter: blur(0.01em);
   backdrop-filter: blur(0.01em);
@@ -1076,7 +1159,25 @@ button:hover::before,
    perspective, which is visually identical. */
 button:active:not(:disabled),
 .btn:active:not(:disabled),
-.lg-btn:active:not(:disabled) {
+.lg-btn:active:not(:disabled),
+.dk-btn:active:not(:disabled),
+.kb-btn:active:not(:disabled),
+.wb-btn:active:not(:disabled),
+.md-btn:active:not(:disabled),
+.opt-btn:active:not(:disabled),
+.wf-btn:active:not(:disabled),
+.sci-btn:active:not(:disabled),
+.md9-btn:active:not(:disabled),
+.dk-btn-quiet:active:not(:disabled),
+.kb-btn-quiet:active:not(:disabled),
+.wb-btn-quiet:active:not(:disabled),
+.wb-chip-btn:active:not(:disabled),
+.opt-pill:active:not(:disabled),
+.opt-filter:active:not(:disabled),
+.md9-pill:active:not(:disabled),
+.sci-pill:active:not(:disabled),
+.opt-branch-toggle:active:not(:disabled),
+.sci-evidence-toggle:active:not(:disabled) {
   transform: perspective(6em) rotate3d(1, 0, 0, 25deg) scale(0.975);
   text-shadow: 0.025em 0.25em 0.05em var(--btn-text-shadow);
   box-shadow:
@@ -1089,9 +1190,45 @@ button:active:not(:disabled),
     inset 0 0.25em 0.05em 0 var(--btn-press-shade);
 }
 button:active:not(:disabled)::after,
-.btn:active:not(:disabled)::after { --angle-1: -75deg; }
+.btn:active:not(:disabled)::after,
+.dk-btn:active:not(:disabled)::after,
+.kb-btn:active:not(:disabled)::after,
+.wb-btn:active:not(:disabled)::after,
+.md-btn:active:not(:disabled)::after,
+.opt-btn:active:not(:disabled)::after,
+.wf-btn:active:not(:disabled)::after,
+.sci-btn:active:not(:disabled)::after,
+.md9-btn:active:not(:disabled)::after,
+.dk-btn-quiet:active:not(:disabled)::after,
+.kb-btn-quiet:active:not(:disabled)::after,
+.wb-btn-quiet:active:not(:disabled)::after,
+.wb-chip-btn:active:not(:disabled)::after,
+.opt-pill:active:not(:disabled)::after,
+.opt-filter:active:not(:disabled)::after,
+.md9-pill:active:not(:disabled)::after,
+.sci-pill:active:not(:disabled)::after,
+.opt-branch-toggle:active:not(:disabled)::after,
+.sci-evidence-toggle:active:not(:disabled)::after { --angle-1: -75deg; }
 button:active:not(:disabled)::before,
-.btn:active:not(:disabled)::before {
+.btn:active:not(:disabled)::before,
+.dk-btn:active:not(:disabled)::before,
+.kb-btn:active:not(:disabled)::before,
+.wb-btn:active:not(:disabled)::before,
+.md-btn:active:not(:disabled)::before,
+.opt-btn:active:not(:disabled)::before,
+.wf-btn:active:not(:disabled)::before,
+.sci-btn:active:not(:disabled)::before,
+.md9-btn:active:not(:disabled)::before,
+.dk-btn-quiet:active:not(:disabled)::before,
+.kb-btn-quiet:active:not(:disabled)::before,
+.wb-btn-quiet:active:not(:disabled)::before,
+.wb-chip-btn:active:not(:disabled)::before,
+.opt-pill:active:not(:disabled)::before,
+.opt-filter:active:not(:disabled)::before,
+.md9-pill:active:not(:disabled)::before,
+.sci-pill:active:not(:disabled)::before,
+.opt-branch-toggle:active:not(:disabled)::before,
+.sci-evidence-toggle:active:not(:disabled)::before {
   background-position: 50% 15%;
   --angle-2: -15deg;
 }
@@ -1106,7 +1243,15 @@ button:active:not(:disabled)::before,
   button:hover, .btn:hover { transform: none; }
 }
 
-.lg-t3 button, .lg-t3 .btn {
+.lg-t3 button, .lg-t3 .btn,
+.lg-t3 .dk-btn,
+.lg-t3 .kb-btn,
+.lg-t3 .wb-btn,
+.lg-t3 .md-btn,
+.lg-t3 .opt-btn,
+.lg-t3 .wf-btn,
+.lg-t3 .sci-btn,
+.lg-t3 .md9-btn {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
   background-color: var(--lg-scrim-strong);

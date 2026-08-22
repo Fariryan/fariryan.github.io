@@ -19,9 +19,12 @@
  * The rules that keep it usable matter more than the effect:
  *
  *   · it never receives pointer events, so nothing under it changes behaviour
- *   · it hides over text, inputs, canvases, molecule and graph viewers, and
- *     for the whole duration of any drag — an orbit control or a text
- *     selection needs the real cursor and its real hotspot
+ *   · it shrinks over text and form fields so it never covers a glyph, and
+ *     hides entirely over canvases, molecule and graph viewers, and for the
+ *     whole duration of any drag — an orbit control needs the real cursor
+ *     and its real hotspot. It shrinks over text; it does not fade out,
+ *     because text is most of the interface and a cursor you cannot see on
+ *     most of the interface is not a cursor
  *   · the native cursor is only hidden where the lens is actually standing in
  *     for it, so an I-beam or a grab hand is never lost
  *   · it does not exist on touch devices, under reduced motion, in forced
@@ -34,13 +37,19 @@
 import { installLensFilter } from "./filters.js";
 import { capability } from "./tiers.js";
 
-/** Where the lens must stand aside and give back the real cursor. */
+/** Where the lens must stand aside entirely and give back the real cursor.
+ *
+ * Only surfaces the pointer *manipulates*: a molecule you orbit, a graph you
+ * pan, a canvas you draw on. There the lens would fight the interaction and
+ * the real cursor carries information the lens cannot.
+ *
+ * Text fields used to be on this list, and that was wrong. A form is mostly
+ * fields, so the lens vanished across whole views — half of "the cursor
+ * disappears". The I-beam and the lens can coexist: the field keeps its
+ * native caret cursor via CSS, which carries the hotspot, and the lens rides
+ * along as decoration. It takes no pointer events either way.
+ */
 const HANDS_OFF = [
-  "input",
-  "textarea",
-  "select",
-  "option",
-  "[contenteditable]",
   "canvas",
   ".viewer",
   "#graph-canvas",
@@ -48,6 +57,9 @@ const HANDS_OFF = [
   "svg",
   ".lg-no-cursor",
 ].join(",");
+
+/** Fields: the lens stays, in its small state, over the native caret. */
+const FIELDS = "input, textarea, select, option, [contenteditable]";
 
 /** What the lens opens up over. */
 const ACTIONABLE = [
@@ -64,8 +76,11 @@ const ACTIONABLE = [
   "[role='tab']",
 ].join(",");
 
-/** Text the lens shrinks over, so it never sits on top of a glyph. */
-const TEXTUAL = "p, li, td, th, dd, dt, h1, h2, h3, h4, h5, h6, code, pre, label";
+/** Text the lens shrinks over, so it never sits on top of a glyph. It
+ *  shrinks; it does not fade out. Fields join it, so the lens over an input
+ *  is the same small ring it is over a paragraph. */
+const TEXTUAL =
+  "p, li, td, th, dd, dt, h1, h2, h3, h4, h5, h6, code, pre, label, " + FIELDS;
 
 let lens = null;
 let running = false;
@@ -120,7 +135,10 @@ function onMove(event) {
   show();
   schedule();
 
-  const actionable = isElement && target.closest(ACTIONABLE);
+  // A field is textual even when it sits inside a label or a button-like
+  // wrapper: what the pointer is over is the field.
+  const inField = isElement && target.closest(FIELDS);
+  const actionable = !inField && isElement && target.closest(ACTIONABLE);
   const textual = !actionable && isElement && target.closest(TEXTUAL);
   lens.classList.toggle("is-hot", Boolean(actionable));
   lens.classList.toggle("is-text", Boolean(textual));

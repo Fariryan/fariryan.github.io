@@ -536,14 +536,95 @@
 
 /* Quiet: a rim with almost no body, for dense toolbars where a row of full
    lenses would be noise. Keeps the conic outline and the sheen. */
-.lg-btn-quiet {
+.lg-btn-quiet,
+.dk-btn-quiet,
+.kb-btn-quiet,
+.wb-btn-quiet,
+.wb-chip-btn,
+.opt-pill,
+.opt-filter,
+.md9-pill,
+.sci-pill,
+.opt-branch-toggle,
+.sci-evidence-toggle,
+.md-btn.ghost,
+.opt-btn.ghost,
+.wf-btn.ghost,
+.sci-btn.ghost,
+.md9-btn.ghost {
   color: var(--text-muted);
   background-image: none;
   box-shadow:
     inset 0 -0.125em 0.125em color-mix(in srgb, var(--btn-inner-bottom) 45%, transparent),
     0 0.125em 0.125em -0.125em color-mix(in srgb, var(--btn-drop) 50%, transparent);
 }
-.lg-btn-quiet:hover { color: var(--text); }
+.lg-btn-quiet:hover,
+.dk-btn-quiet:hover,
+.kb-btn-quiet:hover,
+.wb-btn-quiet:hover,
+.wb-chip-btn:hover,
+.opt-pill:hover,
+.opt-filter:hover,
+.md9-pill:hover,
+.sci-pill:hover,
+.opt-branch-toggle:hover,
+.sci-evidence-toggle:hover,
+.md-btn.ghost:hover,
+.opt-btn.ghost:hover,
+.wf-btn.ghost:hover,
+.sci-btn.ghost:hover,
+.md9-btn.ghost:hover { color: var(--text); }
+
+/* A selected chip. A quiet lens has almost no body, so "selected" cannot be
+   shown by a border — it has none. It is shown by giving the chip back a
+   faint accent-tinted face and lighting its rim, which is the same language
+   the primary button uses, one step quieter. */
+.lg-btn-quiet.is-selected,
+.opt-filter.active,
+.md9-pill.active,
+.opt-pill.active,
+.sci-pill.active {
+  color: var(--accent);
+  background-image: linear-gradient(
+    -75deg,
+    color-mix(in srgb, var(--accent) 12%, transparent),
+    color-mix(in srgb, var(--accent) 20%, transparent),
+    color-mix(in srgb, var(--accent) 12%, transparent)
+  );
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent),
+    inset 0 -0.125em 0.125em color-mix(in srgb, var(--btn-inner-bottom) 45%, transparent);
+}
+
+/* Primary: the accent-tinted face, for the one action a view is about.
+   Same construction as danger — the -75deg three-stop gradient the button's
+   face already uses — so the specular sheen, the conic rim and the press
+   tilt all still read correctly over it.
+
+   This primitive is the reason the phase stylesheets were reinventing the
+   button. Each of them wanted an accent-coloured call to action, found no
+   modifier for one, and reached for `background: var(--accent)` plus a
+   `border` and a small `border-radius`. That produced the doubled shape this
+   modifier exists to prevent: an opaque rounded rectangle inside the glass
+   system's pill-shaped rim, with the rim drawn outside the box and the two
+   corner radii disagreeing. One primitive here removes the temptation. */
+.lg-btn-primary,
+.dk-btn:not(.ghost),
+.kb-btn:not(.ghost),
+.wb-btn:not(.ghost),
+.md-btn:not(.ghost),
+.opt-btn:not(.ghost),
+.wf-btn:not(.ghost),
+.sci-btn:not(.ghost),
+.md9-btn:not(.ghost) {
+  color: var(--accent-on, #061a12);
+  background-image: linear-gradient(
+    -75deg,
+    color-mix(in srgb, var(--accent) 86%, black),
+    color-mix(in srgb, var(--accent) 94%, white),
+    color-mix(in srgb, var(--accent) 86%, black)
+  );
+}
 
 /* Danger keeps every layer and tints the face. Used only where the action is
    genuinely destructive. */
@@ -556,6 +637,51 @@
     color-mix(in srgb, var(--danger) 86%, black)
   );
 }
+
+/* Plain: a <button> that is structurally a row or a card rather than a
+   control. The views use buttons for list items so they stay keyboard
+   reachable, and the material is wrong for them — a pill rim around a
+   full-width row of wrapped text is precisely the "box around the box" this
+   pass exists to remove.
+
+   This has to be an opt-*out*, not an opt-in. The material is declared on the
+   element selector `button`, because the views emit bare <button> in
+   thirty-five modules; so every one of them receives it whether or not its
+   class appears in a list, and the only way a row escapes is to undo the
+   layers explicitly. Each declaration below reverses exactly one of them.
+
+   Third-party widget markup is here for the same reason: the vendored
+   structure editor ships its own buttons with their own visual language, and
+   dressing them as lenses makes the toolbar unreadable. */
+.lg-plain,
+.dk-list-item,
+.md-list-item,
+.sci-conv,
+.opt-edge,
+.K-Widget,
+.K-Widget button {
+  border-radius: var(--radius, 10px);
+  background-image: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  text-shadow: none;
+  white-space: normal;
+  justify-content: flex-start;
+  text-align: left;
+  letter-spacing: normal;
+}
+.lg-plain::before, .lg-plain::after,
+.dk-list-item::before, .dk-list-item::after,
+.md-list-item::before, .md-list-item::after,
+.sci-conv::before, .sci-conv::after,
+.opt-edge::before, .opt-edge::after,
+.K-Widget button::before, .K-Widget button::after { content: none; display: none; }
+.lg-plain:hover, .lg-plain:active:not(:disabled),
+.dk-list-item:hover, .dk-list-item:active:not(:disabled),
+.md-list-item:hover, .md-list-item:active:not(:disabled),
+.sci-conv:hover, .sci-conv:active:not(:disabled),
+.opt-edge:hover, .opt-edge:active:not(:disabled),
+.K-Widget button:hover { transform: none; }
 
 /* A circular lens. Same optics, square aspect. */
 .lg-icon-btn {
@@ -783,11 +909,36 @@
    Behaviour, suppression rules and the spring live in js/glass/cursor.js.
    ========================================================================== */
 
+/* The lens is ruby. It was colourless — a 5% white body and a hairline rim —
+   and that is why it kept vanishing: over a glass panel, whose backdrop is
+   already blurred, a lens that only blurs adds almost nothing, so it read as
+   having slipped behind the pane. Colour is what gives it a signature of its
+   own against any ground, and a ruby lens is still a lens: the alpha stays
+   low enough to look through. */
+:root {
+  --lg-ruby: 350 78% 56%;
+  --lg-ruby-body: hsl(var(--lg-ruby) / 0.16);
+  --lg-ruby-rim: hsl(var(--lg-ruby) / 0.85);
+  --lg-ruby-glow: hsl(var(--lg-ruby) / 0.55);
+  --lg-ruby-deep: hsl(350 82% 38% / 0.7);
+}
+:root[data-theme="light"] {
+  /* Slightly deeper on a bright ground, where a light ruby washes out. */
+  --lg-ruby: 350 74% 47%;
+  --lg-ruby-body: hsl(var(--lg-ruby) / 0.2);
+  --lg-ruby-rim: hsl(var(--lg-ruby) / 0.9);
+  --lg-ruby-glow: hsl(var(--lg-ruby) / 0.6);
+  --lg-ruby-deep: hsl(350 80% 34% / 0.75);
+}
+
 .lg-cursor {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 9998;
+  /* Above every stacking context this application creates. It is decoration
+     that must never be occluded, and it takes no pointer events, so nothing
+     below it loses a click by being underneath. */
+  z-index: 2147483000;
   width: var(--lg-cursor-size, 12px);
   height: var(--lg-cursor-size, 12px);
   margin: calc(var(--lg-cursor-size, 12px) / -2) 0 0 calc(var(--lg-cursor-size, 12px) / -2);
@@ -835,7 +986,15 @@
   inset: 0;
   z-index: 1;
   border-radius: inherit;
-  background: rgba(255, 255, 255, 0.05);
+  /* Ruby body over a brighter core, so the middle still reads as glass being
+     looked through rather than as a coloured sticker. */
+  background:
+    radial-gradient(
+      circle at 34% 28%,
+      hsl(var(--lg-ruby) / 0.05) 0%,
+      var(--lg-ruby-body) 68%,
+      hsl(var(--lg-ruby) / 0.26) 100%
+    );
 }
 
 /* Layer 3 — the rim and the catchlight. Never filtered, so the edge stays
@@ -851,30 +1010,59 @@
     transparent 70%
   );
   box-shadow:
-    inset 0 0 0 0.5px rgba(255, 255, 255, 0.5),
-    inset 0.5px 0.5px 0.5px 0 rgba(255, 255, 255, 0.6),
-    inset -0.5px -0.5px 0.5px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -2px 3px -2px var(--lg-caustic);
+    /* the ruby rim — the part that makes it findable on any ground */
+    inset 0 0 0 1px var(--lg-ruby-rim),
+    /* the white catchlight, kept colourless so it still reads as a specular
+       highlight on glass rather than as more of the tint */
+    inset 0.5px 0.5px 0.5px 0 rgba(255, 255, 255, 0.75),
+    inset -0.5px -0.5px 0.5px 0 rgba(255, 255, 255, 0.4),
+    /* ruby caustic pooling at the bottom of the lens */
+    inset 0 -2.5px 3.5px -2px var(--lg-ruby-deep),
+    /* a short outward glow, which is what separates it from a dark panel */
+    0 0 5px -1px var(--lg-ruby-glow);
   transition: box-shadow 220ms var(--lg-ease);
 }
 
 .lg-cursor.is-visible { opacity: 1; }
 
-/* Over something actionable the lens opens up and its rim takes the accent. */
+/* Over something actionable the lens opens up and the ruby intensifies.
+   It stays ruby rather than switching to the accent: the cursor keeps one
+   identity across the whole interface, and size plus brightness already say
+   "this is clickable" without a second colour to learn. */
 .lg-cursor.is-hot { --lg-cursor-size: 18px; }
 .lg-cursor.is-hot .lg-cursor-shine {
   box-shadow:
-    inset 0 0 0 0.5px color-mix(in srgb, var(--accent) 75%, transparent),
-    inset 0.5px 0.5px 0.5px 0 rgba(255, 255, 255, 0.6),
+    inset 0 0 0 1.25px hsl(var(--lg-ruby) / 1),
+    inset 0.5px 0.5px 0.5px 0 rgba(255, 255, 255, 0.8),
     inset -0.5px -0.5px 0.5px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -3px 4px -2px color-mix(in srgb, var(--accent) 70%, transparent);
+    inset 0 -3.5px 5px -2px var(--lg-ruby-deep),
+    0 0 9px -1px hsl(var(--lg-ruby) / 0.7);
+}
+.lg-cursor.is-hot .lg-cursor-tint {
+  background: radial-gradient(
+    circle at 34% 28%,
+    hsl(var(--lg-ruby) / 0.04) 0%,
+    hsl(var(--lg-ruby) / 0.2) 68%,
+    hsl(var(--lg-ruby) / 0.32) 100%
+  );
 }
 
 /* The press squashes the lens against the surface; the spring returns it. */
 .lg-cursor.is-down { --lg-cursor-size: 9px; transition-duration: 110ms; }
 
-/* Over text it shrinks to a thin ring so it never sits on top of a glyph. */
-.lg-cursor.is-text { --lg-cursor-size: 6px; opacity: 0.4; }
+/* Over text it shrinks so it never sits on top of a glyph — but it stays
+   fully legible. It was 6px at 40% opacity, which over a glass panel is
+   nothing at all, and text is most of the interface: that one rule is why
+   the cursor seemed to disappear across whole pages. Small and present is
+   the goal; small and invisible is a different thing. */
+.lg-cursor.is-text { --lg-cursor-size: 9px; opacity: 0.95; }
+.lg-cursor.is-text .lg-cursor-tint { background: hsl(var(--lg-ruby) / 0.1); }
+.lg-cursor.is-text .lg-cursor-shine {
+  box-shadow:
+    inset 0 0 0 1px hsl(var(--lg-ruby) / 0.95),
+    inset 0.5px 0.5px 0.5px 0 rgba(255, 255, 255, 0.55),
+    0 0 4px -1px var(--lg-ruby-glow);
+}
 
 /* There is no companion dot. The lens sits on the pointer itself, so there is
    no lag for a dot to compensate for — see js/glass/cursor.js. */
@@ -883,6 +1071,10 @@
    Text, fields, canvases and viewers keep the real one: losing an I-beam or a
    grab hand costs more than the effect is worth. */
 html.lg-cursor-active body { cursor: none; }
+/* Fields keep the native caret cursor and now also keep the lens: the two
+   coexist, because the I-beam carries the hotspot and the lens is only
+   decoration. Previously the lens hid over every input, which is the second
+   half of "it disappears" — a form is mostly fields. */
 html.lg-cursor-active input,
 html.lg-cursor-active textarea,
 html.lg-cursor-active select,

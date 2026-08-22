@@ -33,6 +33,7 @@ const NAV = [
       { route: "workflow/design", icon: "▶", label: "Automated Discovery" },
       { route: "workflow/graph", icon: "⚯", label: "Workflow Graph" },
       { route: "scientist/ask", icon: "◎", label: "AI Scientist" },
+      { route: "structint", icon: "⬡", label: "Structure Intelligence" },
       { route: "modalities/overview", icon: "◫", label: "Modalities" },
       { route: "modalities/interface", icon: "◑", label: "PPI Interfaces" },
       { route: "modalities/degrader", icon: "⚯", label: "Degraders" },
@@ -273,6 +274,11 @@ const ROUTES = {
   // QSAR, molecular ML and ADMET, same pattern again.
   qsar: (section, params) =>
     import("./qsar/router.js").then((m) => m.qsarView(view, section, params)),
+
+  // Protein Structure Intelligence. One workspace, not a set of tabs: the
+  // structure is the central object and the panels are views of it.
+  structint: (section, params) =>
+    import("./structint/router.js").then((m) => m.structintView(view, section, params)),
 
   // Modalities beyond the small molecule, same pattern again.
   modalities: (section, params) =>

@@ -27,13 +27,14 @@
 .sci-conv-title { font-size:12px; color:var(--text); line-height:1.35; }
 .sci-conv-meta { font-size:10px; color:var(--text-dim); margin-top:3px; }
 
-.sci-btn { display:inline-block; width:100%; padding:9px 16px; border-radius:var(--radius);
-  border:1px solid var(--accent-dim); background:var(--accent); color:var(--accent-on);
-  font:inherit; font-size:12.5px; font-weight:600; cursor:pointer; text-align:center; }
-.sci-btn:hover:not(:disabled) { filter:brightness(1.08); }
-.sci-btn:disabled { opacity:.45; cursor:not-allowed; }
-.sci-btn.ghost { background:transparent; color:var(--text-muted); border-color:var(--border-strong); margin-top:12px; }
-.sci-btn.ghost:hover { color:var(--accent); border-color:var(--accent); }
+/* Buttons are the design system's glass lens, declared once in app.css and
+   tinted by .lg-btn-primary / .lg-btn-quiet in glass.css. Only the local
+   concerns live here: nothing that would change the shape, the edge or the
+   fill, because the material draws its rim as a pill *outside* the box and a
+   second radius here would show as a box inside a box. */
+.sci-btn { font-size: 12.5px; font-weight: 600; text-decoration: none; }
+.sci-btn:disabled { opacity: .45; cursor: not-allowed; }
+.sci-btn.ghost { font-weight: 500; }
 
 .sci-main { display:flex; flex-direction:column; gap:11px; }
 .sci-thread { max-height:600px; overflow-y:auto; padding:4px; display:flex; flex-direction:column; gap:11px; }
@@ -50,9 +51,8 @@
 .sci-ground.yes { color:var(--ev-established); }
 .sci-ground.no { color:var(--ev-hypothesis); }
 .sci-ground.err { color:var(--danger); }
-.sci-evidence-toggle { margin-left:auto; padding:3px 10px; border-radius:999px; border:1px solid var(--border);
-  background:transparent; color:var(--text-dim); font:inherit; font-size:10.5px; cursor:pointer; }
-.sci-evidence-toggle:hover { color:var(--accent); border-color:var(--accent); }
+.sci-evidence-toggle { margin-left:auto; padding:3px 10px; color:var(--text-dim); font:inherit; font-size:10.5px; cursor:pointer; }
+.sci-evidence-toggle:hover { color:var(--accent); }
 
 .sci-evidence { margin-top:11px; display:flex; flex-direction:column; gap:9px; }
 .sci-block { padding:10px 12px; border-radius:var(--radius); background:var(--bg-input);
@@ -64,16 +64,13 @@
   color:var(--text-muted); max-height:280px; overflow:auto; white-space:pre-wrap; word-break:break-word; }
 
 .sci-suggest { display:flex; gap:6px; flex-wrap:wrap; }
-.sci-pill { padding:4px 11px; border-radius:999px; border:1px solid var(--border);
-  background:var(--bg-input); color:var(--text-muted); font:inherit; font-size:11px; cursor:pointer; }
-.sci-pill:hover { border-color:var(--accent); color:var(--accent); }
+.sci-pill { padding:4px 11px; color:var(--text-muted); font:inherit; font-size:11px; cursor:pointer; }
+.sci-pill:hover { color:var(--accent); }
 .sci-compose { display:flex; gap:9px; align-items:flex-end; }
 .sci-compose textarea { flex:1; padding:10px 13px; border-radius:var(--radius); border:1px solid var(--border);
   background:var(--bg-input); color:var(--text); font:inherit; font-size:13px; line-height:1.6; resize:vertical; }
 .sci-compose textarea:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-glow); }
-.sci-compose .sci-btn { width:auto; padding:10px 22px; }
-
-.sci-note { margin:7px 0 0; font-size:11px; line-height:1.6; color:var(--text-dim); }
+.sci-compose .sci-note { margin:7px 0 0; font-size:11px; line-height:1.6; color:var(--text-dim); }
 .sci-caveat { margin:9px 0 0; padding:9px 12px; border-radius:var(--radius); background:var(--bg-input);
   border-left:2px solid var(--ev-hypothesis); font-size:11px; line-height:1.6; color:var(--text-muted); }
 @media (max-width:1000px){ .sci-layout{grid-template-columns:1fr;} }
