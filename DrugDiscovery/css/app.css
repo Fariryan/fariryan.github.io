@@ -351,6 +351,15 @@ h1, h2, h3, h4, h5 { letter-spacing: -0.015em; }
 .sidebar-foot button { width: 100%; margin-bottom: 9px; }
 .sidebar-foot a { color: var(--text-muted); text-decoration: underline; }
 .sidebar-foot a:hover { color: var(--accent); }
+/* Sits under the disclaimer, quieter than it: the legal notice that matters
+   most on a medical-adjacent tool is the "not medical advice" line, and the
+   copyright must not compete with it for attention. */
+.sidebar-foot .copyright {
+  display: inline-block;
+  margin-top: 6px;
+  opacity: 0.62;
+  letter-spacing: 0.03em;
+}
 
 /* -- main column ---------------------------------------------------------- */
 
@@ -1040,7 +1049,7 @@ button::before,
   top: calc(0% + var(--border-width) / 2);
   left: calc(0% + var(--border-width) / 2);
   box-sizing: border-box;
-  border-radius: 999vw;
+  border-radius: inherit;
   overflow: clip;
   pointer-events: none;
   background: linear-gradient(
@@ -1086,7 +1095,7 @@ button::after,
   position: absolute;
   z-index: 1;
   inset: 0;
-  border-radius: 999vw;
+  border-radius: inherit;
   width: calc(100% + var(--border-width));
   height: calc(100% + var(--border-width));
   top: calc(0% - var(--border-width) / 2);
